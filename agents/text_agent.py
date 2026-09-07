@@ -43,6 +43,7 @@ class TextAgent(BaseAgent):
     name = "text"
 
     def __init__(self, analyze_fn: AnalyzeFn | None = None) -> None:
+        self.analyze_fn = analyze_fn
         self._analyze_fn = analyze_fn or analyze_script_structure
 
     def run(
@@ -95,7 +96,11 @@ class TextAgent(BaseAgent):
             hooks=hooks,
             important_statements=important,
             clip_boundaries=boundaries,
-            provider="gemini" if get_settings().has_gemini_api_key else "heuristic",
+            provider=(
+                "gemini"
+                if self.analyze_fn is not None or get_settings().has_gemini_api_key
+                else "heuristic"
+            ),
         )
 
         transcript_path = self._write_transcript(project_id, root, transcript)
