@@ -478,5 +478,4 @@ pytest -m integration   # needs FFmpeg for fixture media path
 - Emotion is prosody mapping (rate/pitch/volume), not a separate neural emotion model  
 - YouTube path downloads local media via yt-dlp by default (`YOUTUBE_DOWNLOAD_ENABLED=true`; authorized use only; FFmpeg on PATH recommended). Set `false` for metadata-only. Upload remains fully supported for transcription  
 - No Kubernetes / cloud auto-deploy — use Docker Compose or systemd on a VPS
-#   A I - V i d e o - A g e n t  
- 
+#
