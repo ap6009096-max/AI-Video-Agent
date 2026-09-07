@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import os
 from functools import lru_cache
 
 from pydantic import Field
@@ -127,5 +128,22 @@ class Settings(BaseSettings):
 
 @lru_cache
 def get_settings() -> Settings:
-    """Return a cached Settings instance."""
+    """Return cached settings with Streamlit Cloud secret support."""
+
+    # Local development: environment variables / .env take priority.
+    if os.getenv("GEMINI_API_KEY"):
+        return Settings()
+
+    # Streamlit Community Cloud: read secrets when available.
+    try:
+        import streamlit as st
+
+        gemini_key = st.secrets.get("GEMINI_API_KEY", "")
+        if gemini_key:
+            return Settings(GEMINI_API_KEY=str(gemini_key))
+    except Exception:
+        # Streamlit is optional for CLI/tests.
+        pass
+
+    # Fall back to normal Pydantic/.env configuration.
     return Settings()

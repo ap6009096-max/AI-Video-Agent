@@ -2,6 +2,9 @@
 
 from __future__ import annotations
 
+import sys
+from types import SimpleNamespace
+
 from config.settings import Settings, get_settings
 
 
@@ -131,4 +134,39 @@ def test_get_settings_is_cached(monkeypatch) -> None:
     a = get_settings()
     b = get_settings()
     assert a is b
+    get_settings.cache_clear()
+
+
+def test_get_settings_uses_environment_key(monkeypatch) -> None:
+    monkeypatch.setenv("GEMINI_API_KEY", "environment-key")
+    get_settings.cache_clear()
+
+    settings = get_settings()
+
+    assert settings.has_gemini_api_key is True
+    get_settings.cache_clear()
+
+
+def test_get_settings_survives_streamlit_import_failure(monkeypatch, tmp_path) -> None:
+    monkeypatch.chdir(tmp_path)
+    monkeypatch.delenv("GEMINI_API_KEY", raising=False)
+    monkeypatch.setitem(sys.modules, "streamlit", None)
+    get_settings.cache_clear()
+
+    settings = get_settings()
+
+    assert settings.has_gemini_api_key is False
+    get_settings.cache_clear()
+
+
+def test_get_settings_uses_streamlit_secret(monkeypatch, tmp_path) -> None:
+    monkeypatch.chdir(tmp_path)
+    monkeypatch.delenv("GEMINI_API_KEY", raising=False)
+    streamlit = SimpleNamespace(secrets={"GEMINI_API_KEY": "streamlit-key"})
+    monkeypatch.setitem(sys.modules, "streamlit", streamlit)
+    get_settings.cache_clear()
+
+    settings = get_settings()
+
+    assert settings.has_gemini_api_key is True
     get_settings.cache_clear()
