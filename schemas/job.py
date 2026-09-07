@@ -24,13 +24,13 @@ ALLOWED_UPLOAD_EXTENSIONS = {
 }
 ALLOWED_AUDIO_UPLOAD_EXTENSIONS = {".mp3", ".wav", ".m4a", ".flac"}
 
-TargetClipDuration = Literal[10, 15, 30, 40, 45, 60, 90]
+TargetClipDuration = Literal[10, 15, 30, 40, 45, 60, 90, 180]
 
-ALLOWED_SHORT_DURATIONS: tuple[int, ...] = (10, 15, 30, 40, 45, 60, 90)
+ALLOWED_SHORT_DURATIONS: tuple[int, ...] = (10, 15, 30, 40, 45, 60, 90, 180)
 
 
 def _default_short_durations() -> list[int]:
-    return [10, 40, 90]
+    return [30, 60, 90, 180]
 
 HumorAdaptationMode = Literal["original", "localized", "regional", "none"]
 

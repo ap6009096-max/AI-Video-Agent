@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from config.settings import get_settings
 from tools.voice.catalog import build_voice_pack, list_voices, resolve_voice
 from tools.voice.provider import PassthroughTTSProvider, get_tts_provider
 
@@ -47,7 +48,8 @@ def test_ai_voice_without_provider_preserves(monkeypatch) -> None:
 
 
 def test_passthrough_provider_no_audio(monkeypatch) -> None:
-    monkeypatch.setattr("tools.voice.provider.get_tts_provider", lambda: PassthroughTTSProvider())
+    monkeypatch.setenv("TTS_PROVIDER", "none")
+    get_settings.cache_clear()
     provider = get_tts_provider()
     assert isinstance(provider, PassthroughTTSProvider)
     assert provider.is_available()
@@ -60,4 +62,5 @@ def test_passthrough_provider_no_audio(monkeypatch) -> None:
         out_path=Path("unused.wav"),
     )
     assert out is None
+    get_settings.cache_clear()
 

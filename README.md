@@ -64,7 +64,7 @@ Idea briefs use `SourceType.idea` and route through the same script ingest as pa
 
 ### Multi-duration Shorts export
 
-Enable **Multi Shorts Export** (feature toggle) and pick **Short Durations** (default 10 / 40 / 90 seconds; also 15/30/45/60). From a long upload or YouTube download, Smart Clip Selection harvests analysis-backed windows per duration (moments, viral/funny, scenes, transcript). Render still writes `renders/final.mp4` (concat of selected clips) **and** separate files:
+Enable **Multi Shorts Export** (feature toggle) and pick **Short Durations** (default 30 / 60 / 90 / 180 seconds; older programmatic durations remain supported). From a long upload or YouTube download, Smart Clip Selection harvests analysis-backed windows per duration (moments, viral/funny, scenes, transcript). Render still writes `renders/final.mp4` (concat of selected clips) **and** separate files:
 
 - `renders/shorts/short_{duration}s_{index}.mp4`
 - Copied into `exports/` and `final/` / `clips/` on export
@@ -478,4 +478,3 @@ pytest -m integration   # needs FFmpeg for fixture media path
 - Emotion is prosody mapping (rate/pitch/volume), not a separate neural emotion model  
 - YouTube path downloads local media via yt-dlp by default (`YOUTUBE_DOWNLOAD_ENABLED=true`; authorized use only; FFmpeg on PATH recommended). Set `false` for metadata-only. Upload remains fully supported for transcription  
 - No Kubernetes / cloud auto-deploy — use Docker Compose or systemd on a VPS
-#

@@ -3,7 +3,9 @@
 from __future__ import annotations
 
 import json
+import sys
 from pathlib import Path
+from types import SimpleNamespace
 from unittest.mock import MagicMock
 
 import httpx
@@ -18,7 +20,11 @@ from schemas.project import ProjectMetadata
 from schemas.youtube import YouTubeSourceStatus
 from tools.youtube.oembed_provider import OEmbedYouTubeProvider
 from tools.youtube.provider import get_youtube_provider
-from tools.youtube.ytdlp_provider import YtdlpYouTubeProvider
+from tools.youtube.ytdlp_provider import (
+    DEFAULT_YTDLP_FORMAT,
+    YtdlpYouTubeProvider,
+    _default_ytdlp_download,
+)
 
 VIDEO_ID = "dQw4w9WgXcQ"
 WATCH_URL = f"https://www.youtube.com/watch?v={VIDEO_ID}"
@@ -119,6 +125,55 @@ def test_ytdlp_provider_propagates_download_errors(
     with pytest.raises(YouTubeAgentError, match="simulated download failure"):
         provider.prepare_source(tmp_path / "proj", fetched)
     get_settings.cache_clear()
+
+
+def test_default_download_falls_back_from_split_format(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    formats: list[str] = []
+
+    class _FakeYoutubeDL:
+        def __init__(self, options: dict) -> None:
+            self.options = options
+            formats.append(str(options["format"]))
+
+        def __enter__(self):
+            return self
+
+        def __exit__(self, *_args) -> None:
+            return None
+
+        def extract_info(self, _url: str, *, download: bool) -> dict:
+            assert download is True
+            if len(formats) == 1:
+                raise RuntimeError("HTTP Error 403: Forbidden")
+            output = Path(self.options["outtmpl"].replace("%(ext)s", "mp4"))
+            output.write_bytes(b"video")
+            return {"id": "fallback-video"}
+
+        def prepare_filename(self, _info: dict) -> str:
+            return str(Path(self.options["outtmpl"].replace("%(ext)s", "mp4")))
+
+    monkeypatch.setattr(
+        "tools.youtube.ytdlp_provider._require_ffmpeg_hint", lambda: None
+    )
+    monkeypatch.setitem(sys.modules, "yt_dlp", SimpleNamespace(YoutubeDL=_FakeYoutubeDL))
+
+    media = _default_ytdlp_download(
+        "https://www.youtube.com/watch?v=fallback-video",
+        tmp_path,
+        {
+            "video_id": "fallback-video",
+            "format": "bestvideo[height<=720]+bestaudio/best[height<=720]/best",
+        },
+    )
+
+    assert media.read_bytes() == b"video"
+    assert formats == [
+        "bestvideo[height<=720]+bestaudio/best[height<=720]/best",
+        DEFAULT_YTDLP_FORMAT,
+    ]
 
 
 def test_youtube_agent_messages_include_local_media(

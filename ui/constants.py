@@ -291,9 +291,9 @@ PLATFORMS: list[str] = [
     "Reddit",
 ]
 
-TARGET_CLIP_DURATIONS: list[int] = [10, 15, 30, 40, 45, 60, 90]
+TARGET_CLIP_DURATIONS: list[int] = [30, 60, 90, 180]
 
-SHORT_DURATION_OPTIONS: list[int] = [10, 15, 30, 40, 45, 60, 90]
+SHORT_DURATION_OPTIONS: list[int] = [30, 60, 90, 180]
 
 THUMBNAIL_PLATFORMS: list[str] = [
     "Same as platform",

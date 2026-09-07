@@ -15,7 +15,7 @@ sentry-sdk>=2.0.0
 # Media
 opencv-python-headless>=4.10.0
 openai-whisper>=20231117
-yt-dlp>=2024.8.0
+yt-dlp>=2025.01.26
 
 edge-tts>=6.1.0
 

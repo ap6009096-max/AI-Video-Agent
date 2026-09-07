@@ -20,9 +20,7 @@ from tools.youtube.oembed_provider import OEmbedYouTubeProvider
 
 logger = get_logger(__name__)
 
-DEFAULT_YTDLP_FORMAT = (
-    "bestvideo[height<=720]+bestaudio/best[height<=720]/best"
-)
+DEFAULT_YTDLP_FORMAT = "best[height<=720]/best"
 
 _SOURCE_README = """# YouTube source package
 
@@ -99,15 +97,10 @@ def _default_ytdlp_download(
 
     video_id = str(options.get("video_id") or "youtube_video")
     outtmpl = str(source_dir / f"{video_id}.%(ext)s")
-    ydl_opts: dict[str, Any] = {
-        "outtmpl": outtmpl,
-        "format": options.get("format") or DEFAULT_YTDLP_FORMAT,
-        "merge_output_format": "mp4",
-        "noplaylist": True,
-        "quiet": True,
-        "no_warnings": True,
-        "noprogress": True,
-    }
+    requested_format = str(options.get("format") or DEFAULT_YTDLP_FORMAT).strip()
+    formats = [requested_format]
+    if requested_format != DEFAULT_YTDLP_FORMAT:
+        formats.append(DEFAULT_YTDLP_FORMAT)
     cookies = (options.get("cookies_file") or "").strip()
     if cookies:
         cookie_path = Path(cookies)
@@ -115,28 +108,49 @@ def _default_ytdlp_download(
             raise YouTubeAgentError(
                 f"YOUTUBE_COOKIES_FILE not found: {cookie_path}"
             )
-        ydl_opts["cookiefile"] = str(cookie_path.resolve())
 
     ffmpeg_path = (options.get("ffmpeg_path") or "").strip()
-    if ffmpeg_path:
-        ydl_opts["ffmpeg_location"] = ffmpeg_path
 
-    try:
-        with yt_dlp.YoutubeDL(ydl_opts) as ydl:
-            info = ydl.extract_info(url, download=True)
-            if not isinstance(info, dict):
-                raise YouTubeAgentError("yt-dlp returned no media info.")
-            prepared = Path(ydl.prepare_filename(info))
-            media = _pick_downloaded_file(prepared, source_dir, video_id)
-            return Path(validate_media_path(media))
-    except YouTubeAgentError:
-        raise
-    except Exception as exc:  # noqa: BLE001
-        raise YouTubeAgentError(
-            f"YouTube media download failed: {exc}. "
-            "Ensure FFmpeg is on PATH (or set FFMPEG_PATH), the video is "
-            "publicly accessible, and you are authorized to process it."
-        ) from exc
+    last_error: Exception | None = None
+    for index, format_value in enumerate(formats):
+        ydl_opts: dict[str, Any] = {
+            "outtmpl": outtmpl,
+            "format": format_value,
+            "merge_output_format": "mp4",
+            "noplaylist": True,
+            "quiet": True,
+            "no_warnings": True,
+            "noprogress": True,
+        }
+        if cookies:
+            ydl_opts["cookiefile"] = str(cookie_path.resolve())
+        if ffmpeg_path:
+            ydl_opts["ffmpeg_location"] = ffmpeg_path
+
+        try:
+            with yt_dlp.YoutubeDL(ydl_opts) as ydl:
+                info = ydl.extract_info(url, download=True)
+                if not isinstance(info, dict):
+                    raise YouTubeAgentError("yt-dlp returned no media info.")
+                prepared = Path(ydl.prepare_filename(info))
+                media = _pick_downloaded_file(prepared, source_dir, video_id)
+                return Path(validate_media_path(media))
+        except Exception as exc:  # noqa: BLE001
+            last_error = exc
+            if index + 1 < len(formats):
+                logger.warning(
+                    "yt-dlp format failed; retrying with a compatible single-stream format"
+                )
+                continue
+
+    assert last_error is not None
+    if isinstance(last_error, YouTubeAgentError):
+        raise last_error
+    raise YouTubeAgentError(
+        f"YouTube media download failed: {last_error}. "
+        "Ensure FFmpeg is on PATH (or set FFMPEG_PATH), the video is "
+        "publicly accessible, and you are authorized to process it."
+    ) from last_error
 
 
 def download_youtube_media(url: str, dest_dir: Path | str) -> Path:
