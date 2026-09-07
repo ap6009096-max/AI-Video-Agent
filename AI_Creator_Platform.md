@@ -23,6 +23,11 @@ The settings loader uses environment variables and `.env` locally. On Streamlit 
 
 ## Streamlit Community Cloud
 
+Streamlit Community Cloud installs Debian system packages listed in
+`packages.txt`; this repository includes `ffmpeg` there. The `Dockerfile` is
+used for Docker deployments, but it is not the mechanism Community Cloud uses
+to install system packages.
+
 Configure the deployment Secrets with values such as:
 
 ```toml
@@ -33,7 +38,7 @@ YOUTUBE_COOKIES_FILE = ""
 FFMPEG_PATH = ""
 ```
 
-Never commit the actual values. `.env` and `.streamlit/secrets.toml` are ignored by Git. Do not upload personal YouTube cookies unless the use is authorized and the security implications are understood.
+Never commit the actual values. `.env` and `.streamlit/secrets.toml` are ignored by Git. Do not upload personal YouTube cookies unless the use is authorized and the security implications are understood. After changing `packages.txt` or Secrets, allow Streamlit to complete a clean rebuild before testing a download.
 
 ## YouTube Downloads
 
