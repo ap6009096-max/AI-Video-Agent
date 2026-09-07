@@ -1,0 +1,45 @@
+{
+  "max_scenes": 12,
+  "shot_types": {
+    "wide": {
+      "aliases": ["wide shot", "establishing", "wide establishing", "wideshot"],
+      "default_movement": "locked-off hold with gentle atmospheric drift",
+      "instruction": "Wide establishing shot of the environment; keep horizon stable."
+    },
+    "medium": {
+      "aliases": ["medium shot", "mid", "medium framing"],
+      "default_movement": "subtle push-in",
+      "instruction": "Medium framing on subject; hold eyeline and background continuity."
+    },
+    "close_up": {
+      "aliases": ["close-up", "close up", "cu", "closeup"],
+      "default_movement": "slow creep-in",
+      "instruction": "Close-up on face or detail; shallow depth of field."
+    },
+    "extreme_close_up": {
+      "aliases": ["extreme close-up", "ecu", "extreme close up", "macro"],
+      "default_movement": "static locked-off",
+      "instruction": "Extreme close-up on critical detail; clean edges, no shake."
+    },
+    "drone": {
+      "aliases": ["aerial", "drone shot", "overhead"],
+      "default_movement": "smooth aerial glide",
+      "instruction": "Drone / aerial overview; steady altitude and gentle forward glide."
+    },
+    "tracking": {
+      "aliases": ["tracking shot", "dolly", "follow", "track"],
+      "default_movement": "lateral tracking follow",
+      "instruction": "Tracking shot following subject motion; keep subject framed consistently."
+    },
+    "pov": {
+      "aliases": ["pov shot", "point of view", "first person"],
+      "default_movement": "motivated look-around",
+      "instruction": "POV shot from subject viewpoint; natural head-scale motion."
+    },
+    "cinematic": {
+      "aliases": ["cinematic movement", "cinematic", "crane", "orbit"],
+      "default_movement": "cinematic orbit or crane rise",
+      "instruction": "Cinematic camera move with deliberate motivation; smooth start and settle."
+    }
+  }
+}

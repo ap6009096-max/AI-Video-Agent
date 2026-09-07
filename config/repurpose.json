@@ -1,0 +1,13 @@
+{
+  "formats": {
+    "reels": {"max_chars": 500, "tone": "punchy visual hook + CTA"},
+    "shorts": {"max_chars": 500, "tone": "YouTube Shorts spoken script"},
+    "tiktok": {"max_chars": 400, "tone": "native TikTok POV / pattern interrupt"},
+    "blog_summary": {"max_chars": 1200, "tone": "clear scannable paragraphs"},
+    "linkedin_post": {"max_chars": 1300, "tone": "professional insight + takeaway"},
+    "twitter_thread": {"max_tweets": 5, "max_chars_per_tweet": 260, "tone": "numbered thread"},
+    "instagram_caption": {"max_chars": 800, "tone": "caption + light hashtags"},
+    "newsletter_summary": {"max_chars": 900, "tone": "email-friendly summary"}
+  },
+  "notes": "Length hints for Gemini and heuristic truncation."
+}

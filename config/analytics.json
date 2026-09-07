@@ -1,0 +1,18 @@
+{
+  "weights": {
+    "viral_shareability": 0.28,
+    "viral_final": 0.18,
+    "trend_score": 0.18,
+    "hook_strength": 0.14,
+    "seo_richness": 0.12,
+    "thumbnail_presence": 0.10
+  },
+  "score_offsets": {
+    "engagement": 0.0,
+    "retention": -4.0,
+    "shareability": 2.0,
+    "watch_time": -2.0,
+    "ctr": 0.0
+  },
+  "baseline": 38.0
+}

@@ -1,0 +1,23 @@
+services:
+  app:
+    build: .
+    image: ai-video-agent:latest
+    ports:
+      - "8501:8501"
+    env_file:
+      - .env
+    environment:
+      APP_ENV: production
+      LOG_LEVEL: INFO
+      OUTPUT_DIR: outputs
+      STREAMLIT_SERVER_HEADLESS: "true"
+      STREAMLIT_BROWSER_GATHER_USAGE_STATS: "false"
+    volumes:
+      - ./outputs:/app/outputs
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://127.0.0.1:8501/_stcore/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 40s

@@ -1,0 +1,347 @@
+{
+  "styles": [
+    {
+      "id": "platform_safe",
+      "name": "Platform Safe",
+      "aliases": ["Safe", "Default Captions"],
+      "ass_style": {
+        "font": "Arial",
+        "size": 48,
+        "bold": true,
+        "outline": 3,
+        "shadow": 1,
+        "primary_color": "&H00FFFFFF",
+        "highlight_color": "&H0000FFFF",
+        "outline_color": "&H00000000",
+        "back_color": "&H80000000"
+      },
+      "animation": "none",
+      "effects": [],
+      "max_chars_per_line": 32,
+      "max_lines": 2,
+      "emoji_allowed": false,
+      "notes": "High-contrast captions with platform-safe margins."
+    },
+    {
+      "id": "minimal",
+      "name": "Minimal",
+      "aliases": ["Clean", "Simple"],
+      "ass_style": {
+        "font": "Helvetica",
+        "size": 42,
+        "bold": false,
+        "outline": 2,
+        "shadow": 0,
+        "primary_color": "&H00FFFFFF",
+        "highlight_color": "&H00FFFFFF",
+        "outline_color": "&H00000000",
+        "back_color": "&H00000000"
+      },
+      "animation": "none",
+      "effects": [],
+      "max_chars_per_line": 36,
+      "max_lines": 2,
+      "emoji_allowed": false,
+      "notes": "Clean minimal burned-in style."
+    },
+    {
+      "id": "pop",
+      "name": "Pop",
+      "aliases": ["Punchy", "Bold Pop"],
+      "ass_style": {
+        "font": "Impact",
+        "size": 56,
+        "bold": true,
+        "outline": 4,
+        "shadow": 2,
+        "primary_color": "&H00FFFFFF",
+        "highlight_color": "&H0000D7FF",
+        "outline_color": "&H00000000",
+        "back_color": "&H80000000"
+      },
+      "animation": "pop",
+      "effects": ["pop"],
+      "max_chars_per_line": 28,
+      "max_lines": 2,
+      "emoji_allowed": true,
+      "notes": "Bold pop captions with timed scale pulse and optional emoji."
+    },
+    {
+      "id": "kinetic",
+      "name": "Kinetic",
+      "aliases": ["Word Highlight", "Karaoke"],
+      "ass_style": {
+        "font": "Arial Black",
+        "size": 52,
+        "bold": true,
+        "outline": 3,
+        "shadow": 1,
+        "primary_color": "&H00AAAAAA",
+        "highlight_color": "&H0000FFFF",
+        "outline_color": "&H00000000",
+        "back_color": "&H80000000"
+      },
+      "animation": "word_highlight",
+      "effects": ["word_highlight", "karaoke"],
+      "max_chars_per_line": 30,
+      "max_lines": 2,
+      "emoji_allowed": false,
+      "notes": "Word-level highlight / karaoke ASS animation."
+    },
+    {
+      "id": "high_contrast",
+      "name": "High Contrast",
+      "aliases": ["High-Contrast", "Accessible"],
+      "ass_style": {
+        "font": "Arial",
+        "size": 50,
+        "bold": true,
+        "outline": 4,
+        "shadow": 0,
+        "primary_color": "&H0000FFFF",
+        "highlight_color": "&H0000FFFF",
+        "outline_color": "&H00000000",
+        "back_color": "&HCC000000"
+      },
+      "animation": "none",
+      "effects": [],
+      "max_chars_per_line": 30,
+      "max_lines": 2,
+      "emoji_allowed": false,
+      "notes": "Yellow-on-black high contrast for readability."
+    },
+    {
+      "id": "tiktok",
+      "name": "TikTok",
+      "aliases": ["Tik Tok", "TT Captions"],
+      "ass_style": {
+        "font": "Arial Black",
+        "size": 58,
+        "bold": true,
+        "outline": 4,
+        "shadow": 2,
+        "primary_color": "&H00FFFFFF",
+        "highlight_color": "&H0000FFFF",
+        "outline_color": "&H00000000",
+        "back_color": "&H80000000"
+      },
+      "animation": "word_highlight",
+      "effects": ["word_highlight", "karaoke", "bounce"],
+      "max_chars_per_line": 26,
+      "max_lines": 2,
+      "emoji_allowed": true,
+      "notes": "TikTok-style karaoke + bounce. Burn-in recommended for effects."
+    },
+    {
+      "id": "shorts",
+      "name": "Shorts",
+      "aliases": ["YT Shorts Captions", "YouTube Shorts Captions"],
+      "ass_style": {
+        "font": "Arial Black",
+        "size": 54,
+        "bold": true,
+        "outline": 3,
+        "shadow": 1,
+        "primary_color": "&H00FFFFFF",
+        "highlight_color": "&H0000D7FF",
+        "outline_color": "&H00000000",
+        "back_color": "&H80000000"
+      },
+      "animation": "word_highlight",
+      "effects": ["word_highlight", "karaoke", "pop"],
+      "max_chars_per_line": 28,
+      "max_lines": 2,
+      "emoji_allowed": true,
+      "notes": "YouTube Shorts karaoke with pop pulse. Burn-in recommended."
+    },
+    {
+      "id": "reels",
+      "name": "Reels",
+      "aliases": ["IG Reels Captions", "Instagram Reels Captions"],
+      "ass_style": {
+        "font": "Arial Black",
+        "size": 52,
+        "bold": true,
+        "outline": 3,
+        "shadow": 1,
+        "primary_color": "&H00FFFFFF",
+        "highlight_color": "&H00FF69B4",
+        "outline_color": "&H00000000",
+        "back_color": "&H80000000"
+      },
+      "animation": "word_highlight",
+      "effects": ["word_highlight", "karaoke", "zoom"],
+      "max_chars_per_line": 28,
+      "max_lines": 2,
+      "emoji_allowed": true,
+      "notes": "Reels karaoke with zoom-in. Burn-in recommended."
+    },
+    {
+      "id": "podcast",
+      "name": "Podcast",
+      "aliases": ["Podcast Captions", "Audio Show"],
+      "ass_style": {
+        "font": "Georgia",
+        "size": 44,
+        "bold": false,
+        "outline": 2,
+        "shadow": 0,
+        "primary_color": "&H00FFFFFF",
+        "highlight_color": "&H00FFFFFF",
+        "outline_color": "&H00000000",
+        "back_color": "&H99000000"
+      },
+      "animation": "none",
+      "effects": [],
+      "max_chars_per_line": 40,
+      "max_lines": 2,
+      "emoji_allowed": false,
+      "notes": "Clean podcast-readable captions; no motion/emoji."
+    },
+    {
+      "id": "gaming",
+      "name": "Gaming",
+      "aliases": ["Gamer", "Stream Captions"],
+      "ass_style": {
+        "font": "Impact",
+        "size": 56,
+        "bold": true,
+        "outline": 4,
+        "shadow": 2,
+        "primary_color": "&H0000FF00",
+        "highlight_color": "&H0000FFFF",
+        "outline_color": "&H00000000",
+        "back_color": "&H80000000"
+      },
+      "animation": "pop",
+      "effects": ["pop", "bounce"],
+      "max_chars_per_line": 26,
+      "max_lines": 2,
+      "emoji_allowed": true,
+      "notes": "Energetic gaming captions with pop/bounce + emoji. Burn-in recommended."
+    },
+    {
+      "id": "educational",
+      "name": "Educational",
+      "aliases": ["Learn", "Tutorial Captions"],
+      "ass_style": {
+        "font": "Arial",
+        "size": 48,
+        "bold": true,
+        "outline": 3,
+        "shadow": 1,
+        "primary_color": "&H00FFFFFF",
+        "highlight_color": "&H0000FFFF",
+        "outline_color": "&H00000000",
+        "back_color": "&H99000000"
+      },
+      "animation": "word_highlight",
+      "effects": ["word_highlight", "karaoke"],
+      "max_chars_per_line": 34,
+      "max_lines": 2,
+      "emoji_allowed": false,
+      "notes": "Clear educational word highlighting for key terms."
+    }
+  ],
+  "platforms": [
+    {
+      "id": "youtube_shorts",
+      "name": "YouTube Shorts",
+      "aliases": ["Shorts"],
+      "margin_l": 40,
+      "margin_r": 40,
+      "margin_v": 180,
+      "alignment": 2,
+      "notes": "Keep captions above Shorts bottom UI chrome."
+    },
+    {
+      "id": "tiktok",
+      "name": "TikTok",
+      "aliases": [],
+      "margin_l": 48,
+      "margin_r": 48,
+      "margin_v": 220,
+      "alignment": 2,
+      "notes": "Higher MarginV for TikTok UI overlays."
+    },
+    {
+      "id": "instagram_reels",
+      "name": "Instagram Reels",
+      "aliases": ["Reels", "Instagram"],
+      "margin_l": 44,
+      "margin_r": 44,
+      "margin_v": 200,
+      "alignment": 2,
+      "notes": "Safe area above Reels bottom actions."
+    },
+    {
+      "id": "youtube",
+      "name": "YouTube",
+      "aliases": ["YT"],
+      "margin_l": 60,
+      "margin_r": 60,
+      "margin_v": 60,
+      "alignment": 2,
+      "notes": "Standard YouTube lower-third safe area."
+    },
+    {
+      "id": "linkedin",
+      "name": "LinkedIn",
+      "aliases": [],
+      "margin_l": 50,
+      "margin_r": 50,
+      "margin_v": 80,
+      "alignment": 2,
+      "notes": "Conservative LinkedIn margins."
+    },
+    {
+      "id": "facebook",
+      "name": "Facebook",
+      "aliases": [],
+      "margin_l": 50,
+      "margin_r": 50,
+      "margin_v": 90,
+      "alignment": 2,
+      "notes": "Facebook feed / Reels-safe margins."
+    }
+  ],
+  "keyword_stopwords": [
+    "a", "an", "the", "and", "or", "but", "if", "in", "on", "at", "to", "for",
+    "of", "is", "are", "was", "were", "be", "been", "being", "it", "this",
+    "that", "with", "as", "by", "from", "we", "you", "they", "i", "he", "she",
+    "my", "your", "our", "their", "not", "no", "so", "do", "does", "did", "have",
+    "has", "had", "will", "would", "can", "could", "just", "about", "into"
+  ],
+  "keyword_boost": [
+    "secret", "hack", "tips", "mistake", "never", "always", "best", "worst",
+    "viral", "free", "money", "now", "why", "how", "stop", "start", "level",
+    "boss", "quest", "learn", "lesson", "step"
+  ],
+  "emoji_map": {
+    "love": "❤️",
+    "happy": "😊",
+    "sad": "😢",
+    "fire": "🔥",
+    "money": "💰",
+    "win": "🏆",
+    "wow": "😮",
+    "laugh": "😂",
+    "idea": "💡",
+    "warning": "⚠️",
+    "star": "⭐",
+    "rocket": "🚀",
+    "game": "🎮",
+    "play": "▶️",
+    "boss": "👾",
+    "level": "📶",
+    "epic": "💥",
+    "cool": "😎",
+    "party": "🎉",
+    "music": "🎵",
+    "learn": "📚",
+    "tip": "💡",
+    "check": "✅",
+    "fast": "⚡",
+    "goal": "🎯"
+  }
+}

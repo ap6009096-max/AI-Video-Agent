@@ -1,0 +1,90 @@
+[
+  {
+    "id": "none",
+    "name": "No Avatar",
+    "aliases": ["None", "Off", "Disabled"],
+    "gender_hint": "",
+    "default_expression": "neutral",
+    "default_gesture": "none",
+    "lip_sync_default": false,
+    "eye_contact_default": false,
+    "notes": "No avatar presenter — skip avatar planning."
+  },
+  {
+    "id": "male_presenter",
+    "name": "Male presenter",
+    "aliases": ["Male Presenter", "Male"],
+    "gender_hint": "male",
+    "default_expression": "confident",
+    "default_gesture": "subtle",
+    "lip_sync_default": true,
+    "eye_contact_default": true,
+    "notes": "Male talking-head presenter; lip-sync and eye contact on."
+  },
+  {
+    "id": "female_presenter",
+    "name": "Female presenter",
+    "aliases": ["Female Presenter", "Female"],
+    "gender_hint": "female",
+    "default_expression": "warm",
+    "default_gesture": "subtle",
+    "lip_sync_default": true,
+    "eye_contact_default": true,
+    "notes": "Female talking-head presenter; lip-sync and eye contact on."
+  },
+  {
+    "id": "business_presenter",
+    "name": "Business presenter",
+    "aliases": ["Business", "Corporate"],
+    "gender_hint": "neutral",
+    "default_expression": "serious",
+    "default_gesture": "emphasis",
+    "lip_sync_default": true,
+    "eye_contact_default": true,
+    "notes": "Corporate presenter; formal expression and emphasis gestures."
+  },
+  {
+    "id": "teacher",
+    "name": "Teacher",
+    "aliases": ["Educator", "Instructor"],
+    "gender_hint": "neutral",
+    "default_expression": "friendly",
+    "default_gesture": "point",
+    "lip_sync_default": true,
+    "eye_contact_default": true,
+    "notes": "Educational presenter; pointing gestures and clear eye contact."
+  },
+  {
+    "id": "news_anchor",
+    "name": "News anchor",
+    "aliases": ["Anchor", "News"],
+    "gender_hint": "neutral",
+    "default_expression": "serious",
+    "default_gesture": "subtle",
+    "lip_sync_default": true,
+    "eye_contact_default": true,
+    "notes": "Broadcast-style anchor; minimal gestures, strong eye contact."
+  },
+  {
+    "id": "influencer",
+    "name": "Influencer",
+    "aliases": ["Creator", "Social"],
+    "gender_hint": "neutral",
+    "default_expression": "excited",
+    "default_gesture": "emphasis",
+    "lip_sync_default": true,
+    "eye_contact_default": true,
+    "notes": "Social creator style; energetic expression and emphasis gestures."
+  },
+  {
+    "id": "custom",
+    "name": "Custom avatar",
+    "aliases": ["Custom", "User Avatar"],
+    "gender_hint": "neutral",
+    "default_expression": "neutral",
+    "default_gesture": "subtle",
+    "lip_sync_default": true,
+    "eye_contact_default": true,
+    "notes": "Custom avatar placeholder; user asset path reserved for future provider."
+  }
+]

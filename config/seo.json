@@ -1,0 +1,68 @@
+[
+  {
+    "id": "youtube",
+    "name": "YouTube",
+    "aliases": ["YouTube Shorts", "YT", "You Tube"],
+    "max_title_chars": 100,
+    "max_description_chars": 5000,
+    "max_hashtags": 5,
+    "max_tags": 15,
+    "max_keywords": 20,
+    "notes": "YouTube SEO: searchable title, rich description, tags/keywords for discovery."
+  },
+  {
+    "id": "instagram",
+    "name": "Instagram",
+    "aliases": ["Instagram Reels", "IG", "Reels"],
+    "max_title_chars": 80,
+    "max_description_chars": 2200,
+    "max_hashtags": 15,
+    "max_tags": 10,
+    "max_keywords": 12,
+    "notes": "Instagram: caption-style description with hashtags; short title."
+  },
+  {
+    "id": "facebook",
+    "name": "Facebook",
+    "aliases": ["FB", "Meta Facebook"],
+    "max_title_chars": 100,
+    "max_description_chars": 2000,
+    "max_hashtags": 8,
+    "max_tags": 12,
+    "max_keywords": 15,
+    "notes": "Facebook feed: clear title, conversational description, moderate hashtags."
+  },
+  {
+    "id": "tiktok",
+    "name": "TikTok",
+    "aliases": ["Tik Tok", "TT"],
+    "max_title_chars": 80,
+    "max_description_chars": 2200,
+    "max_hashtags": 5,
+    "max_tags": 8,
+    "max_keywords": 10,
+    "notes": "TikTok: punchy title/caption, few high-signal hashtags."
+  },
+  {
+    "id": "linkedin",
+    "name": "LinkedIn",
+    "aliases": ["LI", "Linked In"],
+    "max_title_chars": 120,
+    "max_description_chars": 3000,
+    "max_hashtags": 5,
+    "max_tags": 10,
+    "max_keywords": 15,
+    "notes": "LinkedIn: professional title, value-led description, sparse hashtags."
+  },
+  {
+    "id": "pinterest",
+    "name": "Pinterest",
+    "aliases": ["Pin", "Pins"],
+    "max_title_chars": 100,
+    "max_description_chars": 500,
+    "max_hashtags": 8,
+    "max_tags": 12,
+    "max_keywords": 20,
+    "notes": "Pinterest: keyword-rich title/description for search discovery."
+  }
+]

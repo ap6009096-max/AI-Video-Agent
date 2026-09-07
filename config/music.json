@@ -1,0 +1,92 @@
+[
+  {
+    "id": "original_audio",
+    "name": "Original Audio",
+    "aliases": ["Original", "Keep Audio"],
+    "mode": "original",
+    "mood": "original",
+    "energy": "source",
+    "notes": "Keep source audio bed; no music replacement.",
+    "generation_required": false
+  },
+  {
+    "id": "no_music",
+    "name": "No Music",
+    "aliases": ["None", "Silent Bed"],
+    "mode": "none",
+    "mood": "none",
+    "energy": "none",
+    "notes": "No background music bed.",
+    "generation_required": false
+  },
+  {
+    "id": "background_music",
+    "name": "Background Music",
+    "aliases": ["Bed Music", "Background"],
+    "mode": "bed",
+    "mood": "background",
+    "energy": "low",
+    "notes": "Light supportive bed under voice; selection only for MVP.",
+    "generation_required": false
+  },
+  {
+    "id": "dramatic",
+    "name": "Dramatic",
+    "aliases": ["Drama"],
+    "mode": "bed",
+    "mood": "dramatic",
+    "energy": "high",
+    "notes": "Dramatic underscore mood; no generation required for MVP.",
+    "generation_required": false
+  },
+  {
+    "id": "cinematic",
+    "name": "Cinematic",
+    "aliases": ["Film Score"],
+    "mode": "bed",
+    "mood": "cinematic",
+    "energy": "medium",
+    "notes": "Cinematic bed mood; plan only.",
+    "generation_required": false
+  },
+  {
+    "id": "funny",
+    "name": "Funny",
+    "aliases": ["Comedy", "Comedic"],
+    "mode": "bed",
+    "mood": "funny",
+    "energy": "medium",
+    "notes": "Light comedic bed mood; plan only.",
+    "generation_required": false
+  },
+  {
+    "id": "energetic",
+    "name": "Energetic",
+    "aliases": ["Upbeat", "High Energy"],
+    "mode": "bed",
+    "mood": "energetic",
+    "energy": "high",
+    "notes": "Energetic bed mood; plan only.",
+    "generation_required": false
+  },
+  {
+    "id": "emotional",
+    "name": "Emotional",
+    "aliases": ["Emotive", "Heartfelt"],
+    "mode": "bed",
+    "mood": "emotional",
+    "energy": "low",
+    "notes": "Emotional bed mood; plan only.",
+    "generation_required": false
+  },
+  {
+    "id": "educational",
+    "name": "Educational",
+    "aliases": ["Learning", "Explain"],
+    "mode": "bed",
+    "mood": "educational",
+    "energy": "low",
+    "notes": "Soft educational bed mood; plan only.",
+    "generation_required": false
+  }
+]

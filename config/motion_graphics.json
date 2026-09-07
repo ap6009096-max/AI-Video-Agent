@@ -1,0 +1,47 @@
+{
+  "max_overlays": 12,
+  "kinds": {
+    "kinetic_typography": {
+      "style": "bold kinetic type, high contrast",
+      "animation": "word-by-word slam with scale punch",
+      "timing": "0.0–2.0s on beat",
+      "position": "center frame"
+    },
+    "animated_title": {
+      "style": "clean display title matching visual style",
+      "animation": "fade-up with slight blur dissolve",
+      "timing": "0.0–3.0s open",
+      "position": "center or upper third"
+    },
+    "lower_third": {
+      "style": "compact nameplate bar",
+      "animation": "slide-in from left",
+      "timing": "1.0–4.0s hold",
+      "position": "lower third left"
+    },
+    "data_visualization": {
+      "style": "minimal infographic panel",
+      "animation": "draw-on lines and counters",
+      "timing": "2.0–6.0s",
+      "position": "right third"
+    },
+    "chart": {
+      "style": "simple bar or line chart",
+      "animation": "grow bars sequentially",
+      "timing": "2.0–7.0s",
+      "position": "center graphic plate"
+    },
+    "statistic": {
+      "style": "oversized number callout",
+      "animation": "count-up then settle",
+      "timing": "1.5–4.0s",
+      "position": "center emphasis"
+    },
+    "educational_overlay": {
+      "style": "step callout / tip badge",
+      "animation": "pop-in with underline",
+      "timing": "1.0–5.0s",
+      "position": "upper right safe area"
+    }
+  }
+}

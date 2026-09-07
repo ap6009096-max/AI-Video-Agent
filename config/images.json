@@ -1,0 +1,25 @@
+{
+  "default_kinds": ["scene", "storyboard", "broll", "thumbnail", "background"],
+  "max_items": 8,
+  "style_suffixes": {
+    "Cinematic": "cinematic lighting, shallow depth of field, film still",
+    "Documentary": "natural lighting, documentary still, realistic",
+    "Animated": "clean illustration, vibrant colors, animated look",
+    "Minimal": "minimal composition, negative space, clean design",
+    "Bold": "high contrast, bold colors, striking composition"
+  },
+  "environment_suffixes": {
+    "Wildlife/Nature Forest": "dense forest, natural foliage, outdoor",
+    "Urban City": "city streets, modern architecture, urban",
+    "Studio": "studio backdrop, controlled lighting",
+    "Office": "modern office interior",
+    "Home": "cozy home interior"
+  },
+  "kind_prefixes": {
+    "scene": "Scene still:",
+    "storyboard": "Storyboard frame:",
+    "broll": "B-roll insert:",
+    "thumbnail": "YouTube thumbnail composition:",
+    "background": "Background plate:"
+  }
+}

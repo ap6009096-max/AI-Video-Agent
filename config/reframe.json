@@ -1,0 +1,52 @@
+{
+  "aspects": [
+    {
+      "id": "9_16",
+      "name": "9:16",
+      "aliases": ["vertical", "shorts", "tiktok", "reels"],
+      "ratio": 0.5625,
+      "output_width": 1080,
+      "output_height": 1920,
+      "notes": "Vertical short-form"
+    },
+    {
+      "id": "1_1",
+      "name": "1:1",
+      "aliases": ["square"],
+      "ratio": 1.0,
+      "output_width": 1080,
+      "output_height": 1080,
+      "notes": "Square crop"
+    },
+    {
+      "id": "4_5",
+      "name": "4:5",
+      "aliases": ["portrait feed", "instagram feed"],
+      "ratio": 0.8,
+      "output_width": 1080,
+      "output_height": 1350,
+      "notes": "Instagram feed portrait"
+    }
+  ],
+  "platform_defaults": {
+    "YouTube Shorts": "9:16",
+    "TikTok": "9:16",
+    "Instagram Reels": "9:16",
+    "Instagram": "4:5",
+    "YouTube": "9:16",
+    "LinkedIn": "1:1",
+    "Facebook": "1:1"
+  },
+  "detection": {
+    "sample_fps": 2.0,
+    "max_frames": 120,
+    "face_min_size": 40,
+    "ema_alpha": 0.35,
+    "padding": 0.18,
+    "max_windows_per_clip": 24,
+    "window_seconds": 2.0,
+    "aspect_tolerance": 0.04,
+    "speaker_boost": 1.75,
+    "motion_boost": 1.25
+  }
+}

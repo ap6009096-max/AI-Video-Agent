@@ -1,0 +1,27 @@
+{
+  "max_scenes": 12,
+  "camera_flow_vocab": [
+    "establish wide then push in",
+    "match cut on action",
+    "eyeline match",
+    "hold axis / 180 rule",
+    "cutaway insert then return",
+    "reverse angle",
+    "motivated pan",
+    "dissolve environment hold"
+  ],
+  "note_prefixes": {
+    "story": "Story:",
+    "character": "Character:",
+    "environment": "Environment:",
+    "camera": "Camera:",
+    "transition": "Transition:"
+  },
+  "continuity_templates": {
+    "story": "Carry the beat from scene {a} into scene {b} so the narrative lands cleanly.",
+    "character": "Keep wardrobe, posture, and presence consistent from scene {a} to scene {b}.",
+    "environment": "Hold lighting and location cues from scene {a} into scene {b}.",
+    "camera": "Bridge camera energy from scene {a} ({cam_a}) into scene {b} ({cam_b}).",
+    "transition": "Use a natural {transition} so scene {a} connects into scene {b}."
+  }
+}

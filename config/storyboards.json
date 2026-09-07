@@ -1,0 +1,25 @@
+{
+  "default_duration": 5.0,
+  "min_duration": 2.0,
+  "max_duration": 8.0,
+  "max_shots": 12,
+  "cameras": [
+    "wide establishing",
+    "medium shot",
+    "close-up",
+    "over-the-shoulder",
+    "tracking shot",
+    "low angle",
+    "high angle",
+    "POV"
+  ],
+  "transitions": [
+    "cut",
+    "dissolve",
+    "whip pan",
+    "match cut",
+    "fade",
+    "jump cut",
+    "smash cut"
+  ]
+}

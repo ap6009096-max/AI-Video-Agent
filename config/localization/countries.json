@@ -1,0 +1,167 @@
+[
+  {
+    "id": "us",
+    "name": "United States",
+    "default_language": "English",
+    "currency": {"code": "USD", "symbol": "$", "example": "$19.99"},
+    "measurements": "imperial",
+    "date_format": "MM/DD/YYYY",
+    "cultural_notes": "Casual direct tone; sports and pop-culture references common.",
+    "voice_hints": "Clear American English; energetic for short-form.",
+    "example_swaps": {"football": "American football", "lift": "elevator"}
+  },
+  {
+    "id": "in",
+    "name": "India",
+    "default_language": "Hindi",
+    "currency": {"code": "INR", "symbol": "₹", "example": "₹499"},
+    "measurements": "metric",
+    "date_format": "DD/MM/YYYY",
+    "cultural_notes": "Warm, respectful tone; cricket and festival references land well.",
+    "voice_hints": "Natural Indian English or Hindi delivery; friendly and clear.",
+    "example_swaps": {"baseball": "cricket", "dollars": "rupees", "apartment": "flat"}
+  },
+  {
+    "id": "gb",
+    "name": "United Kingdom",
+    "default_language": "English",
+    "currency": {"code": "GBP", "symbol": "£", "example": "£14.99"},
+    "measurements": "metric",
+    "date_format": "DD/MM/YYYY",
+    "cultural_notes": "Slightly understated British tone; avoid US-only idioms.",
+    "voice_hints": "British English pronunciation; calm or witty.",
+    "example_swaps": {"soccer": "football", "apartment": "flat", "elevator": "lift"}
+  },
+  {
+    "id": "ca",
+    "name": "Canada",
+    "default_language": "English",
+    "currency": {"code": "CAD", "symbol": "$", "example": "C$24.99"},
+    "measurements": "metric",
+    "date_format": "YYYY-MM-DD",
+    "cultural_notes": "Polite, inclusive tone; bilingual awareness (EN/FR).",
+    "voice_hints": "Neutral North American English.",
+    "example_swaps": {}
+  },
+  {
+    "id": "au",
+    "name": "Australia",
+    "default_language": "English",
+    "currency": {"code": "AUD", "symbol": "$", "example": "A$29.95"},
+    "measurements": "metric",
+    "date_format": "DD/MM/YYYY",
+    "cultural_notes": "Laid-back Aussie tone; casual slang acceptable when fitting.",
+    "voice_hints": "Australian English; friendly and conversational.",
+    "example_swaps": {"soccer": "football", "vacation": "holiday"}
+  },
+  {
+    "id": "de",
+    "name": "Germany",
+    "default_language": "German",
+    "currency": {"code": "EUR", "symbol": "€", "example": "19,99 €"},
+    "measurements": "metric",
+    "date_format": "DD.MM.YYYY",
+    "cultural_notes": "Clear, factual tone; value precision and trust.",
+    "voice_hints": "Standard German; confident and clear.",
+    "example_swaps": {}
+  },
+  {
+    "id": "fr",
+    "name": "France",
+    "default_language": "French",
+    "currency": {"code": "EUR", "symbol": "€", "example": "19,99 €"},
+    "measurements": "metric",
+    "date_format": "DD/MM/YYYY",
+    "cultural_notes": "Elegant, conversational French; cultural pride without cliché.",
+    "voice_hints": "Metropolitan French; natural pacing.",
+    "example_swaps": {}
+  },
+  {
+    "id": "br",
+    "name": "Brazil",
+    "default_language": "Portuguese",
+    "currency": {"code": "BRL", "symbol": "R$", "example": "R$49,90"},
+    "measurements": "metric",
+    "date_format": "DD/MM/YYYY",
+    "cultural_notes": "Warm Brazilian Portuguese; energetic and friendly.",
+    "voice_hints": "Brazilian Portuguese; upbeat for short-form.",
+    "example_swaps": {"soccer": "futebol"}
+  },
+  {
+    "id": "jp",
+    "name": "Japan",
+    "default_language": "Japanese",
+    "currency": {"code": "JPY", "symbol": "¥", "example": "¥1,980"},
+    "measurements": "metric",
+    "date_format": "YYYY/MM/DD",
+    "cultural_notes": "Polite register; subtle humor; avoid overly aggressive CTAs.",
+    "voice_hints": "Natural Japanese; calm and respectful.",
+    "example_swaps": {}
+  },
+  {
+    "id": "kr",
+    "name": "South Korea",
+    "default_language": "Korean",
+    "currency": {"code": "KRW", "symbol": "₩", "example": "₩19,900"},
+    "measurements": "metric",
+    "date_format": "YYYY.MM.DD",
+    "cultural_notes": "Trendy, polite Korean; K-culture references sparingly.",
+    "voice_hints": "Natural Korean; energetic short-form tone.",
+    "example_swaps": {}
+  },
+  {
+    "id": "mx",
+    "name": "Mexico",
+    "default_language": "Spanish",
+    "currency": {"code": "MXN", "symbol": "$", "example": "$199 MXN"},
+    "measurements": "metric",
+    "date_format": "DD/MM/YYYY",
+    "cultural_notes": "Mexican Spanish; warm and conversational.",
+    "voice_hints": "Mexican Spanish pronunciation.",
+    "example_swaps": {}
+  },
+  {
+    "id": "ae",
+    "name": "United Arab Emirates",
+    "default_language": "Arabic",
+    "currency": {"code": "AED", "symbol": "د.إ", "example": "AED 79"},
+    "measurements": "metric",
+    "date_format": "DD/MM/YYYY",
+    "cultural_notes": "Respectful Modern Standard / Gulf-friendly Arabic; family-safe tone.",
+    "voice_hints": "Clear Arabic; professional and warm.",
+    "example_swaps": {}
+  },
+  {
+    "id": "sg",
+    "name": "Singapore",
+    "default_language": "English",
+    "currency": {"code": "SGD", "symbol": "S$", "example": "S$19.90"},
+    "measurements": "metric",
+    "date_format": "DD/MM/YYYY",
+    "cultural_notes": "Multicultural Singapore English; concise and practical.",
+    "voice_hints": "Clear Singapore English.",
+    "example_swaps": {}
+  },
+  {
+    "id": "za",
+    "name": "South Africa",
+    "default_language": "English",
+    "currency": {"code": "ZAR", "symbol": "R", "example": "R299"},
+    "measurements": "metric",
+    "date_format": "YYYY/MM/DD",
+    "cultural_notes": "Inclusive South African English; local references carefully.",
+    "voice_hints": "South African English; friendly.",
+    "example_swaps": {}
+  },
+  {
+    "id": "ng",
+    "name": "Nigeria",
+    "default_language": "English",
+    "currency": {"code": "NGN", "symbol": "₦", "example": "₦5,000"},
+    "measurements": "metric",
+    "date_format": "DD/MM/YYYY",
+    "cultural_notes": "Energetic Nigerian English; community and hustle themes resonate.",
+    "voice_hints": "Nigerian English; lively short-form delivery.",
+    "example_swaps": {}
+  }
+]

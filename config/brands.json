@@ -1,0 +1,128 @@
+[
+  {
+    "id": "generic_creator",
+    "name": "Generic Creator",
+    "aliases": ["Creator", "Default", "Generic"],
+    "voice": {
+      "tone": "friendly and energetic",
+      "personality": "helpful creator who keeps it simple",
+      "formality": "casual",
+      "do": ["Speak directly to the viewer", "Lead with a clear hook", "Keep sentences short"],
+      "dont": ["Overpromise results", "Use jargon without explanation", "Sound salesy"]
+    },
+    "visual_identity": {
+      "logo_treatment": "Simple wordmark or icon end-card; keep logo out of faces",
+      "typography": "Bold sans-serif for titles; clean secondary for captions",
+      "imagery_style": "Bright, high-contrast lifestyle and demo footage",
+      "iconography": "Rounded icons, minimal line weight",
+      "avoid": "Do not imitate trademarked logos or character IP"
+    },
+    "colors": {
+      "name": "Creator Bright",
+      "primary": "#2563EB",
+      "secondary": "#0EA5E9",
+      "accent": "#F59E0B",
+      "background": "#0F172A",
+      "text": "#F8FAFC",
+      "usage_notes": "Primary for titles; accent for CTA highlights; keep text high contrast"
+    },
+    "cta": {
+      "style": "soft",
+      "preferred_phrases": ["Follow for more", "Save this tip", "Try this today", "Watch next"],
+      "avoid_phrases": ["Buy now or miss out", "Guaranteed results", "Clickbait only"],
+      "placement_hint": "After payoff, before end card"
+    },
+    "messaging": {
+      "tagline": "Make better videos, faster",
+      "pillars": ["Clarity", "Consistency", "Useful tips"],
+      "value_props": ["Practical steps", "Fast watch time", "Repeatable formats"],
+      "banned_claims": ["Guaranteed viral", "Get rich quick", "Medical or financial advice"],
+      "audience_promise": "Leave with one actionable tip every video"
+    },
+    "notes": "Default creator brand kit for MVP."
+  },
+  {
+    "id": "corporate_clean",
+    "name": "Corporate Clean",
+    "aliases": ["Corporate", "B2B", "Professional"],
+    "voice": {
+      "tone": "clear and professional",
+      "personality": "trusted advisor",
+      "formality": "professional",
+      "do": ["Use precise language", "Lead with outcomes", "Stay respectful"],
+      "dont": ["Use slang", "Hype without evidence", "Attack competitors"]
+    },
+    "visual_identity": {
+      "logo_treatment": "Quiet corner mark; full logo on end slate only",
+      "typography": "Neutral sans-serif; generous tracking on titles",
+      "imagery_style": "Clean product, workspace, and diagram visuals",
+      "iconography": "Geometric, low ornament",
+      "avoid": "Neon gradients and meme aesthetics"
+    },
+    "colors": {
+      "name": "Corporate Neutral",
+      "primary": "#0F766E",
+      "secondary": "#334155",
+      "accent": "#38BDF8",
+      "background": "#F8FAFC",
+      "text": "#0F172A",
+      "usage_notes": "Primary for headers; secondary for body UI; accent sparingly for CTAs"
+    },
+    "cta": {
+      "style": "soft",
+      "preferred_phrases": ["Learn more", "Download the guide", "Book a demo", "See how it works"],
+      "avoid_phrases": ["Act now!!!", "Limited spots left", "Crush your rivals"],
+      "placement_hint": "Close after value summary"
+    },
+    "messaging": {
+      "tagline": "Clarity that scales",
+      "pillars": ["Trust", "Clarity", "Outcomes"],
+      "value_props": ["Reduce friction", "Explain complex ideas simply", "Stay on-brand"],
+      "banned_claims": ["#1 in the world", "Guaranteed ROI", "Unverified rankings"],
+      "audience_promise": "Every video earns trust and explains one outcome"
+    },
+    "notes": "B2B / corporate brand kit."
+  },
+  {
+    "id": "bold_lifestyle",
+    "name": "Bold Lifestyle",
+    "aliases": ["Lifestyle", "Bold", "Punchy"],
+    "voice": {
+      "tone": "punchy and confident",
+      "personality": "stylish coach with high energy",
+      "formality": "casual-bold",
+      "do": ["Use vivid verbs", "Celebrate progress", "Keep CTAs short"],
+      "dont": ["Sound corporate", "Over-explain", "Shame the viewer"]
+    },
+    "visual_identity": {
+      "logo_treatment": "Bold mark over accent bar; keep away from motion blur",
+      "typography": "Heavy display titles; tight tracking",
+      "imagery_style": "Saturated lifestyle stills and kinetic cuts",
+      "iconography": "Thick stroke icons, high contrast",
+      "avoid": "Muted grayscale-only looks"
+    },
+    "colors": {
+      "name": "Lifestyle Pop",
+      "primary": "#E11D48",
+      "secondary": "#7C3AED",
+      "accent": "#FBBF24",
+      "background": "#18181B",
+      "text": "#FAFAFA",
+      "usage_notes": "Saturated accents for CTAs and title pops; dark backgrounds for contrast"
+    },
+    "cta": {
+      "style": "hard",
+      "preferred_phrases": ["Do this today", "Join the challenge", "Hit follow", "Start now"],
+      "avoid_phrases": ["Maybe later", "Whenever you can", "Soft maybe CTAs"],
+      "placement_hint": "Immediately after emotional peak"
+    },
+    "messaging": {
+      "tagline": "Show up bold",
+      "pillars": ["Energy", "Identity", "Action"],
+      "value_props": ["Motivation with a next step", "Stylish visuals", "Community energy"],
+      "banned_claims": ["Body-shaming claims", "Unsafe challenges", "Unrealistic transformations"],
+      "audience_promise": "Feel inspired and leave with one clear action"
+    },
+    "notes": "Lifestyle / motivational brand kit."
+  }
+]

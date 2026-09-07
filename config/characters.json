@@ -1,0 +1,46 @@
+{
+  "max_characters": 6,
+  "role_types": {
+    "human": {
+      "appearance": "adult human with consistent facial features and hair",
+      "clothing": "simple wardrobe matching visual style",
+      "voice": "natural conversational tone",
+      "personality": "warm, clear, relatable",
+      "expressions": ["neutral", "smile", "concern", "surprise"]
+    },
+    "narrator": {
+      "appearance": "off-screen presence; no on-camera body required",
+      "clothing": "n/a (voice-only)",
+      "voice": "calm documentary narration",
+      "personality": "authoritative yet friendly",
+      "expressions": ["steady", "emphatic", "soft"]
+    },
+    "ai_avatar": {
+      "appearance": "digital presenter with stable face and hair",
+      "clothing": "clean studio outfit",
+      "voice": "clear TTS-friendly mid register",
+      "personality": "helpful, upbeat educator",
+      "expressions": ["smile", "nod", "raise brow", "serious"]
+    },
+    "mascot": {
+      "appearance": "friendly stylized mascot silhouette",
+      "clothing": "signature outfit or branded colors (generic)",
+      "voice": "playful bright tone",
+      "personality": "cheerful, energetic",
+      "expressions": ["big smile", "wink", "excited", "curious"]
+    },
+    "animated": {
+      "appearance": "stylized animated character matching art style",
+      "clothing": "simple readable costume shapes",
+      "voice": "expressive character voice",
+      "personality": "curious, expressive",
+      "expressions": ["happy", "worried", "determined", "amazed"]
+    }
+  },
+  "consistency_templates": [
+    "Keep {name} appearance and hair identical across scenes {scenes}.",
+    "Keep {name} clothing ({clothing}) unchanged unless a beat requires a wardrobe change.",
+    "Match {name} voice ({voice}) and personality ({personality}) in every appearance.",
+    "Reuse {name} expressions from the approved set: {expressions}."
+  ]
+}

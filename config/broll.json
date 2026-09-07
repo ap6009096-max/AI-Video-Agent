@@ -1,0 +1,51 @@
+{
+  "source_kinds": [
+    "source_footage",
+    "user_provided",
+    "external_required",
+    "generated_required",
+    "placeholder"
+  ],
+  "templates": [
+    {
+      "id": "establishing",
+      "name": "Establishing",
+      "aliases": ["Wide Establishing", "Establishing Shot"],
+      "description": "Wide establishing shot of the environment for context",
+      "default_source_kind": "external_required",
+      "notes": "Prefer real or licensed stock; use placeholder until acquired."
+    },
+    {
+      "id": "detail",
+      "name": "Detail",
+      "aliases": ["Insert Detail", "Close-up Detail"],
+      "description": "Close-up detail insert supporting the spoken beat",
+      "default_source_kind": "placeholder",
+      "notes": "Mark available only when a real asset path exists."
+    },
+    {
+      "id": "atmosphere",
+      "name": "Atmosphere",
+      "aliases": ["Atmosphere B-Roll", "Mood Shot"],
+      "description": "Atmospheric cutaway matching environment lighting and color",
+      "default_source_kind": "external_required",
+      "notes": "Driven by environment broll_requirements when present."
+    },
+    {
+      "id": "reaction",
+      "name": "Reaction",
+      "aliases": ["Reaction Cutaway"],
+      "description": "Reaction or emphasis cutaway timed to a key line",
+      "default_source_kind": "source_footage",
+      "notes": "Use source clip frames only when they exist in the selected clip."
+    },
+    {
+      "id": "generated_visual",
+      "name": "Generated Visual",
+      "aliases": ["AI Visual", "Generated B-Roll"],
+      "description": "Visual that must be generated later; not present in source",
+      "default_source_kind": "generated_required",
+      "notes": "Never treat as available until a generator writes a file."
+    }
+  ]
+}

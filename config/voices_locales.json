@@ -1,0 +1,77 @@
+{
+  "en": {
+    "male": "en-US-GuyNeural",
+    "female": "en-US-JennyNeural",
+    "neutral": "en-US-JennyNeural"
+  },
+  "hi": {
+    "male": "hi-IN-MadhurNeural",
+    "female": "hi-IN-SwaraNeural",
+    "neutral": "hi-IN-SwaraNeural"
+  },
+  "gu": {
+    "male": "gu-IN-NiranjanNeural",
+    "female": "gu-IN-DhwaniNeural",
+    "neutral": "gu-IN-DhwaniNeural"
+  },
+  "bn": {
+    "male": "bn-IN-BashkarNeural",
+    "female": "bn-IN-TanishaaNeural",
+    "neutral": "bn-IN-TanishaaNeural"
+  },
+  "ta": {
+    "male": "ta-IN-ValluvarNeural",
+    "female": "ta-IN-PallaviNeural",
+    "neutral": "ta-IN-PallaviNeural"
+  },
+  "te": {
+    "male": "te-IN-MohanNeural",
+    "female": "te-IN-ShrutiNeural",
+    "neutral": "te-IN-ShrutiNeural"
+  },
+  "mr": {
+    "male": "mr-IN-ManoharNeural",
+    "female": "mr-IN-AarohiNeural",
+    "neutral": "mr-IN-AarohiNeural"
+  },
+  "ja": {
+    "male": "ja-JP-KeitaNeural",
+    "female": "ja-JP-NanamiNeural",
+    "neutral": "ja-JP-NanamiNeural"
+  },
+  "ko": {
+    "male": "ko-KR-InJoonNeural",
+    "female": "ko-KR-SunHiNeural",
+    "neutral": "ko-KR-SunHiNeural"
+  },
+  "zh": {
+    "male": "zh-CN-YunxiNeural",
+    "female": "zh-CN-XiaoxiaoNeural",
+    "neutral": "zh-CN-XiaoxiaoNeural"
+  },
+  "fr": {
+    "male": "fr-FR-HenriNeural",
+    "female": "fr-FR-DeniseNeural",
+    "neutral": "fr-FR-DeniseNeural"
+  },
+  "es": {
+    "male": "es-ES-AlvaroNeural",
+    "female": "es-ES-ElviraNeural",
+    "neutral": "es-ES-ElviraNeural"
+  },
+  "pt": {
+    "male": "pt-BR-AntonioNeural",
+    "female": "pt-BR-FranciscaNeural",
+    "neutral": "pt-BR-FranciscaNeural"
+  },
+  "de": {
+    "male": "de-DE-ConradNeural",
+    "female": "de-DE-KatjaNeural",
+    "neutral": "de-DE-KatjaNeural"
+  },
+  "ar": {
+    "male": "ar-SA-HamedNeural",
+    "female": "ar-SA-ZariyahNeural",
+    "neutral": "ar-SA-ZariyahNeural"
+  }
+}

@@ -1,0 +1,72 @@
+[
+  {
+    "id": "in-gujarat",
+    "country_id": "in",
+    "name": "Gujarat",
+    "language": "Gujarati",
+    "slang_notes": "Gujarati greetings and everyday phrases; warm community tone.",
+    "idioms": ["Kem cho", "Bhai"],
+    "humor_notes": "Light, family-friendly humor; avoid sarcasm that feels harsh.",
+    "cultural_notes": "Festivals like Navratri/Diwali references work well when relevant."
+  },
+  {
+    "id": "in-maharashtra",
+    "country_id": "in",
+    "name": "Maharashtra",
+    "language": "Marathi",
+    "slang_notes": "Marathi-friendly tone with Mumbai hustle energy when fitting.",
+    "idioms": ["Jai Maharashtra"],
+    "humor_notes": "Witty urban humor; keep respectful.",
+    "cultural_notes": "City life and festival references (Ganesh Chaturthi) when relevant."
+  },
+  {
+    "id": "in-tamil-nadu",
+    "country_id": "in",
+    "name": "Tamil Nadu",
+    "language": "Tamil",
+    "slang_notes": "Tamil cultural warmth; respectful address forms.",
+    "idioms": [],
+    "humor_notes": "Gentle humor; cinema references sparingly.",
+    "cultural_notes": "Pongal and classical culture references when relevant."
+  },
+  {
+    "id": "us-california",
+    "country_id": "us",
+    "name": "California",
+    "language": "English",
+    "slang_notes": "West Coast casual; tech and lifestyle phrasing.",
+    "idioms": ["for sure", "no worries"],
+    "humor_notes": "Laid-back irony; keep inclusive.",
+    "cultural_notes": "Startup and outdoor lifestyle references when fitting."
+  },
+  {
+    "id": "us-texas",
+    "country_id": "us",
+    "name": "Texas",
+    "language": "English",
+    "slang_notes": "Friendly Southern-leaning American English.",
+    "idioms": ["y'all"],
+    "humor_notes": "Warm, straightforward humor.",
+    "cultural_notes": "Local pride without stereotypes."
+  },
+  {
+    "id": "jp-kansai",
+    "country_id": "jp",
+    "name": "Kansai",
+    "language": "Japanese",
+    "slang_notes": "Kansai dialect flavor lightly; keep intelligible nationally.",
+    "idioms": ["ookini"],
+    "humor_notes": "Manzai-style wit only if natural; otherwise polite standard.",
+    "cultural_notes": "Osaka/Kyoto local color when relevant."
+  },
+  {
+    "id": "gb-scotland",
+    "country_id": "gb",
+    "name": "Scotland",
+    "language": "English",
+    "slang_notes": "Light Scottish flavor; keep broadly understandable.",
+    "idioms": [],
+    "humor_notes": "Dry wit; avoid caricature.",
+    "cultural_notes": "Local pride and outdoors references when fitting."
+  }
+]

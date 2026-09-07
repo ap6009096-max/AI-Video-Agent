@@ -1,0 +1,42 @@
+[
+  {
+    "id": "youtube",
+    "name": "YouTube",
+    "aliases": ["YouTube Shorts", "YT", "You Tube"],
+    "layout": "face_left_text_right",
+    "face_zone": "left_third",
+    "aspect_hint": "16:9",
+    "default_emotion": "curious",
+    "notes": "YouTube / Shorts: face left third, bold text right; high contrast."
+  },
+  {
+    "id": "instagram",
+    "name": "Instagram",
+    "aliases": ["Instagram Reels", "IG", "Reels"],
+    "layout": "face_center_text_bottom",
+    "face_zone": "center",
+    "aspect_hint": "9:16",
+    "default_emotion": "excited",
+    "notes": "Instagram / Reels: centered face, short text near bottom safe zone."
+  },
+  {
+    "id": "facebook",
+    "name": "Facebook",
+    "aliases": ["FB", "Meta Facebook"],
+    "layout": "face_left_text_overlay",
+    "face_zone": "left_third",
+    "aspect_hint": "1:1",
+    "default_emotion": "curious",
+    "notes": "Facebook feed: square-friendly, face left, readable overlay text."
+  },
+  {
+    "id": "tiktok",
+    "name": "TikTok",
+    "aliases": ["Tik Tok", "TT"],
+    "layout": "bold_center_face_upper",
+    "face_zone": "upper_third",
+    "aspect_hint": "9:16",
+    "default_emotion": "excited",
+    "notes": "TikTok: bold center text, face upper third; punchy 2–4 word overlay."
+  }
+]

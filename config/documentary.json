@@ -1,0 +1,12 @@
+{
+  "max_chapters": 6,
+  "intro_template": "Open with the central question and stakes: {hook}",
+  "conclusion_template": "Close on the takeaway and forward look from the final beat.",
+  "defaults": {
+    "research": "Identify primary sources, context, and open questions for this chapter.",
+    "evidence": "Anchor claims with observable facts, numbers, or archival beats.",
+    "narration": "Voiceover bridges scenes with calm, factual delivery.",
+    "interview": "Capture a short on-camera answer that advances the argument.",
+    "timeline": "Place this chapter in chronological or causal sequence."
+  }
+}

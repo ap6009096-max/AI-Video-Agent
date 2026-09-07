@@ -1,0 +1,56 @@
+[
+  {
+    "id": "youtube",
+    "name": "YouTube",
+    "aliases": ["YouTube Shorts", "YT"],
+    "seed_topics": ["shorts tips", "how to", "explained", "vs", "challenge"],
+    "seed_hashtags": ["#shorts", "#youtube", "#viral", "#fyp"],
+    "seed_keywords": ["tutorial", "review", "hack", "secret", "must watch"],
+    "viral_patterns": ["hook in 3 seconds", "listicle payoff", "before after"]
+  },
+  {
+    "id": "instagram",
+    "name": "Instagram",
+    "aliases": ["Instagram Reels", "IG", "Reels"],
+    "seed_topics": ["reels growth", "aesthetic", "day in life", "transformation"],
+    "seed_hashtags": ["#reels", "#instagram", "#explore", "#viral"],
+    "seed_keywords": ["reel", "caption", "collab", "trend audio"],
+    "viral_patterns": ["text on screen", "trending audio", "save-worthy tip"]
+  },
+  {
+    "id": "facebook",
+    "name": "Facebook",
+    "aliases": ["FB"],
+    "seed_topics": ["shareable story", "local news", "family tips"],
+    "seed_hashtags": ["#facebook", "#share", "#viral"],
+    "seed_keywords": ["community", "story", "relatable"],
+    "viral_patterns": ["emotion first", "comment bait question", "shareable tip"]
+  },
+  {
+    "id": "tiktok",
+    "name": "TikTok",
+    "aliases": ["Tik Tok", "TT"],
+    "seed_topics": ["fyp tips", "duet ready", "sound trend", "life hack"],
+    "seed_hashtags": ["#fyp", "#tiktok", "#viral", "#foryou"],
+    "seed_keywords": ["pov", "hack", "duet", "stitch"],
+    "viral_patterns": ["pattern interrupt", "POV opener", "loop ending"]
+  },
+  {
+    "id": "linkedin",
+    "name": "LinkedIn",
+    "aliases": ["LI", "Linked In"],
+    "seed_topics": ["career growth", "leadership", "ai at work", "productivity"],
+    "seed_hashtags": ["#linkedin", "#career", "#leadership", "#ai"],
+    "seed_keywords": ["insight", "framework", "case study"],
+    "viral_patterns": ["contrarian take", "numbered lessons", "story to insight"]
+  },
+  {
+    "id": "pinterest",
+    "name": "Pinterest",
+    "aliases": ["Pin"],
+    "seed_topics": ["diy ideas", "home inspo", "recipes", "style guide"],
+    "seed_hashtags": ["#pinterest", "#diy", "#inspo", "#ideas"],
+    "seed_keywords": ["guide", "ideas", "aesthetic", "checklist"],
+    "viral_patterns": ["keyword-rich pin title", "step list", "seasonal hook"]
+  }
+]

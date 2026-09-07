@@ -1,0 +1,55 @@
+{
+  "default_duration": 5.0,
+  "min_duration": 2.0,
+  "max_duration": 8.0,
+  "max_shots": 12,
+  "modes": {
+    "Cinematic": {
+      "aliases": ["Film", "Movie"],
+      "prompt_suffix": "cinematic lighting, shallow depth of field, film grain, 24fps feel",
+      "camera_moves": ["slow push-in", "crane rise", "tracking dolly", "orbit", "static locked-off"]
+    },
+    "Animation": {
+      "aliases": ["Animated", "2D Animation", "3D Animation"],
+      "prompt_suffix": "stylized animation, clean motion, expressive timing",
+      "camera_moves": ["multiplane pan", "snappy zoom", "parallax slide", "hold frame", "whip cut"]
+    },
+    "Documentary": {
+      "aliases": ["Doc", "Documentary Style"],
+      "prompt_suffix": "natural lighting, observational camera, documentary realism",
+      "camera_moves": ["handheld follow", "static interview", "observational wide", "slow pan", "zoom reveal"]
+    },
+    "Explainer": {
+      "aliases": ["Educational", "How-to", "Tutorial"],
+      "prompt_suffix": "clear subject focus, readable composition, instructional clarity",
+      "camera_moves": ["static medium", "gentle push", "cut-to-detail", "screen-insert", "reset wide"]
+    },
+    "AI Avatar": {
+      "aliases": ["Avatar", "Talking Avatar", "Digital Presenter"],
+      "prompt_suffix": "presenter framed mid-shot, stable lighting, lip-sync friendly framing",
+      "camera_moves": ["static talking head", "slight push-in", "cutaway insert", "return to presenter", "end hold"]
+    },
+    "Motion Graphics": {
+      "aliases": ["Motion", "Kinetic", "MG"],
+      "prompt_suffix": "graphic shapes, kinetic type space, bold color blocks, motion design",
+      "camera_moves": ["graphic wipe", "scale punch", "slide layer", "orbit graphic", "snap cut"]
+    }
+  },
+  "shot_types": [
+    "establishing",
+    "medium",
+    "close-up",
+    "insert",
+    "POV",
+    "wide",
+    "over-shoulder"
+  ],
+  "transitions": [
+    "cut",
+    "dissolve",
+    "whip pan",
+    "match cut",
+    "fade",
+    "jump cut"
+  ]
+}

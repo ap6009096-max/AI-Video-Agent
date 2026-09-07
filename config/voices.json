@@ -1,0 +1,209 @@
+[
+  {
+    "id": "original_voice",
+    "name": "Original Voice",
+    "aliases": ["Original", "Source Voice", "Keep Original"],
+    "mode": "original",
+    "gender": "",
+    "language_hint": "",
+    "notes": "Preserve source/original audio; no TTS."
+  },
+  {
+    "id": "ai_voice",
+    "name": "AI Voice",
+    "aliases": ["TTS", "Synthetic Voice"],
+    "mode": "ai_tts",
+    "gender": "neutral",
+    "language_hint": "",
+    "notes": "Requires a configured TTS provider; otherwise preserve original."
+  },
+  {
+    "id": "male",
+    "name": "Male",
+    "aliases": ["Male Voice"],
+    "mode": "talent_direction",
+    "gender": "male",
+    "language_hint": "",
+    "notes": "Talent/TTS direction: male voice."
+  },
+  {
+    "id": "female",
+    "name": "Female",
+    "aliases": ["Female Voice"],
+    "mode": "talent_direction",
+    "gender": "female",
+    "language_hint": "",
+    "notes": "Talent/TTS direction: female voice."
+  },
+  {
+    "id": "neutral",
+    "name": "Neutral",
+    "aliases": ["Neutral Voice"],
+    "mode": "talent_direction",
+    "gender": "neutral",
+    "language_hint": "",
+    "notes": "Talent/TTS direction: neutral voice."
+  },
+  {
+    "id": "english_neutral",
+    "name": "English Neutral",
+    "aliases": ["English", "EN Neutral"],
+    "mode": "talent_direction",
+    "gender": "neutral",
+    "language_hint": "English",
+    "notes": "Language-specific English neutral delivery."
+  },
+  {
+    "id": "hindi_female",
+    "name": "Hindi Female",
+    "aliases": ["Hindi", "HI Female"],
+    "mode": "talent_direction",
+    "gender": "female",
+    "language_hint": "Hindi",
+    "notes": "Language-specific Hindi female delivery."
+  },
+  {
+    "id": "gujarati_female",
+    "name": "Gujarati Female",
+    "aliases": ["Gujarati", "GU Female"],
+    "mode": "talent_direction",
+    "gender": "female",
+    "language_hint": "Gujarati",
+    "notes": "Language-specific Gujarati female delivery."
+  },
+  {
+    "id": "bengali_female",
+    "name": "Bengali Female",
+    "aliases": ["Bengali", "BN Female"],
+    "mode": "talent_direction",
+    "gender": "female",
+    "language_hint": "Bengali",
+    "notes": "Language-specific Bengali female delivery."
+  },
+  {
+    "id": "tamil_female",
+    "name": "Tamil Female",
+    "aliases": ["Tamil", "TA Female"],
+    "mode": "talent_direction",
+    "gender": "female",
+    "language_hint": "Tamil",
+    "notes": "Language-specific Tamil female delivery."
+  },
+  {
+    "id": "telugu_female",
+    "name": "Telugu Female",
+    "aliases": ["Telugu", "TE Female"],
+    "mode": "talent_direction",
+    "gender": "female",
+    "language_hint": "Telugu",
+    "notes": "Language-specific Telugu female delivery."
+  },
+  {
+    "id": "marathi_female",
+    "name": "Marathi Female",
+    "aliases": ["Marathi", "MR Female"],
+    "mode": "talent_direction",
+    "gender": "female",
+    "language_hint": "Marathi",
+    "notes": "Language-specific Marathi female delivery."
+  },
+  {
+    "id": "japanese_female",
+    "name": "Japanese Female",
+    "aliases": ["Japanese", "JA Female"],
+    "mode": "talent_direction",
+    "gender": "female",
+    "language_hint": "Japanese",
+    "notes": "Language-specific Japanese female delivery."
+  },
+  {
+    "id": "korean_female",
+    "name": "Korean Female",
+    "aliases": ["Korean", "KO Female"],
+    "mode": "talent_direction",
+    "gender": "female",
+    "language_hint": "Korean",
+    "notes": "Language-specific Korean female delivery."
+  },
+  {
+    "id": "chinese_female",
+    "name": "Chinese Female",
+    "aliases": ["Chinese", "ZH Female", "Mandarin"],
+    "mode": "talent_direction",
+    "gender": "female",
+    "language_hint": "Chinese",
+    "notes": "Language-specific Mandarin Chinese female delivery."
+  },
+  {
+    "id": "french_female",
+    "name": "French Female",
+    "aliases": ["French", "FR Female"],
+    "mode": "talent_direction",
+    "gender": "female",
+    "language_hint": "French",
+    "notes": "Language-specific French female delivery."
+  },
+  {
+    "id": "spanish_male",
+    "name": "Spanish Male",
+    "aliases": ["Spanish", "ES Male"],
+    "mode": "talent_direction",
+    "gender": "male",
+    "language_hint": "Spanish",
+    "notes": "Language-specific Spanish male delivery."
+  },
+  {
+    "id": "portuguese_female",
+    "name": "Portuguese Female",
+    "aliases": ["Portuguese", "PT Female", "Brazilian"],
+    "mode": "talent_direction",
+    "gender": "female",
+    "language_hint": "Portuguese",
+    "notes": "Language-specific Portuguese female delivery."
+  },
+  {
+    "id": "german_female",
+    "name": "German Female",
+    "aliases": ["German", "DE Female"],
+    "mode": "talent_direction",
+    "gender": "female",
+    "language_hint": "German",
+    "notes": "Language-specific German female delivery."
+  },
+  {
+    "id": "arabic_female",
+    "name": "Arabic Female",
+    "aliases": ["Arabic", "AR Female"],
+    "mode": "talent_direction",
+    "gender": "female",
+    "language_hint": "Arabic",
+    "notes": "Language-specific Arabic female delivery."
+  },
+  {
+    "id": "energetic",
+    "name": "Energetic",
+    "aliases": [],
+    "mode": "talent_direction",
+    "gender": "neutral",
+    "language_hint": "",
+    "notes": "Legacy UI alias — energetic delivery direction."
+  },
+  {
+    "id": "calm",
+    "name": "Calm",
+    "aliases": [],
+    "mode": "talent_direction",
+    "gender": "neutral",
+    "language_hint": "",
+    "notes": "Legacy UI alias — calm delivery direction."
+  },
+  {
+    "id": "narrative",
+    "name": "Narrative",
+    "aliases": ["Narrator"],
+    "mode": "talent_direction",
+    "gender": "neutral",
+    "language_hint": "",
+    "notes": "Legacy UI alias — narrative delivery direction."
+  }
+]
