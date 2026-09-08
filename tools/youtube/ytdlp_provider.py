@@ -125,6 +125,17 @@ def _default_ytdlp_download(
             "quiet": True,
             "no_warnings": True,
             "noprogress": True,
+            "retries": 3,
+            "fragment_retries": 3,
+            "file_access_retries": 3,
+            "concurrent_fragment_downloads": 1,
+            "http_headers": {
+                "User-Agent": (
+                    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
+                    "AppleWebKit/537.36 (KHTML, like Gecko) "
+                    "Chrome/131.0.0.0 Safari/537.36"
+                )
+            },
         }
         if cookies:
             ydl_opts["cookiefile"] = str(cookie_path.resolve())
@@ -150,10 +161,17 @@ def _default_ytdlp_download(
     assert last_error is not None
     if isinstance(last_error, YouTubeAgentError):
         raise last_error
+    error_text = str(last_error)
+    if "403" in error_text or "forbidden" in error_text.lower():
+        raise YouTubeAgentError(
+            "YouTube rejected the media request with HTTP 403. This is usually "
+            "caused by video restrictions, an expired/blocked request, or the "
+            "deployment IP being denied. Use an authorized public video or upload "
+            "the media file directly."
+        ) from last_error
     raise YouTubeAgentError(
-        f"YouTube media download failed: {last_error}. "
-        "Ensure the bundled FFmpeg executable is available (or set FFMPEG_PATH), the video is "
-        "publicly accessible, and you are authorized to process it."
+        f"YouTube media download failed: {last_error}. Ensure the video is "
+        "publicly accessible and you are authorized to process it."
     ) from last_error
 
 

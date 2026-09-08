@@ -137,6 +137,9 @@ def test_default_download_falls_back_from_split_format(
         def __init__(self, options: dict) -> None:
             self.options = options
             assert options["ffmpeg_location"]
+            assert options["retries"] == 3
+            assert options["fragment_retries"] == 3
+            assert options["concurrent_fragment_downloads"] == 1
             formats.append(str(options["format"]))
 
         def __enter__(self):
