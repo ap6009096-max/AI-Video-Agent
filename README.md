@@ -1,445 +1,979 @@
-# AI Creator Platform
+AI Creator Platform
+> A YouTube-first AI Creator Operating System for turning ideas, experiences, knowledge, and life stories into meaningful video content.
+Why This App Exists
+This platform is built around a simple idea:
+Life is a journey, and video is a powerful way to document, transform, and share that journey.
+YouTube content creation is at the center of the platform. The purpose is not simply to generate videos, but to provide a complete creative workflow that helps transform ideas, experiences, stories, knowledge, and memorable moments into useful and engaging content.
+Simple Creation Process
+Start with an idea or source
+Understand and research the content
+Plan the video
+Create the script and storyboard
+Produce and edit the video
+Add captions, voice, visuals, and other media
+Optimize the content for the target audience
+Prepare the final files for publishing
+Review performance and improve future content
+The process can be used for local, regional, country-specific, or global audiences.
+---
+The Vision
+The long-term vision is to make content creation feel like a continuous journey rather than a collection of disconnected tools.
+A creator can begin with something as simple as:
+An idea
+A personal experience
+A story
+A YouTube video
+A podcast
+An uploaded video
+An audio recording
+A script
+A moment worth sharing
+The platform then helps transform that starting point into a complete content package.
+```text
+Experience
+   ↓
+Idea
+   ↓
+Story
+   ↓
+Video
+   ↓
+Audience
+   ↓
+Feedback
+   ↓
+Learning
+   ↓
+Better Content
+```
+The goal is to help creators capture what happens in their lives, find the stories inside those experiences, turn those stories into content, and continue improving through every creation.
+---
+YouTube Content Creation First
+YouTube is the primary content-creation focus of this application.
+The platform is designed to support the journey from an initial concept to content prepared for publishing.
+It supports workflows for:
+Long-form YouTube videos
+YouTube Shorts
+Podcast clips
+Educational videos
+Explainer videos
+Documentary-style content
+Personal stories
+AI-assisted video concepts
+Short-form social content
+Repurposed content
+The system helps reduce the distance between:
+“I have something to say.”
+and
+“I have a structured video ready to share.”
+---
+What the Platform Does
+The application combines AI-assisted creative stages into a single workflow.
+Creator Workflow
+```text
+Research
+   ↓
+Planning
+   ↓
+Script
+   ↓
+Storyboard
+   ↓
+Video Creation
+   ↓
+Optimization
+   ↓
+Analytics
+   ↓
+Publishing Preparation
+```
+Each stage contributes to the final content package.
+Stage	Purpose
+Research	Understand source material, transcripts, moments, clips, and supporting information
+Planning	Develop stories, content direction, video type, style, environment, and calendar planning
+Script	Create and structure the narrative with language, region, culture, and humor considerations
+Storyboard	Convert the story into scenes, shots, visuals, voiceover, and transitions
+Video Creation	Plan video, B-roll, voice, avatar, music, captions, reframing, and rendering
+Optimization	Improve platform fit, SEO, trends, repurposing, and thumbnails
+Analytics	Estimate engagement, retention, shareability, watch-time, and CTR signals
+Publishing Preparation	Prepare export files and platform metadata for later publishing
+---
+From Life to Story
+One of the most important ideas behind the platform is that valuable content does not always begin as a polished script.
+It can begin with a real experience.
+For example:
+```text
+Something happened
+        ↓
+You experienced it
+        ↓
+You understood something
+        ↓
+You formed an idea
+        ↓
+The idea became a story
+        ↓
+The story became a script
+        ↓
+The script became a video
+        ↓
+The video became part of your journey
+```
+This approach makes the platform useful not only for traditional content production, but also for creators who want to document their growth, lessons, discoveries, projects, experiments, and experiences through video.
+---
+A Creator Operating System
+The application is structured as a Creator Operating System rather than a single-purpose video generator.
+One Streamlit application and one LangGraph workflow coordinate the different stages of the creation process.
+```text
+Input
+  ↓
+Understanding
+  ↓
+Story
+  ↓
+Script
+  ↓
+Visual Direction
+  ↓
+Media Planning
+  ↓
+Video
+  ↓
+Optimization
+  ↓
+Analytics
+  ↓
+Export
+```
+This structure allows individual capabilities to be enabled or skipped depending on the creator's needs.
+The system can work with different starting points while maintaining a common creative workflow.
+---
+Supported Starting Points
+Idea
+Start with an idea or brief and develop it into structured content.
+YouTube Source
+Provide a YouTube URL for local media processing when enabled.
+Upload
+Upload video or audio and use the content as the source for analysis and creation.
+Script
+Paste an existing script and continue through the content pipeline.
+Podcast
+Use podcast audio as a source for transcription, analysis, moments, clips, and repurposing.
+---
+AI-Assisted Content Creation
+The platform brings together multiple AI-assisted capabilities, including:
+Content understanding
+Transcription
+Moment detection
+Smart clip selection
+Story development
+Script generation
+Localization
+Cultural adaptation
+Humor adaptation
+Storyboarding
+Character planning
+Camera planning
+Director planning
+Motion graphics planning
+Documentary planning
+Video-generation planning
+Image-generation planning
+Voice localization
+Avatar planning
+Dynamic captions
+SEO and metadata
+Trend detection
+Content repurposing
+Thumbnail planning
+Analytics prediction
+Rendering
+Quality checks
+Export preparation
+The purpose of combining these capabilities is to make the creative process more connected and repeatable.
+---
+Creator Journey
+The platform is designed to support a creator across multiple stages of development.
+1. Capture
+Capture an idea, experience, conversation, video, podcast, or script.
+2. Understand
+Use transcription and AI analysis to identify important information, scenes, moments, and opportunities.
+3. Create
+Turn the source into a story, script, storyboard, visual direction, voice, captions, and video plan.
+4. Transform
+Adapt the content for different platforms, languages, formats, audiences, and durations.
+5. Share
+Prepare the content, metadata, thumbnails, and exports for publishing.
+6. Learn
+Use analytics predictions and content signals to understand what can be improved.
+7. Continue
+Use what was learned from one piece of content to inform the next part of the journey.
+---
+Example Content Journey
+A creator might start with a simple experience:
+```text
+“I learned something important while building a project.”
+```
+The platform can help transform it into:
+```text
+Experience
+   ↓
+Content Idea
+   ↓
+Research
+   ↓
+Story Structure
+   ↓
+YouTube Script
+   ↓
+Storyboard
+   ↓
+Video
+   ↓
+Captions
+   ↓
+Thumbnail
+   ↓
+SEO Metadata
+   ↓
+YouTube Export
+   ↓
+Shorts / Reels / TikTok Repurposing
+```
+The same underlying story can become multiple pieces of content without requiring the creator to rebuild everything from scratch.
+---
+Multi-Duration Shorts
+The platform supports analysis-backed short-form extraction from longer media.
+Default short durations include:
+10 seconds
+40 seconds
+90 seconds
+Additional durations:
+15 seconds
+30 seconds
+45 seconds
+60 seconds
+Smart Clip Selection can use signals such as:
+Important moments
+Viral or funny indicators
+Scene boundaries
+Transcript analysis
+Generated Shorts are stored separately under:
+```text
+renders/shorts/
+```
+Example:
+```text
+short_10s_1.mp4
+short_40s_1.mp4
+short_90s_1.mp4
+```
+This allows a long-form video to become a source for multiple short-form pieces.
+---
+Localization
+The platform supports multilingual content workflows.
+Supported languages include:
+English
+Hindi
+Gujarati
+Bengali
+Tamil
+Telugu
+Marathi
+Japanese
+Korean
+Chinese
+French
+Spanish
+Portuguese
+German
+Arabic
+Voice controls include:
+Male
+Female
+Neutral
+Country accents
+Emotion
+Speaking speed
+Pitch
+This makes it possible to take one content idea and adapt it for different languages and audiences.
+---
+Dynamic Captions
+The platform supports caption creation and FFmpeg-based burn-in.
+Supported styles include:
+TikTok
+Shorts
+Reels
+Podcast
+Gaming
+Educational
+Platform Safe
+Minimal
+Pop
+Kinetic
+High Contrast
+Caption effects include:
+Word highlighting
+Karaoke-style highlighting
+Emoji insertion
+Pop
+Bounce
+Zoom animation
+Output formats include:
+```text
+captions.srt
+captions.vtt
+captions.ass
+```
+---
+Content Repurposing
+A single source can become multiple content formats.
+```text
+Original Content
+       ↓
+   AI Analysis
+       ↓
+ ┌─────┼─────────┬──────────┐
+ ↓     ↓         ↓          ↓
+Shorts Reels   TikTok    LinkedIn
+ ↓     ↓         ↓          ↓
+Blog  Caption  Thread   Newsletter
+```
+The repurposing system can prepare content for:
+Reels
+Shorts
+TikTok
+Blog summaries
+LinkedIn posts
+X/Twitter threads
+Instagram captions
+Newsletter summaries
+The current implementation is primarily planning-oriented rather than a fully automated multi-format rendering system.
+---
+Analytics as a Feedback Loop
+Analytics prediction is intended to make content creation iterative.
+```text
+Create
+  ↓
+Publish
+  ↓
+Observe
+  ↓
+Learn
+  ↓
+Improve
+  ↓
+Create Again
+```
+The analytics package can estimate signals such as:
+Engagement
+Retention
+Shareability
+Watch time
+Click-through rate
+These are predictions, not guarantees of actual platform performance.
+The purpose is to provide creators with another input for improving future content.
+---
 
-Python-first local MVP: Streamlit UI, LangGraph orchestration, LangChain + Gemini, Whisper, OpenCV, and FFmpeg. Artifacts live on the filesystem under `outputs/` — no database, no queue, no OAuth publish.
+Global & Regional Content Intelligence
+The platform is designed for a global creator ecosystem, where content can be created for a specific local audience, adapted for another region, or developed for a worldwide audience.
+A central principle of the platform is:
+> **The same idea does not need to become the same video for every audience.**
+A topic can remain consistent while the presentation changes according to the people and market being targeted.
+Audience Adaptation
+Content can be adapted based on:
+Region or continent
+Country
+Language
+Culture and local context
+Audience interests
+Profession or industry
+Content category
+Platform and video format
+Current audience trends
+Why Regional Adaptation Matters
+Audiences are different across continents, countries, cultures, languages, professions, generations, and interests.
+The platform therefore treats audience and region as important inputs to content creation, rather than assuming that one universal recommendation or one version of a video will work equally well everywhere.
+For example, a topic can be adapted for:
+Asian audiences
+Indian audiences
+Chinese audiences
+Pakistani audiences
+Southeast Asian audiences
+European audiences
+African audiences
+Middle Eastern audiences
+North American audiences
+Latin American audiences
+A global English-speaking audience
+Country-level adaptation can further change the language, examples, cultural references, humor, storytelling style, visuals, terminology, audience priorities, and publishing strategy.
+Asia as a Regional Example
+Asia contains many different markets and audience behaviors. The platform is intended to support more specific localization rather than treating Asia as one audience.
+For example:
+```text
+Asia
+ ├── India
+ ├── China
+ ├── Pakistan
+ ├── Japan
+ ├── South Korea
+ ├── Indonesia
+ ├── Bangladesh
+ ├── Vietnam
+ ├── Philippines
+ └── Other Countries
+```
+The underlying content idea can be maintained while the creative approach changes for the selected country or audience.
+For India, for example, the workflow may consider the selected language, regional context, cultural references, audience interests, professions, and the type of content being created.
+The same principle applies to China, Pakistan, Japan, South Korea, and other countries.
+Local Audience → Regional Audience → Global Audience
+The platform supports a progression from highly local content to broader global content.
+```text
+Local Audience
+      ↓
+Country Audience
+      ↓
+Regional Audience
+      ↓
+Continental Audience
+      ↓
+Global Audience
+```
+A creator can therefore choose whether the objective is:
+A local community
+A national audience
+A regional audience
+A continental audience
+An international niche
+A worldwide audience
+The system can use that target when preparing the creative direction and content strategy.
+Audience-Specific Video Creation
+Content adaptation can consider:
+Dimension	Examples
+Region	Asia, Europe, Africa, North America, Latin America, Middle East
+Country	India, China, Pakistan, United States, Japan, etc.
+Language	English, Hindi, Gujarati, Bengali, Tamil, Mandarin, Urdu, Japanese, etc.
+Culture	Local references, customs, context, communication style
+Audience	Local, national, regional, international, global
+Profession	Students, developers, creators, business owners, educators, workers, professionals
+Interests	Technology, business, education, entertainment, politics, sports, lifestyle, finance, science, and more
+Generation	Different age and generation-oriented communication styles
+Platform	YouTube, Shorts, Instagram, Facebook, TikTok, LinkedIn, Pinterest, etc.
+Format	Long-form, Shorts, clips, podcasts, explainers, documentaries, educational videos
+Timing	Region- and audience-aware publishing considerations
+Trends	Current topics, regional interests, and changing audience behavior
+These dimensions can influence how a topic is researched, written, visualized, localized, packaged, and prepared for distribution.
+---
+One Idea, Multiple Audience Versions
+The platform is designed to make it possible to start with one original concept and develop different versions for different audiences.
+For example:
+```text
+Original Idea
+     ↓
+Global Content Strategy
+     ├── India Version
+     ├── China Version
+     ├── Pakistan Version
+     ├── United States Version
+     ├── Europe Version
+     └── Other Regional Versions
+```
+The versions do not have to be identical.
+Depending on the audience, the system can adapt:
+Story framing
+Examples
+Language
+Cultural context
+Humor
+Visual direction
+Voice and accent
+Titles
+Descriptions
+Keywords
+Hashtags
+Thumbnail concepts
+Short-form cuts
+Platform strategy
+Audience positioning
+The goal is to preserve the core story or information while making the resulting content more relevant to its intended audience.
+---
+Global and Local Targeting
+The platform supports two complementary strategies.
+Local-first creation
+Create content specifically for one country, region, language, profession, or community.
+```text
+Creator
+  ↓
+Local Context
+  ↓
+Local Audience
+  ↓
+Localized Video
+```
+Global-first creation
+Create an idea with international relevance and adapt it for multiple markets.
+```text
+Creator
+  ↓
+Universal Topic
+  ↓
+Global Strategy
+  ↓
+Regional Adaptation
+  ↓
+Country Versions
+  ↓
+Multiple Audiences
+```
+This allows the creator to decide whether a story should remain highly local or become a global piece of content.
+---
+Content Categories
+The Creator OS is intended to support many types of content rather than a single niche.
+Examples include:
+Education
+Tutorials
+Learning content
+Courses
+Explanations
+Study content
+Educational documentaries
+Technology
+AI
+Software
+Programming
+Devices
+Startups
+Technology news
+Business
+Entrepreneurship
+Companies
+Careers
+Jobs
+Productivity
+Industry analysis
+Entertainment
+Stories
+Commentary
+Interviews
+Pop culture
+Comedy
+General entertainment
+Politics & Current Affairs
+Political education
+News-style explainers
+Public policy topics
+Political history
+Current-affairs storytelling
+For political and current-affairs content, the platform should treat factual accuracy, context, source quality, and regional differences as important parts of the workflow rather than assuming that the same framing is appropriate for every audience.
+Lifestyle
+Travel
+Food
+Personal development
+Daily life
+Hobbies
+Experiences
+Science & Knowledge
+Science explainers
+History
+Research
+Engineering
+Space
+General knowledge
+Creator & Personal Journey
+Building in public
+Career journeys
+Learning journeys
+Project documentation
+Personal stories
+Lessons learned
+Experiments and challenges
+The same creation system can support both highly personal content and broad public-interest content.
+---
+Why the Video Changes by Audience
+A video can change because the audience changes.
+The underlying subject may remain the same, but the audience may have different:
+Prior knowledge
+Language
+Cultural references
+Interests
+Problems
+Expectations
+Humor
+Attention patterns
+Search behavior
+Platform habits
+Regional context
+For that reason, the platform is designed around audience-aware creation.
+```text
+Same Subject
+    ↓
+Different Audience
+    ↓
+Different Context
+    ↓
+Different Creative Decisions
+    ↓
+Different Video Version
+```
+This is not simply translation.
+Localization changes the way the story is communicated.
+---
+The Global Creator Loop
+The larger vision is a continuous global content loop:
+```text
+Life / Experience / Knowledge
+            ↓
+         Idea
+            ↓
+      Audience Research
+            ↓
+   Regional Understanding
+            ↓
+         Story
+            ↓
+         Script
+            ↓
+     Localized Creation
+            ↓
+        Video / Shorts
+            ↓
+   Global / Local Distribution
+            ↓
+          Audience
+            ↓
+        Performance
+            ↓
+         Learning
+            ↓
+       Better Strategy
+            ↓
+       Next Creation
+```
+This allows the platform to grow with the creator and with changing audiences.
+---
+The Core Product Philosophy
+The platform is not built around the assumption that there is one audience, one format, or one universal version of a video.
+Instead, it is designed around:
+One creator → many ideas → many audiences → many versions → continuous learning.
+The creator provides the original perspective and purpose.
+The Creator OS helps transform that perspective into content that can be understood and presented appropriately across different markets.
+```text
+Your Experience
+      ↓
+Your Story
+      ↓
+Your Original Content
+      ↓
+Audience Intelligence
+      ↓
+Regional Adaptation
+      ↓
+Local + Global Content
+      ↓
+Audience Feedback
+      ↓
+Continuous Creation
+```
+The ultimate goal is to give creators a system that can move from local storytelling to global storytelling without losing the original meaning behind the content.
+Architecture
+The application uses a single LangGraph workflow defined in:
+```text
+graph/workflow.py
+```
+The high-level pipeline is:
+```text
+Input
+ → Source Ingest
+ → Transcript
+ → Understanding
+ → Scene / Audio / Speaker Analysis
+ → Moments
+ → Funny / Viral Analysis
+ → Smart Clips
+ → Podcast
+ → Research
+ → Supervisor
+ → Story
+ → Script
+ → Localization
+ → Video Direction
+ → Storyboard
+ → Character / Camera / Director
+ → Motion Graphics
+ → Documentary
+ → Video Generation
+ → Image Generation
+ → B-roll / Voice / Avatar / Music
+ → Captions
+ → Reframe
+ → Platform / SEO / Trend / Repurpose / Thumbnail / Analytics
+ → Render
+ → Quality
+ → Export
+```
+Feature flags determine which optional stages are executed.
+LangChain handles Gemini prompts and structured output inside agents.
+FFmpeg, OpenCV, and Whisper are used locally when available.
+Optional providers can be skipped or mocked when they are not configured.
+---
+Project Structure
+Each job creates a project under:
+```text
+outputs/projects/{project_id}/
+```
+Path	Purpose
+`project.json`	Project metadata
+`transcript.json`	Transcript root alias
+`scenes.json`	Scene analysis root alias
+`analysis.json`	Analysis root alias
+`moments.json`	Moments root alias
+`clips.json`	Clips root alias
+`localization.json`	Locale, cultural, and humor information
+`video_plan.json`	Creative, A/V, and rendering plan
+`quality_report.json`	Quality-check results
+`source/`	Source material
+`transcripts/`	Transcript data
+`analysis/`	Analysis and planning artifacts
+`clips/`	Clip deliverables
+`audio/`	Audio assets
+`subtitles/`	Subtitle assets
+`thumbnails/`	Thumbnail assets
+`images/`	Generated images
+`final/`	Final deliverables
+`renders/`	Rendering outputs
+`renders/shorts/`	Multi-duration Shorts
+`captions/`	Caption files
+`exports/`	Export packages
+`memory.json`	Workflow orchestration state
+`execution_history.jsonl`	Execution history
+`checkpoints.sqlite`	LangGraph checkpoint database
+---
+Resume & Recovery
+The Memory & Resume functionality supports:
+Resume Project
+Continue an incomplete or failed project from its stored checkpoint.
+Rerun From Step
+Restart the workflow from a selected stage while clearing downstream state.
+Retry Failed Steps
+Retry failed agents, with one retry available by default.
+Workflow versioning is stored as:
+```text
+workflow_version = 26.0
+```
+A project with an incompatible workflow version is not resumed automatically.
+---
+How to Use
+The app can be used in three simple ways:
+```text
+Local Computer
+      │
+      ├── Run with Python
+      │
+      ├── Open in Browser
+      │
+      └── Create Videos
 
-## Quick start
+Online / VPS
+      │
+      ├── Run the app on a server
+      ├── Open it from a browser
+      └── Use it from anywhere
 
+Docker
+      │
+      ├── Build the app
+      ├── Run the container
+      └── Open it in a browser
+```
+1. Use Locally
+Use the app directly on your computer.
+Start
+```bash
+pip install -r requirements.txt
+streamlit run app.py
+```
+Then open the Streamlit address shown in the terminal, usually:
+```text
+http://localhost:8501
+```
+This is useful for development, testing, and personal content creation.
+---
+2. Use Online
+The app can also run on a Linux VPS or other server.
+```text
+Internet
+   ↓
+Server / VPS
+   ↓
+AI Creator Platform
+   ↓
+Browser
+```
+Start the application on the server:
+```bash
+streamlit run app.py --server.address=0.0.0.0 --server.port=8501
+```
+Then access it from a browser using the server address and configured port.
+For production use, Docker Compose or systemd can be used to keep the application running.
+---
+3. Use with Docker
+Docker provides a simple way to package the application and its dependencies together.
+Start with Docker Compose
+```bash
+docker compose up --build
+```
+Or build and run manually
+```bash
+docker build -t ai-video-agent .
+docker run --rm -p 8501:8501 --env-file .env -v "%cd%/outputs:/app/outputs" ai-video-agent
+```
+macOS / Linux:
+```bash
+docker run --rm -p 8501:8501 --env-file .env -v "$PWD/outputs:/app/outputs" ai-video-agent
+```
+Open:
+```text
+http://localhost:8501
+```
+The `outputs/` folder is mounted so projects and generated files remain available.
+---
+Simple Usage Flow
+Once the app is running:
+```text
+1. Open the app
+        ↓
+2. Choose an input
+   • Idea
+   • YouTube URL
+   • Upload
+   • Audio / Podcast
+   • Script
+        ↓
+3. Select the audience and region
+        ↓
+4. Choose the content type
+        ↓
+5. Apply the Creator OS settings
+        ↓
+6. Generate the content package
+        ↓
+7. Review the results
+        ↓
+8. Export the video and content
+```
+The same workflow can be used for local content, country-specific content, regional content, or global content.
+---
+Configuration
+Configuration is documented in:
+```text
+.env.example
+```
+Important environment variables include:
+Variable	Purpose
+`GEMINI_API_KEY`	Google Gemini API key
+`GEMINI_MODEL`	Gemini model identifier
+`GEMINI_FALLBACK_MODELS`	Fallback model identifiers
+`GEMINI_MAX_RETRIES`	Temporary API retry count
+`GEMINI_RETRY_BASE_SECONDS`	Initial retry delay
+`GEMINI_RETRY_MAX_SECONDS`	Maximum retry delay
+`WHISPER_MODEL`	Whisper model size
+`FFMPEG_PATH`	Optional FFmpeg path
+`TTS_PROVIDER`	TTS provider configuration
+`OUTPUT_DIR`	Artifact directory
+`LOG_LEVEL`	Logging level
+`APP_ENV`	Application environment
+`LOG_TO_FILE`	File logging toggle
+`SENTRY_DSN`	Optional Sentry configuration
+`SENTRY_TRACES_SAMPLE_RATE`	Sentry trace sampling
+`MAX_UPLOAD_MB`	Upload size limit
+---
+Getting Started
+Local Development
 ```bash
 cd ai-video-agent
+
 python -m venv .venv
+```
+Windows:
+```bash
+.venv\Scripts	ctivate
+```
+macOS / Linux:
+```bash
+source .venv/bin/activate
+```
+Install dependencies:
+```bash
+pip install -r requirements.txt
+```
+Configure:
+```bash
+copy .env.example .env
+```
+Then set:
+```env
+GEMINI_API_KEY=your_key_here
+```
+Start the application:
+```bash
+streamlit run app.py
+```
+---
+Docker Deployment
+Recommended:
+```bash
+docker compose up --build
+```
+Or:
+```bash
+docker build -t ai-video-agent .
+docker run --rm -p 8501:8501 --env-file .env -v "%cd%/outputs:/app/outputs" ai-video-agent
+```
+macOS / Linux:
+```bash
+docker run --rm -p 8501:8501 --env-file .env -v "$PWD/outputs:/app/outputs" ai-video-agent
+```
+The `outputs/` directory should be mounted so generated projects persist between container restarts.
+The container includes FFmpeg.
+Health checks use:
+```text
+http://127.0.0.1:8501/_stcore/health
+```
+---
+Linux VPS
+Docker
+```bash
+git clone <repo>
+cd ai-video-agent
 
-# Windows
-.venv\Scripts\activate
+cp .env.example .env
 
-# macOS / Linux
+docker compose up -d --build
+```
+Configure the required environment variables before starting production workloads.
+systemd + Python
+Install dependencies:
+```bash
+sudo apt-get update
+sudo apt-get install -y ffmpeg python3.12 python3.12-venv
+```
+Create the virtual environment:
+```bash
+python3.12 -m venv .venv
 source .venv/bin/activate
 
 pip install -r requirements.txt
-copy .env.example .env   # Windows
-# cp .env.example .env   # macOS / Linux
 ```
-
-Set `GEMINI_API_KEY` in `.env`. Local development can use [FFmpeg](https://ffmpeg.org/) or `FFMPEG_PATH`; deployments use the bundled `imageio-ffmpeg` executable.
-
-YouTube URLs download local media by default (`YOUTUBE_DOWNLOAD_ENABLED=true`, requires `yt-dlp`). Only process content you are authorized to use. Set the flag to `false` for metadata-only. **Upload** remains fully supported.
-
+Configure:
 ```bash
-streamlit run app.py
-pytest
+cp .env.example .env
 ```
-
-## AI Creator Operating System (Prompt 50)
-
-One Streamlit app (`app.py`) + one LangGraph workflow orchestrates Prompts 1–50 agents as an end-to-end **Creator OS**:
-
+For production:
+```env
+APP_ENV=production
+LOG_TO_FILE=true
 ```
-Research → Planning → Script → Storyboard → Video Creation
-  → Optimization → Analytics → Publishing Preparation
-```
-
-| Stage | Capabilities (agents / artifacts) |
-|-------|-----------------------------------|
-| Research | Ingest, transcript, moments, smart clips, podcast clips, research report |
-| Planning | Story, video type / style / environment, brand kit, content calendar |
-| Script | Script + country / region / language / cultural / humor |
-| Storyboard | Storyboard, image generation, motion graphics |
-| Video Creation | Video generation, B-roll, voice, avatar, music, captions, reframe, render, quality |
-| Optimization | Platform, SEO, trend, repurpose, thumbnail |
-| Analytics | Analytics **prediction** pack (`analysis/analytics_plan.json`) |
-| Publishing Preparation | Export manifest + platform metadata (**plan-only** — not live social post) |
-
-**How to run the full package:** open the Streamlit UI → choose idea / YouTube / upload / script → click **Apply Creator OS preset** (enables research, storyboard, video generation, SEO, thumbnail, content calendar, analytics, captions, clips, platform) → **GENERATE PACKAGE**.
-
-Progress shows Creator OS stages first; fine-grained `PIPELINE_STEPS` stay in a collapsed expander. Results are grouped by stage.
-
-Idea briefs use `SourceType.idea` and route through the same script ingest as pasted scripts (no separate PDF/web crawler).
-
-## What you can do
-
-1. Provide a YouTube URL, upload video/podcast audio, paste an idea brief, or paste a script  
-2. Choose video type, visual style, environment, country, region, language, humor, platform  
-3. Toggle AI features or apply the **Creator OS preset**  
-4. Click **GENERATE PACKAGE**  
-5. Inspect stage progress, then results: research, planning, scripts, storyboard, video, optimization, analytics, publishing prep  
-
-### Multi-duration Shorts export
-
-Enable **Multi Shorts Export** (feature toggle) and pick **Short Durations** (default 30 / 60 / 90 / 180 seconds; older programmatic durations remain supported). From a long upload or YouTube download, Smart Clip Selection harvests analysis-backed windows per duration (moments, viral/funny, scenes, transcript). Render still writes `renders/final.mp4` (concat of selected clips) **and** separate files:
-
-- `renders/shorts/short_{duration}s_{index}.mp4`
-- Copied into `exports/` and `final/` / `clips/` on export
-
-`analysis/clips.json` tags each clip with `target_duration` and `source_signals`. Distinct from Video Gen mode strings and plan-only creative agents.
-
-## Architecture
-
-One LangGraph workflow (`graph/workflow.py`) with specialized agent nodes:
-
-```
-input → source ingest → transcript (video) → understanding → scene/audio/speaker
-  → moments → funny?/viral? → smart clips → podcast? → research? → supervisor?
-  → story → script
-  → country → region → language → cultural? → humor?
-  → video type → visual style → environment
-  → storyboard? → character?/camera?/director?/motion?/documentary?
-  → video_generation? → image_generation? → b-roll?/voice?/avatar?/music? → captions → reframe
-  → platform → brand? → seo? → trend? → repurpose? → calendar? → thumbnail? → analytics?
-  → render → quality (± one re-render) → export
-```
-
-Feature flags and config drive **conditional skip edges** (e.g. Original Voice skips TTS; No Avatar skips avatar; No Music skips music; Storyboard/Character Management/Camera Planning/Director/Motion Graphics/Documentary/Video Generation/Image Generation/SEO/Trend/Repurpose/Thumbnail/Analytics off skip those nodes; viral/funny/cultural off bypass those nodes). Soft-skips inside agents remain as a safety net.
-
-LangChain is used for Gemini prompts / structured output inside agents. FFmpeg/OpenCV/Whisper run locally when available; optional providers mock/skip when not configured.
-
-### Voice localization (Prompt 27)
-
-Pipeline data flow:
-
-```
-Transcript → LanguageAgent (translation) → VoiceAgent (TTS) → Render audio sync → final.mp4
-```
-
-- **Languages:** English, Hindi, Gujarati, Bengali, Tamil, Telugu, Marathi, Japanese, Korean, Chinese, French, Spanish, Portuguese, German, Arabic  
-- **Controls:** Male / Female / Neutral presets, country accents (`voices_accents.json`), emotion, speaking speed, pitch  
-- **TTS:** set `TTS_PROVIDER=edge` (edge-tts neural voices). `none` / passthrough preserves original audio  
-- **Artifacts:** `analysis/voice_plan.json`, `audio/voice_{lang}.mp3`; render muxes primary VO when generated  
-
-### Avatar planning (Prompt 28)
-
-Avatar Agent runs after Voice (before Music) and writes `analysis/avatar_plan.json`:
-
-```json
-{ "avatar_type": "", "voice": "", "language": "", "emotion": "" }
-```
-
-plus capability plan fields: lip sync, gesture, eye contact, expression, multi-language speaking metadata. Presenters: Male/Female/Business/Teacher/News anchor/Influencer/Custom. **Plan-only MVP** — no lip-sync ML composite yet; enable via Avatar feature toggle + avatar preset.
-
-### Dynamic captions (Prompt 29)
-
-ASS + FFmpeg burn-in caption engine with styles:
-
-**TikTok · Shorts · Reels · Podcast · Gaming · Educational** (+ legacy Platform Safe / Minimal / Pop / Kinetic / High Contrast)
-
-Effects (ASS tags, visible when burn-in is on):
-
-- Word highlighting / karaoke (`\k`)
-- Emoji insertion (style + checkbox)
-- Pop / bounce / zoom (`\t` scale animation)
-
-Artifacts: `captions/captions.srt|.vtt|.ass`, optional `captions/burned_in.mp4`.
-
-### Thumbnail planning (Prompt 30)
-
-Thumbnail Agent runs after Platform/SEO/Trend (before Render) and writes `analysis/thumbnail_plan.json`:
-
-```json
-{ "title": "", "hook": "", "thumbnail_text": "", "emotion": "", "layout": "" }
-```
-
-plus `face_placement`, `click_titles`, and `platform`. Supports **YouTube · Instagram · Facebook · TikTok** (aliases map Shorts/Reels). Text prefers SEO → trend topics → script/platform metadata; layout/face zones come from `config/thumbnails.json`. **Plan-only MVP** — no branded image compose; Render still extracts `thumbnail.jpg`. Enable via Thumbnail feature toggle (+ optional Thumbnail Platform override).
-
-### SEO / Metadata (Prompt 31)
-
-SEO Agent runs after Platform (before Trend/Thumbnail) and writes `analysis/seo_plan.json`:
-
-```json
-{ "title": "", "description": "", "tags": [], "hashtags": [], "keywords": [] }
-```
-
-Supports **YouTube · Instagram · Facebook · TikTok · LinkedIn · Pinterest**. Prefers existing platform/script metadata; clamps to per-platform limits in `config/seo.json`. **Plan-only MVP** — does not replace PlatformAgent export hints or auto-publish. Enable via SEO / Metadata feature toggle (+ optional SEO Platform override).
-
-### Trend detection (Prompt 32)
-
-Trend Agent runs after SEO (before Repurpose/Thumbnail) and writes `analysis/trend_plan.json`:
-
-```json
-{ "trend_score": 0, "trend_topics": [], "recommended_tags": [] }
-```
-
-plus trending hashtags/keywords, viral patterns, and audience relevance. Uses **Gemini** for topic classification / trend matching when `GEMINI_API_KEY` is set; otherwise heuristic matching against `config/trends.json` seeds. Enable via Trend Detection feature toggle.
-
-### Content repurposing (Prompt 33)
-
-Repurpose Agent runs after Trend (before Thumbnail) and writes `analysis/repurpose_plan.json`:
-
-```json
-{
-  "source_kind": "",
-  "reels": "",
-  "shorts": "",
-  "tiktok": "",
-  "blog_summary": "",
-  "linkedin_post": "",
-  "twitter_thread": [],
-  "instagram_caption": "",
-  "newsletter_summary": ""
-}
-```
-
-Workflow: **Source → AI Analysis → Multiple Output**. Input kinds: Video / Podcast / Article / Transcript (Auto maps from job source). Gemini when configured; heuristic excerpt fallback otherwise. Plan-only — no separate renders per format. Enable via Content Repurposing toggle (+ optional Repurpose Source).
-
-### Analytics prediction (Prompt 34)
-
-Analytics Agent runs after Thumbnail (before Render) and writes `analysis/analytics_plan.json`:
-
-```json
-{ "engagement_score": 0, "retention_score": 0, "shareability_score": 0 }
-```
-
-plus internal `watch_time_score` and `ctr_score`. Gemini when configured; otherwise heuristic blend of viral/trend/SEO/hook/thumbnail signals (`config/analytics.json`). **This is a prediction model, not a guarantee.** Plan-only — does not change render. Enable via Analytics Prediction feature toggle.
-
-### Image generation (Prompt 36)
-
-Image Agent runs after Video Generation (before B-roll) and writes `analysis/image_plan.json` plus PNG assets under `images/`:
-
-```json
-{
-  "scene_id": "",
-  "prompt": "",
-  "style": "",
-  "environment": "",
-  "image_path": ""
-}
-```
-
-Capabilities: scene prompts, storyboard frames, B-roll visuals, thumbnails, background plates (tagged via `kind`). Gemini plans prompts when configured; files are written via Imagen when available, otherwise minimal PNG placeholders (noted in plan). Does **not** replace Render’s ffmpeg thumbnail or composite into `final.mp4` yet. Enable via Image Generation feature toggle.
-
-### Storyboard (Prompt 37)
-
-Storyboard Agent runs after Environment (before Director / Video Generation / Image Generation) and writes `analysis/storyboard_plan.json` with timed shots:
-
-```json
-{
-  "scene": 1,
-  "duration": 5,
-  "camera": "",
-  "visual": "",
-  "voiceover": "",
-  "transition": ""
-}
-```
-
-Also stores `shot_list` / `scene_list` (same rows) plus `camera_plan` and `transition_plan` string arrays. Distinct from Story Agent (`stories.json` narrative beats) and ImageAgent `kind=storyboard` (generated frames). Plan-only — does not drive Render yet. Enable via Storyboard feature toggle.
-
-### Character Management (Prompt 40)
-
-Character Management Agent runs after Storyboard (before Director) and writes `analysis/character_plan.json` — a cast bible for cross-scene consistency. Supports role types: human · narrator · ai_avatar · mascot · animated. Plan-only — distinct from late-pipeline Avatar Agent (presenter lip-sync) and from Director continuity notes.
-
-```json
-{
-  "characters": [
-    {
-      "name": "Host",
-      "role_type": "human",
-      "appearance": "",
-      "clothing": "",
-      "voice": "",
-      "personality": "",
-      "expressions": ["smile", "concern"]
-    }
-  ],
-  "consistency_notes": ["Keep Host clothing identical across scenes."]
-}
-```
-
-Director may enrich `Character:` continuity notes from the cast; Video Generation may append cast consistency lines to scene prompts. Enable via Character Management feature toggle (default off).
-
-### Camera Planning (Prompt 41)
-
-Camera Planning Agent runs after Character Management (before Director) and writes `analysis/camera_plan.json` with per-scene camera instructions. Supported shot types: wide · medium · close_up · extreme_close_up · drone · tracking · pov · cinematic. Plan-only — distinct from Storyboard’s in-file `camera_plan` string array and from Director `camera_flow`.
-
-```json
-{
-  "instructions": [
-    {
-      "scene": 1,
-      "shot_type": "wide",
-      "movement": "slow push-in",
-      "instruction": "Establish environment with a locked-off wide, then gentle cinematic push."
-    }
-  ]
-}
-```
-
-Director may seed `camera_flow` from this plan; Video Generation may prefer shot_type / movement when building prompts. Enable via Camera Planning feature toggle (default off).
-
-### Director (Prompt 39)
-
-Director Agent runs after Camera Planning (before Motion Graphics) and writes `analysis/director_plan.json` for scene sequencing and continuity (story, character, environment, camera). Plan-only — does not call media APIs or replace Storyboard / Video Generation / Render.
-
-Public surface:
-
-```json
-{
-  "scene_order": [1, 2, 3],
-  "continuity_notes": ["Story: ...", "Character: ...", "Environment: ..."],
-  "camera_flow": ["scene 1→2: establish wide then push in"]
-}
-```
-
-When present, Video Generation may reorder storyboard-derived shots to match `scene_order`. Enable via Director feature toggle (default off).
-
-### Motion Graphics (Prompt 42)
-
-Motion Graphics Agent runs after Director (before Documentary) and writes `analysis/motion_graphics_plan.json` — a **plan-only** graphic-layer overlay list (titles, kinetic type, lower thirds, charts/stats, educational callouts). It does **not** burn overlays with After Effects, Remotion, or ffmpeg. Distinct from CaptionAgent’s kinetic caption style and from Video Generation’s `"Motion Graphics"` mode string.
-
-Supported overlay kinds: kinetic_typography · animated_title · lower_third · data_visualization · chart · statistic · educational_overlay.
-
-```json
-{
-  "overlays": [
-    {
-      "scene": 1,
-      "kind": "animated_title",
-      "text": "",
-      "style": "",
-      "animation": "",
-      "timing": "",
-      "position": ""
-    }
-  ]
-}
-```
-
-Video Generation may append short overlay cues into scene prompts when this pack is present. Enable via Motion Graphics feature toggle (default off).
-
-### Documentary (Prompt 43)
-
-Documentary Agent runs after Motion Graphics (before Video Generation) and writes `analysis/documentary_plan.json` — a **plan-only** narrative arc with research, evidence, narration, interview, and timeline planning. Distinct from the video_types / Video Gen mode string `"Documentary"`.
-
-```json
-{
-  "introduction": "",
-  "chapters": [{"title": "", "summary": ""}],
-  "conclusion": ""
-}
-```
-
-Video Generation may append intro/chapter/conclusion cues into scene prompts when this pack is present. Enable via Documentary feature toggle (default off).
-
-### Video Generation (Prompt 38)
-
-Video Generation Agent runs after Documentary (before Image Generation) and writes a **provider-agnostic** plan to `analysis/video_generation_plan.json` — scene prompts, shot sequence, and camera movement plan for any later executor (Runway, Pika, Luma, local, etc.). It does **not** call video vendor APIs or write `.mp4`. Distinct from Render’s ffmpeg `render_plan.json`.
-
-Modes (from job `video_type` / config aliases): Cinematic · Animation · Documentary · Explainer · AI Avatar · Motion Graphics.
-
-```json
-{
-  "shots": [{ "scene": 1, "duration": 5, "prompt": "", "camera_move": "", "shot_type": "" }],
-  "shot_sequence": ["scene 1: medium / slow push-in (5s)"],
-  "camera_movement_plan": ["scene 1: slow push-in"],
-  "scene_prompts": ["..."],
-  "mode": "Cinematic",
-  "provider": "gemini"
-}
-```
-
-`provider` is only `none` | `gemini` | `heuristic`. Enable via Video Generation feature toggle (default off).
-
-## Project layout
-
-Each job writes `outputs/projects/{project_id}/` with:
-
-| Path | Purpose |
-|------|---------|
-| `project.json` | Project metadata |
-| `transcript.json` | Transcript (root alias) |
-| `scenes.json`, `analysis.json`, `moments.json`, `clips.json` | Root aliases of analysis JSON |
-| `localization.json` | Locale + cultural + humor rollup |
-| `video_plan.json` | Creative + A/V + render plan rollup |
-| `quality_report.json` | Quality checks alias |
-| `source/`, `transcripts/`, `analysis/` | Working data |
-| `clips/`, `audio/`, `subtitles/`, `thumbnails/`, `images/`, `final/` | Deliverable folders |
-| `renders/shorts/` | Per-duration Short MP4s when Multi Shorts Export is on |
-| `captions/`, `renders/`, `exports/` | Pipeline working + export package |
-| `memory.json` | Prompt 26 orchestration index (steps, agent_outputs, retries) |
-| `execution_history.jsonl` | Append-only node start/complete/fail/resume events |
-| `checkpoints.sqlite` | LangGraph Sqlite checkpointer (`thread_id` = project id) |
-
-### Resume & partial rerun
-
-The UI **Memory & Resume** section can:
-
-- **Resume project** — continue an incomplete/failed job from its Sqlite checkpoint  
-- **Rerun from step** — clear downstream memory indexes and jump from a selected node  
-- **Retry failed steps** — one retry per failed agent (default max 1)
-
-Workflow version is stored as `workflow_version` (`26.0`). Resume refuses mismatched versions (force a full new job).
-
-## Environment variables
-
-See [`.env.example`](.env.example). Common keys:
-
-| Variable | Description |
-|----------|-------------|
-| `GEMINI_API_KEY` | Google Gemini API key |
-| `GEMINI_MODEL` | Model id (default `gemini-3.6-flash`) |
-| `GEMINI_FALLBACK_MODELS` | Comma-separated supported fallback model ids (empty by default) |
-| `GEMINI_MAX_RETRIES` | Application retries per model for temporary 429/5xx errors (default `2`) |
-| `GEMINI_RETRY_BASE_SECONDS` | Initial retry delay (default `2`) |
-| `GEMINI_RETRY_MAX_SECONDS` | Maximum retry delay (default `30`) |
-| `WHISPER_MODEL` | Whisper size (`tiny` default; `base` recommended for non-English / localization) |
-| `FFMPEG_PATH` | Optional absolute path to `ffmpeg` |
-| `TTS_PROVIDER` | TTS engine: `edge` (edge-tts) or `none` / passthrough |
-| `OUTPUT_DIR` | Artifact root (default `outputs`) |
-| `LOG_LEVEL` | Logging level |
-| `APP_ENV` | `development` / `production` (affects log format) |
-| `LOG_TO_FILE` | `true` writes rotating logs to `{OUTPUT_DIR}/logs/app.log` |
-| `SENTRY_DSN` | Optional Sentry DSN for error reporting (empty = off) |
-| `SENTRY_TRACES_SAMPLE_RATE` | Sentry traces sample rate (default `0.0`) |
-| `MAX_UPLOAD_MB` | Upload size limit |
-
-## Deployment
-
-Final command on all targets:
-
-```bash
-streamlit run app.py
-```
-
-### Local machine
-
-1. Create a venv and `pip install -r requirements.txt`
-2. Install system [FFmpeg](https://ffmpeg.org/) locally if desired; deployments use `imageio-ffmpeg` unless `FFMPEG_PATH` is set
-3. Copy `.env.example` → `.env` and set `GEMINI_API_KEY`
-4. Run `streamlit run app.py`
-5. Optional VPS-style file logs: `LOG_TO_FILE=true`
-
-### Docker
-
-```bash
-# Compose (recommended)
-docker compose up --build
-
-# Or plain Docker
-docker build -t ai-video-agent .
-docker run --rm -p 8501:8501 --env-file .env -v "%cd%/outputs:/app/outputs" ai-video-agent
-# macOS/Linux: -v "$PWD/outputs:/app/outputs"
-```
-
-Mount `outputs/` so projects persist. FFmpeg is installed in the image. Healthcheck probes `http://127.0.0.1:8501/_stcore/health`.
-
-### Linux VPS
-
-**Option A — Docker on the VPS**
-
-```bash
-git clone <repo> && cd ai-video-agent
-cp .env.example .env   # set GEMINI_API_KEY (and optional SENTRY_DSN)
-docker compose up -d --build
-```
-
-**Option B — systemd + venv**
-
-```bash
-sudo apt-get update && sudo apt-get install -y ffmpeg python3.12 python3.12-venv
-python3.12 -m venv .venv && source .venv/bin/activate
-pip install -r requirements.txt
-cp .env.example .env   # set keys; APP_ENV=production; LOG_TO_FILE=true
-```
-
-Example unit (`/etc/systemd/system/ai-video-agent.service`):
-
+Example systemd service:
 ```ini
 [Unit]
 Description=AI Video Agent
@@ -454,27 +988,84 @@ Restart=on-failure
 [Install]
 WantedBy=multi-user.target
 ```
-
-Then: `sudo systemctl enable --now ai-video-agent`.
-
-### CI / monitoring / errors
-
-- GitHub Actions: [`.github/workflows/ci.yml`](.github/workflows/ci.yml) runs `pytest` and `docker build`
-- Monitoring: Docker/Compose healthcheck on Streamlit `/_stcore/health`
-- Error reporting: set `SENTRY_DSN` to enable Sentry (no-op when empty)
-
-## Tests
-
+Enable the service:
+```bash
+sudo systemctl enable --now ai-video-agent
+```
+---
+Testing
+Run the standard test suite:
 ```bash
 pytest
-pytest -m integration   # needs FFmpeg for fixture media path
 ```
-
-## Limitations (MVP)
-
-- No OAuth / automatic publishing (platform pack stays `not_published`)  
-- No hosted DB/queue — resume uses local `memory.json` + `checkpoints.sqlite` per project  
-- TTS needs `TTS_PROVIDER=edge` (+ `edge-tts` package); otherwise voice plans preserve original audio  
-- Emotion is prosody mapping (rate/pitch/volume), not a separate neural emotion model  
-- YouTube path downloads local media via yt-dlp by default (`YOUTUBE_DOWNLOAD_ENABLED=true`; authorized use only; bundled `imageio-ffmpeg` handles processing). Set `false` for metadata-only. Upload remains fully supported for transcription
-- No Kubernetes / cloud auto-deploy — use Docker Compose or systemd on a VPS
+Run integration tests:
+```bash
+pytest -m integration
+```
+Integration tests require FFmpeg for the fixture media path.
+---
+Current MVP Boundaries
+The platform currently focuses on the creation and preparation journey rather than fully automated publishing.
+Current limitations include:
+No OAuth integration.
+No automatic social publishing.
+No hosted database or queue.
+Resume state is stored locally.
+Avatar functionality is currently planning-oriented.
+Video Generation produces provider-agnostic plans rather than directly calling video-generation vendors.
+Motion Graphics produces overlay plans rather than rendering the overlays through a dedicated compositor.
+Thumbnail generation remains planning-oriented, while rendering can extract a thumbnail frame.
+Analytics provides predictions rather than guaranteed performance results.
+TTS requires the configured TTS provider and package.
+YouTube local downloading uses `yt-dlp` when enabled.
+No Kubernetes or cloud auto-deployment is currently included.
+---
+Future Direction
+The platform can evolve toward a larger creator infrastructure with:
+More video-generation providers
+More image-generation providers
+Advanced editing
+Richer character consistency
+Automated visual composition
+Advanced motion graphics
+Hosted project storage
+Distributed job processing
+Automated publishing
+Deeper analytics
+Creator performance feedback loops
+More sophisticated content repurposing
+Collaborative creator workflows
+The underlying goal remains the same:
+```text
+Capture the Journey
+        ↓
+Find the Story
+        ↓
+Create the Content
+        ↓
+Share the Story
+        ↓
+Learn From the Audience
+        ↓
+Grow Through the Journey
+```
+---
+Philosophy
+Technology should make creation easier without taking the story away from the creator.
+The creator brings:
+The experience
+The perspective
+The idea
+The emotion
+The purpose
+The story
+The platform provides the workflow and AI-assisted tools to help transform those ingredients into content.
+The goal is not to replace the creator.
+The goal is to help the creator turn more of their journey into something worth sharing.
+---
+License
+Add the applicable project license here.
+---
+Project Status
+Status: Local MVP
+The current platform provides an end-to-end foundation for AI-assisted YouTube and video content creation, with local processing, structured workflow orchestration, reusable project artifacts, recovery support, optimization planning, analytics prediction, and publishing preparation.
