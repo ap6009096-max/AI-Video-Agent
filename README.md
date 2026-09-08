@@ -2,7 +2,7 @@
 
 > **A global, YouTube-first AI Creator Operating System for turning ideas, experiences, knowledge, stories, videos, podcasts, and scripts into complete video content.**
 >
-> live line https://ai-video-agent-cqlricoiqzepckum4ka8jx.streamlit.app/
+> live link https://ai-video-agent-cqlricoiqzepckum4ka8jx.streamlit.app/
 
 ## Overview
 
