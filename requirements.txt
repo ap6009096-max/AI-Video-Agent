@@ -26,4 +26,3 @@ pypdf>=4.0.0
 # Tests
 pytest>=8.3.0
 
-imageio-ffmpeg
