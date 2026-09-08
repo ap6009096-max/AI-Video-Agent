@@ -15,7 +15,7 @@ The repository contains application code and configuration defaults only. API ke
 1. Create a virtual environment and install `requirements.txt`.
 2. Copy `.env.example` to `.env`.
 3. Set `GEMINI_API_KEY` in `.env` without committing the file.
-4. Install FFmpeg and make it available on `PATH`, or set `FFMPEG_PATH`.
+4. For local development, install FFmpeg or set `FFMPEG_PATH`; deployments use the bundled `imageio-ffmpeg` executable.
 5. Start the app with `streamlit run app.py`.
 6. Run `python -m pytest -q` before pushing.
 
@@ -23,10 +23,10 @@ The settings loader uses environment variables and `.env` locally. On Streamlit 
 
 ## Streamlit Community Cloud
 
-Streamlit Community Cloud installs Debian system packages listed in
-`packages.txt`; this repository includes `ffmpeg` there. The `Dockerfile` is
-used for Docker deployments, but it is not the mechanism Community Cloud uses
-to install system packages.
+Streamlit Community Cloud installs Python dependencies from `requirements.txt`.
+This repository uses `imageio-ffmpeg` to provide the FFmpeg executable, so no
+apt package file is required. The `Dockerfile` remains available for Docker
+deployments and installs system FFmpeg there.
 
 Configure the deployment Secrets with values such as:
 
@@ -38,7 +38,7 @@ YOUTUBE_COOKIES_FILE = ""
 FFMPEG_PATH = ""
 ```
 
-Never commit the actual values. `.env` and `.streamlit/secrets.toml` are ignored by Git. Do not upload personal YouTube cookies unless the use is authorized and the security implications are understood. After changing `packages.txt` or Secrets, allow Streamlit to complete a clean rebuild before testing a download.
+Never commit the actual values. `.env` and `.streamlit/secrets.toml` are ignored by Git. Do not upload personal YouTube cookies unless the use is authorized and the security implications are understood. After changing Secrets, allow Streamlit to complete a clean rebuild before testing a download.
 
 ## YouTube Downloads
 
@@ -55,7 +55,7 @@ If an older local configuration requests separate video and audio streams and th
 ```bash
 python -m pip install -U yt-dlp
 python -m yt_dlp --version
-ffmpeg -version
+python -c "import imageio_ffmpeg; print(imageio_ffmpeg.get_ffmpeg_exe())"
 ```
 
 For an authorized public URL, test the downloader outside the application:

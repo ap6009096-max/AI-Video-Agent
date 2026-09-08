@@ -6,6 +6,8 @@ import shutil
 import subprocess
 from pathlib import Path
 
+import imageio_ffmpeg
+
 from config.settings import get_settings
 from core.errors import TranscriptAgentError
 from core.logging import get_logger
@@ -14,16 +16,17 @@ logger = get_logger(__name__)
 
 
 def resolve_ffmpeg_binary() -> str | None:
-    """Return FFmpeg executable path from settings or PATH, else None."""
+    """Return the configured or bundled FFmpeg executable path."""
     configured = get_settings().ffmpeg_path.strip()
     if configured:
         path = Path(configured)
         if path.is_file():
             return str(path.resolve())
-        found = shutil.which(configured)
-        if found:
-            return found
-    return shutil.which("ffmpeg")
+    try:
+        return imageio_ffmpeg.get_ffmpeg_exe()
+    except Exception:  # noqa: BLE001
+        logger.warning("imageio-ffmpeg executable is unavailable")
+        return None
 
 
 def resolve_ffprobe_binary() -> str | None:

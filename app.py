@@ -67,13 +67,14 @@ def _render_sidebar() -> None:
     from tools.ffmpeg.bin import resolve_ffmpeg_binary
 
     ffmpeg_bin = resolve_ffmpeg_binary()
-    ffmpeg_display = settings.ffmpeg_path.strip() or "(system PATH)"
+    ffmpeg_display = settings.ffmpeg_path.strip() or "(imageio-ffmpeg)"
     if ffmpeg_bin:
         st.sidebar.markdown(f"**FFmpeg:** `ready` (`{ffmpeg_display}`)")
     else:
         st.sidebar.error(
             "FFmpeg is required for video/audio processing. "
-            "Please install FFmpeg and make sure it is available in PATH."
+            "The bundled imageio-ffmpeg executable is unavailable; "
+            "install FFmpeg locally or set FFMPEG_PATH."
         )
     st.sidebar.markdown(
         f"**YouTube download:** "

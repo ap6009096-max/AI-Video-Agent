@@ -19,7 +19,7 @@ copy .env.example .env   # Windows
 # cp .env.example .env   # macOS / Linux
 ```
 
-Set `GEMINI_API_KEY` in `.env`. Install [FFmpeg](https://ffmpeg.org/) (leave `FFMPEG_PATH` empty to use PATH).
+Set `GEMINI_API_KEY` in `.env`. Local development can use [FFmpeg](https://ffmpeg.org/) or `FFMPEG_PATH`; deployments use the bundled `imageio-ffmpeg` executable.
 
 YouTube URLs download local media by default (`YOUTUBE_DOWNLOAD_ENABLED=true`, requires `yt-dlp`). Only process content you are authorized to use. Set the flag to `false` for metadata-only. **Upload** remains fully supported.
 
@@ -400,7 +400,7 @@ streamlit run app.py
 ### Local machine
 
 1. Create a venv and `pip install -r requirements.txt`
-2. Install system [FFmpeg](https://ffmpeg.org/) (leave `FFMPEG_PATH` empty to use PATH)
+2. Install system [FFmpeg](https://ffmpeg.org/) locally if desired; deployments use `imageio-ffmpeg` unless `FFMPEG_PATH` is set
 3. Copy `.env.example` → `.env` and set `GEMINI_API_KEY`
 4. Run `streamlit run app.py`
 5. Optional VPS-style file logs: `LOG_TO_FILE=true`
@@ -476,5 +476,5 @@ pytest -m integration   # needs FFmpeg for fixture media path
 - No hosted DB/queue — resume uses local `memory.json` + `checkpoints.sqlite` per project  
 - TTS needs `TTS_PROVIDER=edge` (+ `edge-tts` package); otherwise voice plans preserve original audio  
 - Emotion is prosody mapping (rate/pitch/volume), not a separate neural emotion model  
-- YouTube path downloads local media via yt-dlp by default (`YOUTUBE_DOWNLOAD_ENABLED=true`; authorized use only; FFmpeg on PATH recommended). Set `false` for metadata-only. Upload remains fully supported for transcription  
+- YouTube path downloads local media via yt-dlp by default (`YOUTUBE_DOWNLOAD_ENABLED=true`; authorized use only; bundled `imageio-ffmpeg` handles processing). Set `false` for metadata-only. Upload remains fully supported for transcription
 - No Kubernetes / cloud auto-deploy — use Docker Compose or systemd on a VPS

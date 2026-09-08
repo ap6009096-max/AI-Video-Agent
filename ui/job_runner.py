@@ -159,8 +159,8 @@ def run_job_from_ui(
     if resolve_ffmpeg_binary() is None:
         msg = (
             "FFmpeg is required for video/audio processing. "
-            "Please install FFmpeg and make sure it is available in PATH "
-            "(or set FFMPEG_PATH)."
+            "The bundled imageio-ffmpeg executable is unavailable; "
+            "install FFmpeg locally or set FFMPEG_PATH."
         )
         st.warning(msg)
         logger.warning("[MEDIA] %s", msg)

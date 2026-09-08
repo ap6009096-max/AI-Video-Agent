@@ -51,8 +51,8 @@ def render_source_form() -> dict[str, Any]:
         if download_enabled:
             st.caption(
                 "YouTube URLs are downloaded locally (yt-dlp) into the media folder, "
-                "validated, then transcribed. FFmpeg must be on PATH. Upload remains "
-                "available as an alternative."
+                "validated, then transcribed. Bundled imageio-ffmpeg handles media "
+                "processing. Upload remains available as an alternative."
             )
         else:
             st.caption(

@@ -28,8 +28,8 @@ This directory stores YouTube source metadata and a local media copy downloaded
 via yt-dlp for pipeline processing.
 
 Only process content you are authorized to use, and comply with YouTube
-platform terms and copyright requirements. FFmpeg must be on PATH when
-yt-dlp needs to merge/remux streams.
+platform terms and copyright requirements. The application uses its bundled
+imageio-ffmpeg executable, or FFMPEG_PATH when explicitly configured.
 """
 
 DownloadFn = Callable[[str, Path, dict[str, Any]], Path]
@@ -41,8 +41,8 @@ def _require_ffmpeg_hint() -> None:
     if resolve_ffmpeg_binary() is None:
         raise YouTubeAgentError(
             "FFmpeg is required for video/audio processing. "
-            "Please install FFmpeg and make sure it is available in PATH "
-            "(or set FFMPEG_PATH)."
+            "The bundled imageio-ffmpeg executable was unavailable; "
+            "install FFmpeg locally or set FFMPEG_PATH."
         )
 
 
@@ -148,7 +148,7 @@ def _default_ytdlp_download(
         raise last_error
     raise YouTubeAgentError(
         f"YouTube media download failed: {last_error}. "
-        "Ensure FFmpeg is on PATH (or set FFMPEG_PATH), the video is "
+        "Ensure the bundled FFmpeg executable is available (or set FFMPEG_PATH), the video is "
         "publicly accessible, and you are authorized to process it."
     ) from last_error
 

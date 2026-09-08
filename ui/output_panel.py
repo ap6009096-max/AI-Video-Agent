@@ -41,7 +41,10 @@ def render_final_output_panel(result: dict[str, Any] | None = None) -> None:
             st.video(str(final_video))
             st.caption(f"Video file: `{final_video.name}` ({final_video.stat().st_size / 1024 / 1024:.1f} MB)")
         else:
-            st.info("No encoded MP4 file generated. (Check logs or FFmpeg PATH if unexpected).")
+            st.info(
+                "No encoded MP4 file generated. "
+                "(Check logs or bundled FFmpeg configuration if unexpected)."
+            )
 
     with d_col:
         # Deliverable Metadata
