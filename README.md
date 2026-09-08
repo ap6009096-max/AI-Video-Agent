@@ -1,579 +1,595 @@
-<div align="center">
+# AI Video Agent
 
-AI Creator Platform
+> **A global, YouTube-first AI Creator Operating System for turning ideas, experiences, knowledge, stories, videos, podcasts, and scripts into complete video content.**
+>
+> live line https://ai-video-agent-cqlricoiqzepckum4ka8jx.streamlit.app/
 
-<p><strong>A global AI content-creation platform for YouTube and other video formats.</strong></p>
+## Overview
 
-<p>
-  <a href="#why-this-app-exists">Purpose</a> ·
-  <a href="#global-and-regional-content">Global Content</a> ·
-  <a href="#simple-creator-workflow">Workflow</a> ·
-  <a href="#how-to-use">How to Use</a> ·
-  <a href="#architecture">Architecture</a>
-</p>
+**AI Video Agent** is an AI-powered Creator Operating System built to simplify the modern video-creation process.
 
-</div>
+Today, content creation often requires a collection of disconnected tools. Creators may research topics in one application, write scripts in another, edit video elsewhere, generate captions separately, optimize metadata manually, and prepare content for publishing through additional services.
 
-<hr>
+This fragmented workflow creates unnecessary complexity, repeated work, and wasted time.
 
-Why This App Exists
+AI Video Agent brings these stages together into a **single, structured AI-assisted workflow**.
 
-<div align="center">
-  <p><strong>Turn ideas, experiences, knowledge, conversations, and stories into useful video content.</strong></p>
-  <p>Built for creators who want to create content for local, regional, country-specific, and global audiences.</p>
-</div>
+The platform helps creators move from an initial idea or source to a complete content package through research, planning, scripting, storyboarding, video production, localization, optimization, analytics, and publishing preparation.
 
-YouTube is the main focus, while the platform can also support Shorts, podcasts, education, entertainment, technology, business, lifestyle, documentaries, and other video categories.
+---
 
-The goal is simple: create the right content for the right audience.
+## Why AI Video Agent?
 
-Global and Regional Content
+The platform is built around a simple principle:
 
-The platform is designed for local, regional, country-specific, and global audiences.
+> **Creators should spend more time creating meaningful stories and less time managing disconnected tools.**
 
-The same topic does not always need the same video. Content can change according to:
+AI Video Agent provides one place to organize and automate the major stages of the content-creation process while keeping the creator in control of the story and final result.
 
-Region or continent
+---
 
-Country
+## Start With Almost Anything
 
-Language
+A project can begin with:
 
-Culture and local context
+* A simple idea
+* A personal experience
+* A YouTube video
+* An uploaded video
+* A podcast episode
+* An audio recording
+* A script draft
+* A story worth sharing
 
-Audience interests
+The system analyzes the available source and uses that information to build the appropriate content workflow.
 
-Profession or industry
+---
 
-Audience type
+## Creator Workflow
 
-Content category
+The platform provides a structured process for turning an idea or source into content.
 
-Platform and format
+| Stage                      | Purpose                                                           |
+| -------------------------- | ----------------------------------------------------------------- |
+| **Input**                  | Accept an idea, video, podcast, audio, YouTube source, or script  |
+| **Research**               | Understand the subject and gather relevant information            |
+| **Planning**               | Define the story, content direction, audience, and video approach |
+| **Script**                 | Develop the narrative and dialogue                                |
+| **Storyboard**             | Plan scenes, shots, visuals, voiceover, and transitions           |
+| **Video Creation**         | Prepare visual, audio, voice, and production elements             |
+| **Optimization**           | Improve platform fit, SEO, trends, thumbnails, and repurposing    |
+| **Analytics**              | Provide performance predictions and content signals               |
+| **Publishing Preparation** | Prepare final files and platform metadata                         |
 
-Current trends and audience behavior
+---
 
-One idea can be adapted for India, China, Pakistan, the United States, Europe, or other markets while keeping the original purpose of the content.
+## From Life Experience to Content
 
-Audience-Aware Creation
+Valuable content does not always begin with a finished script.
 
-The target audience can influence:
+It can begin with something that happened in real life.
 
-Story framing
+A creator may experience something, learn from it, develop an idea, and turn that experience into a story that can be shared with an audience.
 
-Examples
+AI Video Agent is designed to support this process.
 
-Language
+The platform can help transform:
 
-Cultural context
+**Experiences → Ideas → Stories → Scripts → Videos → Audience Feedback → Better Content**
 
-Humor
+This makes the system useful for personal storytelling, educational content, project documentation, creator journeys, and many other forms of video creation.
 
-Visual style
+---
 
-Voice and accent
+# Global Content Creation
 
-Titles
+AI Video Agent is designed for a **global creator ecosystem**.
 
-Descriptions
+The platform does not assume that one version of a video is equally effective for every audience.
 
-Keywords
+The same underlying idea can be adapted for different:
 
-Hashtags
+* Continents
+* Countries
+* Regions
+* Languages
+* Cultures
+* Professions
+* Industries
+* Interests
+* Audience types
+* Platforms
+* Content categories
+
+### Local and Global Audiences
+
+Creators can develop content specifically for a local audience or expand the same concept toward regional and global audiences.
+
+Examples include:
+
+* India
+* China
+* Pakistan
+* Japan
+* South Korea
+* Southeast Asia
+* Europe
+* Africa
+* Middle East
+* North America
+* Latin America
+* Global audiences
+
+The underlying story can remain the same while the presentation changes for the intended audience.
 
-Thumbnail concepts
+---
 
-Short-form versions
+## Audience-Aware Content
 
-Publishing strategy
+Different audiences may require different approaches.
 
-This is more than translation. It is adapting the content for the people who will watch it.
+AI Video Agent can use audience and regional context when planning:
 
-Simple Creator Workflow
+* Language
+* Cultural references
+* Examples
+* Story framing
+* Tone
+* Humor
+* Visual direction
+* Voice and accent
+* Titles
+* Descriptions
+* Keywords
+* Hashtags
+* Thumbnail concepts
+* Short-form versions
+* Platform strategy
 
-Choose an idea or source.
+This is more than translation.
 
-Select the target audience and region.
+**Localization adapts the way the content is communicated for the intended audience.**
 
-Research and understand the content.
+---
 
-Create the story, script, and visual plan.
+# Multilingual Content
 
-Produce and edit the video.
+AI Video Agent supports multilingual content workflows so creators can adapt one content idea for different markets.
 
-Add voice, captions, visuals, and other media.
+### Supported Languages
 
-Optimize for the target platform and audience.
+* English
+* Hindi
+* Gujarati
+* Bengali
+* Tamil
+* Telugu
+* Marathi
+* Japanese
+* Korean
+* Chinese
+* French
+* Spanish
+* Portuguese
+* German
+* Arabic
 
-Review the result.
+### Voice Controls
 
-Export the final content.
+* Male
+* Female
+* Neutral
+* Country-specific accents
+* Emotion
+* Speaking speed
+* Pitch
 
-Main Product Idea
+This allows creators to develop localized versions while preserving the original story or message.
 
-<div align="center">
-  <blockquote>
-    <strong>Tell the AI what you want to change in a video, and change only that part while keeping the rest intact.</strong>
-  </blockquote>
-</div>
+---
 
-Example:
+# Long-Form and Short-Form Content
 
-Make the guest's answer in scene 3 shorter and funnier. Keep the host, background, music, and all other scenes unchanged.
+AI Video Agent supports both long-form and short-form content creation.
 
-The system should identify the correct scene and speaker, understand the requested change, generate only the required replacement, preserve unchanged content, render the final video, and validate the result.
+### Supported Content Types
 
-A Creator Operating System
-The application is structured as a Creator Operating System rather than a single-purpose video generator.
-One Streamlit application and one LangGraph workflow coordinate the different stages of the creation process.
+* YouTube videos
+* YouTube Shorts
+* Podcast clips
+* Educational videos
+* Explainer videos
+* Documentary-style videos
+* Personal stories
+* AI-assisted video concepts
+* Social media content
+* Repurposed content
 
-Creator Journey
-The platform is designed to support a creator across multiple stages of development.
+---
 
-Capture
-Capture an idea, experience, conversation, video, podcast, or script.
+## Multi-Duration Shorts
 
-Understand
-Use transcription and AI analysis to identify important information, scenes, moments, and opportunities.
+Long-form media can be analyzed to identify useful short-form moments.
 
-Create
-Turn the source into a story, script, storyboard, visual direction, voice, captions, and video plan.
+Supported durations include:
 
-Transform
-Adapt the content for different platforms, languages, formats, audiences, and durations.
+* 10 seconds
+* 15 seconds
+* 30 seconds
+* 40 seconds
+* 45 seconds
+* 60 seconds
+* 90 seconds
 
-Share
-Prepare the content, metadata, thumbnails, and exports for publishing.
-
-Learn
-Use analytics predictions and content signals to understand what can be improved.
-
-Continue
-Use what was learned from one piece of content to inform the next part of the journey.
-
-Example Content Journey
-A creator might start with a simple experience:
-
-The platform can help transform it into:
-
-The same underlying story can become multiple pieces of content without requiring the creator to rebuild everything from scratch.
-
-Multi-Duration Shorts
-The platform supports analysis-backed short-form extraction from longer media.
-Default short durations include:
-10 seconds
-40 seconds
-90 seconds
-Additional durations:
-15 seconds
-30 seconds
-45 seconds
-60 seconds
 Smart Clip Selection can use signals such as:
-Important moments
-Viral or funny indicators
-Scene boundaries
-Transcript analysis
-Generated Shorts are stored separately under:
 
-Example:
+* Important moments
+* Scene boundaries
+* Transcript content
+* Viral indicators
+* Funny moments
 
-This allows a long-form video to become a source for multiple short-form pieces.
+A single long-form video can therefore become multiple short-form content assets.
 
-Dynamic Captions
-The platform supports caption creation and FFmpeg-based burn-in.
-Supported styles include:
-TikTok
-Shorts
-Reels
-Podcast
-Gaming
-Educational
-Platform Safe
-Minimal
-Pop
-Kinetic
-High Contrast
-Caption effects include:
-Word highlighting
-Karaoke-style highlighting
-Emoji insertion
-Pop
-Bounce
-Zoom animation
-Output formats include:
+---
 
-Content Repurposing
-A single source can become multiple content formats.
+# AI-Assisted Capabilities
 
-Analytics as a Feedback Loop
-Analytics prediction is intended to make content creation iterative.
+The platform brings multiple capabilities into one Creator Operating System.
 
-Global & Regional Content Intelligence
-The platform is designed for a global creator ecosystem, where content can be created for a specific local audience, adapted for another region, or developed for a worldwide audience.
-A central principle of the platform is:
+### Content Intelligence
 
-The same idea does not need to become the same video for every audience.
-A topic can remain consistent while the presentation changes according to the people and market being targeted.
-Audience Adaptation
-Content can be adapted based on:
-Region or continent
-Country
-Language
-Culture and local context
-Audience interests
-Profession or industry
-Content category
-Platform and video format
-Current audience trends
-Why Regional Adaptation Matters
-Audiences are different across continents, countries, cultures, languages, professions, generations, and interests.
-The platform therefore treats audience and region as important inputs to content creation, rather than assuming that one universal recommendation or one version of a video will work equally well everywhere.
-For example, a topic can be adapted for:
-Asian audiences
-Indian audiences
-Chinese audiences
-Pakistani audiences
-Southeast Asian audiences
-European audiences
-African audiences
-Middle Eastern audiences
-North American audiences
-Latin American audiences
-A global English-speaking audience
-Country-level adaptation can further change the language, examples, cultural references, humor, storytelling style, visuals, terminology, audience priorities, and publishing strategy.
-Asia as a Regional Example
-Asia contains many different markets and audience behaviors. The platform is intended to support more specific localization rather than treating Asia as one audience.
-For example:
+* Content understanding
+* Transcription
+* Scene analysis
+* Speaker analysis
+* Moment detection
+* Smart clip selection
+* Research
 
-The underlying content idea can be maintained while the creative approach changes for the selected country or audience.
-For India, for example, the workflow may consider the selected language, regional context, cultural references, audience interests, professions, and the type of content being created.
-The same principle applies to China, Pakistan, Japan, South Korea, and other countries.
-Local Audience → Regional Audience → Global Audience
-The platform supports a progression from highly local content to broader global content.
+### Creative Development
 
-One Idea, Multiple Audience Versions
-The platform is designed to make it possible to start with one original concept and develop different versions for different audiences.
-For example:
+* Story generation
+* Script generation
+* Localization
+* Cultural adaptation
+* Humor adaptation
+* Storyboarding
+* Character planning
+* Camera planning
+* Director planning
+* Documentary planning
 
-Global and Local Targeting
-The platform supports two complementary strategies.
-Local-first creation
-Create content specifically for one country, region, language, profession, or community.
+### Media Production
 
-Global-first creation
-Create an idea with international relevance and adapt it for multiple markets.
+* Video planning
+* Image planning
+* Voice planning
+* Avatar planning
+* B-roll planning
+* Dynamic captions
+* Reframing
+* Rendering
+* Quality validation
 
-This allows the creator to decide whether a story should remain highly local or become a global piece of content.
+### Content Optimization
 
-Why the Video Changes by Audience
-A video can change because the audience changes.
-The underlying subject may remain the same, but the audience may have different:
-Prior knowledge
-Language
-Cultural references
-Interests
-Problems
-Expectations
-Humor
-Attention patterns
-Search behavior
-Platform habits
-Regional context
-For that reason, the platform is designed around audience-aware creation.
+* SEO and metadata
+* Trend analysis
+* Content repurposing
+* Thumbnail planning
+* Analytics prediction
 
-The Global Creator Loop
-The larger vision is a continuous global content loop:
+---
 
-This allows the platform to grow with the creator and with changing audiences.
+# Technical Architecture
 
-The Core Product Philosophy
-The platform is not built around the assumption that there is one audience, one format, or one universal version of a video.
-Instead, it is designed around:
-One creator → many ideas → many audiences → many versions → continuous learning.
-The creator provides the original perspective and purpose.
-The Creator OS helps transform that perspective into content that can be understood and presented appropriately across different markets.
+The application uses a **LangGraph-based workflow orchestration system** to coordinate the content pipeline.
 
-The ultimate goal is to give creators a system that can move from local storytelling to global storytelling without losing the original meaning behind the content.
-Architecture
-The application uses a single LangGraph workflow defined in:
+The workflow manages analysis, planning, AI-assisted generation, optimization, validation, and export.
 
-The high-level pipeline is:
+## Architecture Pipeline
 
-Project Structure
-Each job creates a project under:
+```text
+Input
+→ Source Ingest
+→ Transcript
+→ Content Understanding
+→ Scene Analysis
+→ Audio Analysis
+→ Speaker Analysis
+→ Moment Detection
+→ Smart Clips
+→ Research
+→ Story
+→ Script
+→ Localization
+→ Storyboard
+→ Video Direction
+→ Motion Graphics
+→ Video Planning
+→ Image Planning
+→ Voice Planning
+→ Captions
+→ Reframing
+→ SEO
+→ Trends
+→ Repurposing
+→ Thumbnail Planning
+→ Analytics
+→ Rendering
+→ Quality Assurance
+→ Export
+```
 
-Resume & Recovery
-The Memory & Resume functionality supports:
-Resume Project
-Continue an incomplete or failed project from its stored checkpoint.
-Rerun From Step
-Restart the workflow from a selected stage while clearing downstream state.
-Retry Failed Steps
-Retry failed agents, with one retry available by default.
-Workflow versioning is stored as:
+Optional stages can be enabled or skipped according to project requirements.
 
-A project with an incompatible workflow version is not resumed automatically.
+---
 
-How to Use
-The app can be used in three simple ways:
+# Project Artifacts
 
-Use Locally
-Use the app directly on your computer.
-Start
+Every project produces structured artifacts that make workflows easier to inspect, reproduce, resume, and manage.
 
-pip install -r requirements.txt
-streamlit run app.py
+```text
+outputs/projects/{project_id}/
+```
 
-Then open the Streamlit address shown in the terminal, usually:
+### Core Files
 
-This is useful for development, testing, and personal content creation.
+```text
+project.json
+transcript.json
+analysis.json
+moments.json
+clips.json
+localization.json
+video_plan.json
+quality_report.json
+memory.json
+execution_history.jsonl
+```
 
-Use Online
-The app can also run on a Linux VPS or other server.
+### Working Directories
 
-Start the application on the server:
+```text
+source/
+transcripts/
+analysis/
+clips/
+audio/
+subtitles/
+thumbnails/
+images/
+renders/
+renders/shorts/
+exports/
+final/
+```
 
-streamlit run app.py --server.address=0.0.0.0 --server.port=8501
+---
 
-Use with Docker
-Docker provides a simple way to package the application and its dependencies together.
-Start with Docker Compose
+# Project Recovery
 
-docker compose up --build
+Long-running AI workflows can fail or be interrupted.
 
-Or build and run manually
+AI Video Agent includes project recovery and resume functionality.
 
-docker build -t ai-video-agent .
-docker run --rm -p 8501:8501 --env-file .env -v "%cd%/outputs:/app/outputs" ai-video-agent
+Creators can:
 
-macOS / Linux:
+* Resume interrupted projects
+* Retry failed stages
+* Continue from stored checkpoints
+* Restart from selected pipeline stages
 
-docker run --rm -p 8501:8501 --env-file .env -v "$PWD/outputs:/app/outputs" ai-video-agent
+This makes longer workflows more manageable and reduces the need to restart an entire project after a single failure.
 
-Open:
+---
 
-The outputs/ folder is mounted so projects and generated files remain available.
+# Deployment
 
-Simple Usage Flow
-Once the app is running:
+AI Video Agent is designed to be simple to run in different environments.
 
-The same workflow can be used for local content, country-specific content, regional content, or global content.
-
-Configuration
-Configuration is documented in:
-
-Getting Started
-Local Development
-
-cd ai-video-agent
-
-python -m venv .venv
-
-Windows:
-
-.venv\Scripts	ctivate
-
-macOS / Linux:
-
-source .venv/bin/activate
+## Local
 
 Install dependencies:
 
+```bash
 pip install -r requirements.txt
-
-Configure:
-
-copy .env.example .env
-
-Then set:
-
-GEMINI_API_KEY=your_key_here
+```
 
 Start the application:
 
+```bash
 streamlit run app.py
+```
 
-Docker Deployment
-Recommended:
+Open:
 
+```text
+http://localhost:8501
+```
+
+---
+
+## Online / VPS
+
+Run the application on a server:
+
+```bash
+streamlit run app.py --server.address=0.0.0.0 --server.port=8501
+```
+
+Then open the application through the server address in a web browser.
+
+For production deployments, Docker Compose or systemd can be used.
+
+---
+
+## Docker
+
+### Docker Compose
+
+```bash
 docker compose up --build
+```
 
-Or:
+### Manual Docker
 
+```bash
 docker build -t ai-video-agent .
+```
+
+```bash
 docker run --rm -p 8501:8501 --env-file .env -v "%cd%/outputs:/app/outputs" ai-video-agent
+```
 
 macOS / Linux:
 
+```bash
 docker run --rm -p 8501:8501 --env-file .env -v "$PWD/outputs:/app/outputs" ai-video-agent
-
-The outputs/ directory should be mounted so generated projects persist between container restarts.
-The container includes FFmpeg.
-Health checks use:
-
-Linux VPS
-Docker
-
-git clone <repo>
-cd ai-video-agent
-
-cp .env.example .env
-
-docker compose up -d --build
-
-Configure the required environment variables before starting production workloads.
-systemd + Python
-Install dependencies:
-
-sudo apt-get update
-sudo apt-get install -y ffmpeg python3.12 python3.12-venv
-
-Create the virtual environment:
-
-python3.12 -m venv .venv
-source .venv/bin/activate
-
-pip install -r requirements.txt
-
-Configure:
-
-cp .env.example .env
-
-For production:
-
-APP_ENV=production
-LOG_TO_FILE=true
-
-Example systemd service:
-
-[Unit]
-Description=AI Video Agent
-After=network.target
-
-[Service]
-WorkingDirectory=/opt/ai-video-agent
-EnvironmentFile=/opt/ai-video-agent/.env
-ExecStart=/opt/ai-video-agent/.venv/bin/streamlit run app.py --server.address=0.0.0.0 --server.port=8501
-Restart=on-failure
-
-[Install]
-WantedBy=multi-user.target
-
-Enable the service:
-
-sudo systemctl enable --now ai-video-agent
-
-Testing
-Run the standard test suite:
-
-pytest
-
-Run integration tests:
-
-pytest -m integration
-
-Integration tests require FFmpeg for the fixture media path.
-
-Future Direction
-The platform can evolve toward a larger creator infrastructure with:
-More video-generation providers
-More image-generation providers
-Advanced editing
-Richer character consistency
-Automated visual composition
-Advanced motion graphics
-Hosted project storage
-Distributed job processing
-Automated publishing
-Deeper analytics
-Creator performance feedback loops
-More sophisticated content repurposing
-Collaborative creator workflows
-The underlying goal remains the same:
-
-Project Status
-Status: Local MVP
-The current platform provides an end-to-end foundation for AI-assisted YouTube and video content creation, with local processing, structured workflow orchestration, reusable project artifacts, recovery support, optimization planning, analytics prediction, and publishing preparation.
-
-How to Use
-
-<table>
-<tr>
-<td width="33%" valign="top">
-
-<h3>Local</h3>
-
-<p>Run directly on your computer.</p>
-
-pip install -r requirements.txt
-streamlit run app.py
-
-<p><code>http://localhost:8501</code></p>
-
-</td>
-<td width="33%" valign="top">
-
-<h3>Online / VPS</h3>
-
-<p>Run the application on a server and open it from a browser.</p>
-
-streamlit run app.py --server.address=0.0.0.0 --server.port=8501
-
-</td>
-<td width="33%" valign="top">
-
-<h3>Docker</h3>
-
-<p>Package the app and dependencies together.</p>
-
-docker compose up --build
-
-<p><code>http://localhost:8501</code></p>
-
-</td>
-</tr>
-</table>
-
-Local Computer
-
-Install dependencies:
-
-pip install -r requirements.txt
-
-Start the app:
-
-streamlit run app.py
+```
 
 Open:
 
+```text
 http://localhost:8501
+```
 
-Online / VPS
+Mounting the `outputs/` directory keeps project artifacts available across container restarts.
 
-Run the app on a server:
+---
 
-streamlit run app.py --server.address=0.0.0.0 --server.port=8501
+# Technology Stack
 
-Then open the server address in a browser.
+| Area                    | Technology                           |
+| ----------------------- | ------------------------------------ |
+| **Interface**           | Streamlit                            |
+| **AI**                  | Google Gemini                        |
+| **Agent Orchestration** | LangGraph                            |
+| **LLM Framework**       | LangChain                            |
+| **Speech Recognition**  | Whisper                              |
+| **Computer Vision**     | OpenCV                               |
+| **Video Processing**    | FFmpeg                               |
+| **Language**            | Python                               |
+| **Project Storage**     | Local structured artifacts and JSON  |
+| **Deployment**          | Docker, Linux VPS, local development |
 
-Docker
+---
 
-Start with Docker Compose:
+# Content Categories
 
-docker compose up --build
+AI Video Agent is designed to support many content categories.
 
-Or build and run manually:
+### Education
 
-docker build -t ai-video-agent .
-docker run --rm -p 8501:8501 --env-file .env -v "%cd%/outputs:/app/outputs" ai-video-agent
+Tutorials, explainers, courses, study content, and educational documentaries.
 
-Open:
+### Technology
 
-http://localhost:8501
+AI, software, programming, devices, startups, and technology content.
 
-Keep the outputs/ folder mounted so project files remain available.
+### Business
+
+Entrepreneurship, companies, careers, jobs, productivity, and industry topics.
+
+### Entertainment
+
+Stories, commentary, interviews, comedy, pop culture, and general entertainment.
+
+### Politics and Current Affairs
+
+Educational and explanatory content about politics, public policy, history, and current affairs.
+
+### Lifestyle
+
+Travel, food, hobbies, personal development, daily life, and experiences.
+
+### Science and Knowledge
+
+Science, history, engineering, research, space, and general knowledge.
+
+### Creator Journey
+
+Building in public, career journeys, learning journeys, project documentation, personal stories, experiments, and lessons learned.
+
+---
+
+# Why Content Changes by Audience
+
+A subject can stay the same while the video changes because the audience changes.
+
+Different audiences may have different:
+
+* Knowledge levels
+* Languages
+* Cultural references
+* Interests
+* Problems
+* Expectations
+* Humor
+* Search behavior
+* Platform habits
+* Regional context
+
+AI Video Agent is therefore designed around **audience-aware content creation** rather than a single universal version of every video.
+
+---
+
+# Product Philosophy
+
+Technology should make content creation easier without removing the creator from the process.
+
+The creator provides:
+
+* Experience
+* Perspective
+* Ideas
+* Emotion
+* Purpose
+* Story
+
+AI Video Agent provides the workflow and AI-assisted tools needed to transform those inputs into structured content.
+
+The goal is not to replace the creator.
+
+**The goal is to help creators turn more of their ideas and experiences into stories worth sharing.**
+
+---
+
+# Future Direction
+
+The platform can evolve toward a broader Creator Operating System with:
+
+* More video-generation providers
+* More image-generation providers
+* Advanced editing
+* Stronger character consistency
+* Automated visual composition
+* Advanced motion graphics
+* Hosted project storage
+* Distributed processing
+* Automated publishing
+* Deeper analytics
+* Creator performance feedback
+* Advanced content repurposing
+* Collaborative creator workflows
+
+The long-term objective is to help creators move from **local storytelling to global storytelling** while preserving the original meaning and purpose of their content.
+
+---
+
+# Project Status
+
+**Status: Local MVP**
+
+AI Video Agent currently provides an end-to-end foundation for AI-assisted YouTube and video content creation, including content analysis, structured workflow orchestration, localization, planning, optimization, project recovery, rendering, analytics prediction, and publishing preparation.
+
+---
 
 <div align="center">
-  <sub>AI Creator Platform · YouTube-first · Global audience-aware · Local, online, and Docker-ready</sub>
+
+**AI Video Agent**
+
+*Create locally. Adapt globally. Tell better stories.*
+
 </div>
