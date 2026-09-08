@@ -11,6 +11,7 @@ from core.errors import (
     GeminiQuotaExhaustedError,
 )
 from schemas.story import GeminiClipStory, GeminiStoriesBatch
+from schemas.transcript import GeminiScriptAnalysis
 from tools.llm import gemini
 
 
@@ -43,6 +44,10 @@ def _success() -> GeminiStoriesBatch:
             )
         ]
     )
+
+
+def _script_success() -> GeminiScriptAnalysis:
+    return GeminiScriptAnalysis(language="English", topics=["test"])
 
 
 def _configure(monkeypatch: pytest.MonkeyPatch, *, fallback: str = "", retries: str = "2") -> None:
@@ -157,5 +162,37 @@ def test_unexpected_error_is_not_swallowed(monkeypatch: pytest.MonkeyPatch) -> N
 
     with pytest.raises(GeminiGenerationError, match="programming failure"):
         gemini.generate_clip_stories(["clip"], model=model)
+
+    assert model.calls == 1
+
+
+def test_script_analysis_retries_temporary_failures_five_times(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    _configure(monkeypatch, retries="2")
+    model = _FakeStructured(
+        [
+            RuntimeError("503 UNAVAILABLE"),
+            RuntimeError("502 BAD_GATEWAY"),
+            RuntimeError("504 DEADLINE_EXCEEDED"),
+            RuntimeError("500 INTERNAL"),
+            _script_success(),
+        ]
+    )
+
+    result = gemini.analyze_script_structure("A test script.", [], [], model=model)
+
+    assert result.language == "English"
+    assert model.calls == 5
+
+
+def test_script_analysis_does_not_retry_authentication_failure(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    _configure(monkeypatch, retries="2")
+    model = _FakeStructured([RuntimeError("401 API key invalid")])
+
+    with pytest.raises(Exception, match="Gemini script analysis failed"):
+        gemini.analyze_script_structure("A test script.", [], [], model=model)
 
     assert model.calls == 1

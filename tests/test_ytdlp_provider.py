@@ -136,6 +136,7 @@ def test_default_download_falls_back_from_split_format(
     class _FakeYoutubeDL:
         def __init__(self, options: dict) -> None:
             self.options = options
+            assert options["ffmpeg_location"]
             formats.append(str(options["format"]))
 
         def __enter__(self):

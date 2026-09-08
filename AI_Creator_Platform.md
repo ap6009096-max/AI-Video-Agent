@@ -33,7 +33,7 @@ Configure the deployment Secrets with values such as:
 ```toml
 GEMINI_API_KEY = "replace-with-a-secret-value"
 YOUTUBE_DOWNLOAD_ENABLED = "true"
-YOUTUBE_DOWNLOAD_FORMAT = "best[height<=720]/best"
+YOUTUBE_DOWNLOAD_FORMAT = "bestvideo*+bestaudio/best"
 YOUTUBE_COOKIES_FILE = ""
 FFMPEG_PATH = ""
 ```
@@ -47,7 +47,7 @@ YouTube downloads are intended for public or otherwise authorized media only. Th
 The default format is the conservative single-stream request:
 
 ```text
-best[height<=720]/best
+bestvideo*+bestaudio/best
 ```
 
 If an older local configuration requests separate video and audio streams and that request fails, the downloader retries with the single-stream format. A 403 can still mean that YouTube rejected the media request, the video is restricted, or the downloader needs an update. Update `yt-dlp` before further diagnosis:
@@ -61,7 +61,7 @@ python -c "import imageio_ffmpeg; print(imageio_ffmpeg.get_ffmpeg_exe())"
 For an authorized public URL, test the downloader outside the application:
 
 ```bash
-python -m yt_dlp --verbose --format "best[height<=720]/best" "YOUTUBE_URL"
+python -m yt_dlp --verbose --format "bestvideo*+bestaudio/best" "YOUTUBE_URL"
 ```
 
 If the request still returns 403, use direct video-file upload or resolve the access issue with the content owner. Do not attempt to bypass access controls.

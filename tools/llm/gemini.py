@@ -192,7 +192,20 @@ def classify_gemini_error(exc: BaseException) -> str:
     if status == 429 or "429" in text or "rate limit" in text or "resource_exhausted" in text:
         return "temporary_rate_limit"
     if status in {500, 502, 503, 504} or any(
-        marker in text for marker in ("500", "502", "503", "504", "internal server error", "service unavailable")
+        marker in text
+        for marker in (
+            "500",
+            "502",
+            "503",
+            "504",
+            "internal",
+            "bad_gateway",
+            "bad gateway",
+            "deadline_exceeded",
+            "deadline exceeded",
+            "internal server error",
+            "service unavailable",
+        )
     ):
         return "server_temporary"
     return "unexpected"
@@ -257,21 +270,50 @@ def analyze_script_structure(
         cleaned_text, sentence_lines, section_summaries
     )
 
-    try:
-        chat = model or get_chat_model()
-        structured = chat.with_structured_output(GeminiScriptAnalysis)
-        result = structured.invoke(
-            [
-                SystemMessage(content=TEXT_AGENT_SYSTEM),
-                HumanMessage(content=user_prompt),
-            ]
-        )
-    except ConfigurationError:
-        logger.warning("GEMINI_API_KEY missing — using heuristic script analysis")
-        return _heuristic_script_analysis(cleaned_text, sentences, sections)
-    except Exception as exc:  # noqa: BLE001
-        logger.exception("Gemini script analysis failed")
-        raise TextAgentError(f"Gemini script analysis failed: {exc}") from exc
+    max_attempts = 5
+    messages = [
+        SystemMessage(content=TEXT_AGENT_SYSTEM),
+        HumanMessage(content=user_prompt),
+    ]
+    last_error: BaseException | None = None
+    for attempt in range(max_attempts):
+        try:
+            chat = model or get_chat_model()
+            structured = chat.with_structured_output(GeminiScriptAnalysis)
+            result = structured.invoke(messages)
+            last_error = None
+            break
+        except ConfigurationError:
+            logger.warning("GEMINI_API_KEY missing — using heuristic script analysis")
+            return _heuristic_script_analysis(cleaned_text, sentences, sections)
+        except Exception as exc:  # noqa: BLE001
+            classification = classify_gemini_error(exc)
+            last_error = exc
+            if classification not in {"temporary_rate_limit", "server_temporary"}:
+                logger.error(
+                    "Gemini script analysis failed classification=%s attempt=%s",
+                    classification,
+                    attempt + 1,
+                )
+                raise TextAgentError(f"Gemini script analysis failed: {exc}") from exc
+            logger.warning(
+                "Gemini script analysis temporary failure classification=%s attempt=%s/%s",
+                classification,
+                attempt + 1,
+                max_attempts,
+            )
+            if attempt + 1 < max_attempts:
+                time.sleep(_retry_delay(exc, attempt))
+                continue
+            break
+    else:  # pragma: no cover - loop always breaks on success or final failure
+        result = None
+
+    if last_error is not None:
+        raise TextAgentError(
+            "Gemini is temporarily unavailable due to high demand. "
+            "The request was retried automatically. Please try again in a few minutes."
+        ) from last_error
 
     if isinstance(result, GeminiScriptAnalysis):
         return result

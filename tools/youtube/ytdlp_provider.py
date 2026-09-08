@@ -20,7 +20,7 @@ from tools.youtube.oembed_provider import OEmbedYouTubeProvider
 
 logger = get_logger(__name__)
 
-DEFAULT_YTDLP_FORMAT = "best[height<=720]/best"
+DEFAULT_YTDLP_FORMAT = "bestvideo*+bestaudio/best"
 
 _SOURCE_README = """# YouTube source package
 
@@ -109,7 +109,11 @@ def _default_ytdlp_download(
                 f"YOUTUBE_COOKIES_FILE not found: {cookie_path}"
             )
 
-    ffmpeg_path = (options.get("ffmpeg_path") or "").strip()
+    from tools.ffmpeg.bin import resolve_ffmpeg_binary
+
+    ffmpeg_path = (
+        (options.get("ffmpeg_path") or "").strip() or resolve_ffmpeg_binary() or ""
+    )
 
     last_error: Exception | None = None
     for index, format_value in enumerate(formats):
