@@ -9,8 +9,10 @@ from agents.base import BaseAgent
 from core.errors import StorageError, YouTubeAgentError
 from core.logging import get_logger
 from core.paths import ensure_project_dir, ensure_project_source_dir
+from ingestion.errors import YouTubeDownloadError
 from schemas.project import ProjectMetadata
 from schemas.youtube import YouTubeAgentResult
+from storage.sync import persist_source_media
 from tools.youtube.provider import YouTubeSourceProvider, get_youtube_provider
 
 logger = get_logger(__name__)
@@ -45,12 +47,45 @@ class YouTubeAgent(BaseAgent):
             canonical = self.provider.normalize_url(url)
             fetched = self.provider.fetch_metadata(url)
             prepared = self.provider.prepare_source(root, fetched)
+        except YouTubeDownloadError as exc:
+            raise YouTubeAgentError(exc.message) from exc
         except YouTubeAgentError:
             raise
         except StorageError:
             raise
         except Exception as exc:  # noqa: BLE001
             raise YouTubeAgentError(f"YouTube agent failed: {exc}") from exc
+
+        storage_ref = None
+        updated_project = meta.model_dump(mode="json")
+        if prepared.local_media_path:
+            try:
+                storage_ref = persist_source_media(
+                    project_id=project_id,
+                    local_path=prepared.local_media_path,
+                    source_type="youtube",
+                    source_url=canonical,
+                    original_filename=Path(prepared.local_media_path).name,
+                )
+                updated_project.update(
+                    {
+                        "storage_bucket": storage_ref.storage_bucket,
+                        "storage_path": storage_ref.storage_path,
+                        "source_path": prepared.local_media_path,
+                        "original_filename": storage_ref.original_filename,
+                        "file_size": storage_ref.file_size,
+                        "mime_type": storage_ref.mime_type,
+                        "source_status": "ready",
+                    }
+                )
+            except Exception as exc:  # noqa: BLE001
+                logger.warning(
+                    "Durable source upload skipped project_id=%s err=%s",
+                    project_id,
+                    type(exc).__name__,
+                )
+                updated_project["source_path"] = prepared.local_media_path
+                updated_project["source_status"] = "ready"
 
         media_msg = (
             f"[{self.name}] Local media ready → {prepared.local_media_path}"
@@ -60,6 +95,8 @@ class YouTubeAgent(BaseAgent):
                 "set YOUTUBE_DOWNLOAD_ENABLED=true for yt-dlp, or upload a video."
             )
         )
+        if storage_ref:
+            media_msg += f" | storage → {storage_ref.storage_path}"
         messages = [
             f"[{self.name}] Validated URL → {canonical}",
             f"[{self.name}] Title: {prepared.metadata.title or '(unknown)'}",
@@ -84,6 +121,7 @@ class YouTubeAgent(BaseAgent):
             metadata_path=prepared.metadata_path,
             local_media_path=prepared.local_media_path,
             messages=messages,
+            project=updated_project,
         )
 
     def _coerce_project(self, project: ProjectMetadata | dict[str, Any]) -> ProjectMetadata:

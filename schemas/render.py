@@ -29,6 +29,7 @@ class RenderPlan(BaseModel):
     output_path: str = ""
     thumbnail_path: str = ""
     short_paths: list[str] = Field(default_factory=list)
+    short_errors: list[str] = Field(default_factory=list)
     encoded: bool = False
     skipped: bool = False
     notes: str = ""

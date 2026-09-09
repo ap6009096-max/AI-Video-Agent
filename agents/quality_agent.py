@@ -46,13 +46,14 @@ class QualityAgent(BaseAgent):
         root = Path(project_dir) if project_dir else ensure_project_dir(project_id)
         root.mkdir(parents=True, exist_ok=True)
 
-        media_path, expect_w, expect_h, expect_aspect, skipped_render = (
+        media_path, expect_w, expect_h, expect_aspect, skipped_render, had_source = (
             self._resolve_expectations(root, render_pack, platform_pack)
         )
         caption_paths = self._caption_paths(captions_pack)
 
-        # Soft path: no media required when render skipped (script-only honesty)
-        if skipped_render:
+        # Soft path: only when there was never source media (script-only honesty).
+        # Encode failures / missing FFmpeg with source present must fail closed.
+        if skipped_render and not had_source:
             report = QualityReport(
                 project_id=project_id,
                 media_path=str(media_path or ""),
@@ -73,6 +74,25 @@ class QualityAgent(BaseAgent):
                     f"[{self.name}] Wrote analysis/quality_report.json",
                 ],
             )
+
+        # Source was expected but no deliverable: soft-skip encode OR post-encode
+        # validate_video failure (skipped=False, encoded=False). Never soft-pass.
+        if had_source and not media_path:
+            checks = run_quality_checks(None, require_media=True, caption_paths=caption_paths)
+            report = QualityReport(
+                project_id=project_id,
+                media_path="",
+                checks=checks,
+                passed=False,
+                skipped=False,
+                notes=(
+                    "Full video generation failed. Stage: Render. "
+                    "Reason: encode or validation failed with source media present."
+                ),
+            )
+            pack = QualityPack(report=report, notes=report.notes)
+            path = self._write_pack(project_id, root, pack)
+            raise QualityAgentError(report.notes)
 
         media = Path(media_path) if media_path else Path("")
         checks = run_quality_checks(
@@ -182,15 +202,20 @@ class QualityAgent(BaseAgent):
         root: Path,
         render_pack: dict[str, Any] | None,
         platform_pack: dict[str, Any] | None,
-    ) -> tuple[str | None, int, int, str, bool]:
+    ) -> tuple[str | None, int, int, str, bool, bool]:
         media_path: str | None = None
         expect_w, expect_h = 0, 0
         aspect = ""
         skipped = False
+        had_source = False
         if isinstance(render_pack, dict):
             plan = render_pack.get("plan") or {}
             if isinstance(plan, dict):
                 skipped = bool(plan.get("skipped")) and not bool(plan.get("encoded"))
+                src = str(plan.get("source_path") or "").strip()
+                # Recorded plan path only — do not require the file on disk
+                # (moved/deleted/restored projects must still fail closed).
+                had_source = bool(src)
                 op = str(plan.get("output_path") or "").strip()
                 if op and Path(op).is_file():
                     media_path = op
@@ -204,6 +229,10 @@ class QualityAgent(BaseAgent):
             cand = root / "renders" / "final.mp4"
             if cand.is_file():
                 media_path = str(cand)
+            else:
+                packaged = root / "final" / "final.mp4"
+                if packaged.is_file():
+                    media_path = str(packaged)
         if not aspect and isinstance(platform_pack, dict):
             pplan = platform_pack.get("plan") or {}
             if isinstance(pplan, dict):
@@ -213,7 +242,7 @@ class QualityAgent(BaseAgent):
                     aspect = str(meta.get("aspect_recommendation") or "")
                 if isinstance(hints, dict) and hints.get("preferred_aspect"):
                     aspect = str(hints["preferred_aspect"])
-        return media_path, expect_w, expect_h, aspect, skipped
+        return media_path, expect_w, expect_h, aspect, skipped, had_source
 
     def _caption_paths(self, captions_pack: dict[str, Any] | None) -> list[str]:
         paths: list[str] = []

@@ -56,6 +56,7 @@ class YouTubeAgentResult(BaseModel):
     metadata_path: str
     local_media_path: str | None = None
     messages: list[str] = Field(default_factory=list)
+    project: dict[str, Any] | None = None
 
     def to_state_dict(self) -> dict[str, Any]:
         """Partial WorkflowState update.
@@ -67,8 +68,15 @@ class YouTubeAgentResult(BaseModel):
         """
         meta = self.metadata.model_dump(mode="json")
         meta["local_media_path"] = self.local_media_path
-        return {
+        if self.project:
+            for key in ("storage_bucket", "storage_path", "file_size", "mime_type"):
+                if self.project.get(key):
+                    meta[key] = self.project[key]
+        out: dict[str, Any] = {
             "source_metadata": meta,
             "source_dir": self.source_dir,
             "messages": list(self.messages),
         }
+        if self.project is not None:
+            out["project"] = self.project
+        return out

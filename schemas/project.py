@@ -41,6 +41,12 @@ class ProjectMetadata(BaseModel):
     source_path: str = ""
     youtube_url: str = ""
     raw_text: str = ""
+    storage_bucket: str = ""
+    storage_path: str = ""
+    original_filename: str = ""
+    mime_type: str = ""
+    file_size: int = 0
+    source_status: str = ""
     created_at: datetime = Field(default_factory=_utc_now)
     status: JobStatus = JobStatus.RUNNING
     configuration: dict[str, Any] = Field(default_factory=dict)

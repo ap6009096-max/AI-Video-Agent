@@ -112,11 +112,10 @@ def probe_media(media_path: str | Path) -> dict[str, Any] | None:
     return (
         result
         if (
-            result["duration"]
-            or result["width"]
-            or result["has_video"]
-            or result["has_audio"]
-            or (path.is_file() and path.stat().st_size > 0)
+            result["has_video"]
+            and result["duration"] > 0
+            and result["width"] > 0
+            and result["height"] > 0
         )
         else None
     )

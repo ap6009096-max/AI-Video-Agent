@@ -91,7 +91,7 @@ def test_youtube_agent_writes_source_metadata(
 
     state = result.to_state_dict()
     assert state["source_metadata"]["local_media_path"] is None
-    assert "project" not in state
+    assert isinstance(state.get("project"), dict)
 
     get_settings.cache_clear()
 

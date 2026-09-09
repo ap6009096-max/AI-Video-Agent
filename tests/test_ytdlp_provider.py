@@ -131,40 +131,30 @@ def test_default_download_falls_back_from_split_format(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    formats: list[str] = []
+    """Provider delegates to ingestion.youtube; verify successful path placement."""
+    media = tmp_path / "fallback-video.mp4"
+    media.write_bytes(b"video")
 
-    class _FakeYoutubeDL:
-        def __init__(self, options: dict) -> None:
-            self.options = options
-            assert options["ffmpeg_location"]
-            assert options["retries"] == 3
-            assert options["fragment_retries"] == 3
-            assert options["concurrent_fragment_downloads"] == 1
-            formats.append(str(options["format"]))
+    from ingestion.errors import YouTubeDownloadStatus
+    from ingestion.youtube import YouTubeDownloadResult
 
-        def __enter__(self):
-            return self
-
-        def __exit__(self, *_args) -> None:
-            return None
-
-        def extract_info(self, _url: str, *, download: bool) -> dict:
-            assert download is True
-            if len(formats) == 1:
-                raise RuntimeError("HTTP Error 403: Forbidden")
-            output = Path(self.options["outtmpl"].replace("%(ext)s", "mp4"))
-            output.write_bytes(b"video")
-            return {"id": "fallback-video"}
-
-        def prepare_filename(self, _info: dict) -> str:
-            return str(Path(self.options["outtmpl"].replace("%(ext)s", "mp4")))
+    def _fake_download(url: str, *, dest_dir=None, keep_temp=False):  # noqa: ANN001
+        assert dest_dir is not None
+        dest = Path(dest_dir) / "fallback-video.mp4"
+        dest.write_bytes(b"video")
+        return YouTubeDownloadResult(
+            status=YouTubeDownloadStatus.SUCCESS,
+            local_path=str(dest),
+            video_id="fallback-video",
+            title="ok",
+        )
 
     monkeypatch.setattr(
-        "tools.youtube.ytdlp_provider._require_ffmpeg_hint", lambda: None
+        "tools.youtube.ytdlp_provider.download_youtube",
+        _fake_download,
     )
-    monkeypatch.setitem(sys.modules, "yt_dlp", SimpleNamespace(YoutubeDL=_FakeYoutubeDL))
 
-    media = _default_ytdlp_download(
+    out = _default_ytdlp_download(
         "https://www.youtube.com/watch?v=fallback-video",
         tmp_path,
         {
@@ -173,11 +163,8 @@ def test_default_download_falls_back_from_split_format(
         },
     )
 
-    assert media.read_bytes() == b"video"
-    assert formats == [
-        "bestvideo[height<=720]+bestaudio/best[height<=720]/best",
-        DEFAULT_YTDLP_FORMAT,
-    ]
+    assert out.read_bytes() == b"video"
+    assert out.parent == tmp_path.resolve() or out.parent.resolve() == tmp_path.resolve()
 
 
 def test_youtube_agent_messages_include_local_media(

@@ -88,6 +88,31 @@ class LocalVideoIngestAgent(BaseAgent):
         height = int(probe.get("height") or 0)
 
         dest_resolved = str(dest.resolve())
+        storage_fields: dict[str, Any] = {}
+        try:
+            from storage.sync import persist_source_media
+
+            ref = persist_source_media(
+                project_id=project_id,
+                local_path=dest_resolved,
+                source_type="upload",
+                original_filename=dest.name,
+            )
+            storage_fields = {
+                "storage_bucket": ref.storage_bucket,
+                "storage_path": ref.storage_path,
+                "original_filename": ref.original_filename,
+                "file_size": ref.file_size,
+                "mime_type": ref.mime_type,
+                "source_status": "ready",
+            }
+        except Exception as exc:  # noqa: BLE001
+            logger.warning(
+                "Durable upload storage skipped project_id=%s err=%s",
+                project_id,
+                type(exc).__name__,
+            )
+
         metadata = {
             "source_type": "upload",
             "original_path": str(src.resolve()),
@@ -102,6 +127,7 @@ class LocalVideoIngestAgent(BaseAgent):
             "audio_codec": probe.get("audio_codec") or "",
             "has_audio": bool(probe.get("has_audio")),
             "probed_at": datetime.now(timezone.utc).isoformat(),
+            **storage_fields,
         }
         meta_path = source_dir / "source_metadata.json"
         try:
@@ -110,14 +136,15 @@ class LocalVideoIngestAgent(BaseAgent):
             raise StorageError(f"Failed to write source metadata: {exc}") from exc
 
         # Update project source_path to in-project copy
-        updated = meta.model_copy(update={"source_path": dest_resolved})
+        update_payload = {"source_path": dest_resolved, **storage_fields}
+        updated = meta.model_copy(update=update_payload)
         project_json = root / "project.json"
         try:
             if project_json.is_file():
                 existing = json.loads(project_json.read_text(encoding="utf-8"))
             else:
                 existing = updated.model_dump(mode="json")
-            existing["source_path"] = dest_resolved
+            existing.update(update_payload)
             project_json.write_text(json.dumps(existing, indent=2), encoding="utf-8")
         except (OSError, json.JSONDecodeError) as exc:
             logger.warning("Could not update project.json: %s", exc)
@@ -127,6 +154,10 @@ class LocalVideoIngestAgent(BaseAgent):
             f"[{self.name}] Copied upload → {dest_resolved}",
             f"[{self.name}] duration={duration:.2f}s {width}x{height}",
         ]
+        if storage_fields.get("storage_path"):
+            messages.append(
+                f"[{self.name}] Durable storage → {storage_fields['storage_path']}"
+            )
         logger.info(
             "LocalVideoIngest ready project_id=%s path=%s duration=%.2f",
             project_id,

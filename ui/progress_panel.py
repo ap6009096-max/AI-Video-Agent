@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from pathlib import Path
 from typing import Any
 
 import streamlit as st
@@ -46,11 +47,34 @@ def _step_icon(status: str) -> str:
         return "🔵"
     if status == ProgressStepStatus.FAILED.value:
         return "❌"
+    if status == ProgressStepStatus.SKIPPED.value:
+        return "⊘"
     return "⚪"
 
 
 def _step_css_class(status: str) -> str:
     return f"ava-step-{status}"
+
+
+def _has_validated_full(result: dict[str, Any] | None) -> bool:
+    if not isinstance(result, dict):
+        return False
+    project_dir = result.get("project_dir") or ""
+    if not project_dir:
+        return False
+    try:
+        from core.versioning import get_final_video_path
+        from tools.media.validate_video import validate_video
+
+        root = Path(str(project_dir))
+        if not root.is_dir():
+            from core.paths import get_project_dir
+
+            root = get_project_dir(str(project_dir))
+        final = get_final_video_path(root)
+        return bool(final and validate_video(final).ok)
+    except Exception:  # noqa: BLE001
+        return False
 
 
 def render_progress_panel() -> None:
@@ -91,10 +115,16 @@ def render_progress_panel() -> None:
     completed = sum(
         1 for s in steps if s.get("status") == ProgressStepStatus.COMPLETED.value
     )
+    skipped = sum(
+        1 for s in steps if s.get("status") == ProgressStepStatus.SKIPPED.value
+    )
     fraction = completed / total if total else 0.0
 
     with st.expander("Fine-grained pipeline steps", expanded=False):
-        st.progress(fraction, text=f"{completed} / {total} steps · status: {status}")
+        st.progress(
+            fraction,
+            text=f"{completed} completed · {skipped} skipped · {total} total · {status}",
+        )
         lines: list[str] = ['<div class="ava-progress-card">']
         for step in steps:
             step_status = step.get("status", ProgressStepStatus.PENDING.value)
@@ -119,18 +149,44 @@ def render_progress_panel() -> None:
         st.caption(f"Current stage: **{running.get('label')}**")
 
     if status == JobStatus.COMPLETED.value:
-        st.success("Creator OS run finished — multi-platform package ready.")
+        video_ready = _has_validated_full(st.session_state.last_result)
+        if video_ready:
+            st.success("Video Ready — validated MP4 deliverables available below.")
+        else:
+            st.info(
+                "Job finished without a validated full video "
+                "(script-only path or render incomplete). "
+                "Downloads stay disabled until `validate_video` passes."
+            )
+        last = st.session_state.last_result or {}
+        sync_warn = (
+            last.get("storage_sync_warning")
+            if isinstance(last, dict)
+            else None
+        )
+        if not sync_warn and isinstance(snapshot, dict):
+            sync_warn = snapshot.get("storage_sync_warning")
+        if sync_warn:
+            st.warning(str(sync_warn))
         if st.session_state.last_result:
-            from ui.results_panel import render_results_panel
+            with st.expander("Creator OS package details", expanded=False):
+                from ui.results_panel import render_results_panel
 
-            render_results_panel(st.session_state.last_result)
+                render_results_panel(st.session_state.last_result)
             with st.expander("Raw result JSON"):
                 st.json(st.session_state.last_result)
         if st.session_state.pipeline_messages:
             with st.expander("Pipeline messages"):
                 for msg in st.session_state.pipeline_messages:
                     st.write(f"- {msg}")
+                    if "Durable storage sync failed" in str(msg):
+                        st.caption(
+                            "On Streamlit Cloud, failed durable sync means "
+                            "artifacts may not survive remount."
+                        )
     elif status == JobStatus.FAILED.value and st.session_state.last_result:
-        from ui.results_panel import render_results_panel
+        st.warning("Job failed — partial artifacts may still appear in Results.")
+        with st.expander("Creator OS package details", expanded=False):
+            from ui.results_panel import render_results_panel
 
-        render_results_panel(st.session_state.last_result)
+            render_results_panel(st.session_state.last_result)

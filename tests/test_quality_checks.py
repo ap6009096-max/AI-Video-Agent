@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from pathlib import Path
-from unittest.mock import patch
+from unittest.mock import MagicMock, patch
 
 from schemas.quality import QualityCheck
 from tools.quality.checks import attempt_corrections, run_quality_checks
@@ -37,8 +37,19 @@ def test_aspect_mismatch_detection(tmp_path: Path) -> None:
         "has_video": True,
         "container": "mp4",
     }
+    fake_validation = MagicMock(
+        ok=True,
+        reason="ok",
+        duration=2.0,
+        width=1920,
+        height=1080,
+        fps=30.0,
+        has_video=True,
+        has_audio=True,
+    )
     with (
         patch("tools.quality.checks.probe_media", return_value=fake),
+        patch("tools.media.validate_video.validate_video", return_value=fake_validation),
         patch("tools.quality.checks._sample_frames", return_value=(True, True, "ok")),
     ):
         checks = run_quality_checks(

@@ -41,7 +41,7 @@ class Settings(BaseSettings):
         default=True, alias="YOUTUBE_DOWNLOAD_ENABLED"
     )
     youtube_download_format: str = Field(
-        default="bestvideo*+bestaudio/best",
+        default="bv*+ba/b",
         alias="YOUTUBE_DOWNLOAD_FORMAT",
     )
     youtube_cookies_file: str = Field(default="", alias="YOUTUBE_COOKIES_FILE")
@@ -89,6 +89,12 @@ class Settings(BaseSettings):
     supervisor_max_retries: int = Field(default=1, alias="SUPERVISOR_MAX_RETRIES")
     calendar_horizon_days: int = Field(default=30, alias="CALENDAR_HORIZON_DAYS")
     calendar_posts_per_week: int = Field(default=7, alias="CALENDAR_POSTS_PER_WEEK")
+    supabase_url: str = Field(default="", alias="SUPABASE_URL")
+    supabase_publishable_key: str = Field(default="", alias="SUPABASE_PUBLISHABLE_KEY")
+    supabase_service_role_key: str = Field(default="", alias="SUPABASE_SERVICE_ROLE_KEY")
+    supabase_storage_bucket: str = Field(
+        default="ai-video-agent", alias="SUPABASE_STORAGE_BUCKET"
+    )
 
     @property
     def has_sentry_dsn(self) -> bool:
@@ -99,6 +105,43 @@ class Settings(BaseSettings):
     def has_gemini_api_key(self) -> bool:
         """Return True when a non-empty Gemini API key is configured."""
         return bool(self.gemini_api_key.strip())
+
+    @property
+    def has_supabase_storage(self) -> bool:
+        """Return True when Supabase Storage service-role credentials are set.
+
+        ``SUPABASE_PUBLISHABLE_KEY`` is optional (docs / future client use only)
+        and is **not** required for server-side Storage.
+        """
+        return bool(
+            self.supabase_url.strip()
+            and self.supabase_service_role_key.strip()
+            and self.supabase_storage_bucket.strip()
+        )
+
+    @property
+    def has_supabase_publishable_key(self) -> bool:
+        """Publishable (anon) key present — optional; unused by Storage client."""
+        return bool(self.supabase_publishable_key.strip())
+
+    def storage_config_status(self) -> str:
+        """Return ``missing`` | ``configured`` | ``unreachable`` for Storage.
+
+        ``configured`` means credentials are set; live reachability is confirmed
+        via ``storage.factory.storage_config_status`` (health check).
+        """
+        if not self.has_supabase_storage:
+            return "missing"
+        return "configured"
+
+    @property
+    def is_streamlit_cloud(self) -> bool:
+        """Best-effort detection of Streamlit Community Cloud."""
+        return bool(
+            os.getenv("STREAMLIT_SHARING_MODE")
+            or os.getenv("IS_STREAMLIT_CLOUD")
+            or (os.getenv("HOSTNAME") or "").endswith(".streamlit.app")
+        )
 
     @property
     def has_youtube_api_key(self) -> bool:
@@ -126,24 +169,39 @@ class Settings(BaseSettings):
         return key
 
 
-@lru_cache
-def get_settings() -> Settings:
-    """Return cached settings with Streamlit Cloud secret support."""
-
-    # Local development: environment variables / .env take priority.
-    if os.getenv("GEMINI_API_KEY"):
-        return Settings()
-
-    # Streamlit Community Cloud: read secrets when available.
+def _secrets_overlay() -> dict[str, str]:
+    """Load selected keys from Streamlit secrets when present (server-side only)."""
+    overlay: dict[str, str] = {}
     try:
         import streamlit as st
 
-        gemini_key = st.secrets.get("GEMINI_API_KEY", "")
-        if gemini_key:
-            return Settings(GEMINI_API_KEY=str(gemini_key))
+        secrets = st.secrets
     except Exception:
-        # Streamlit is optional for CLI/tests.
-        pass
+        return overlay
 
-    # Fall back to normal Pydantic/.env configuration.
+    for key in (
+        "GEMINI_API_KEY",
+        "SUPABASE_URL",
+        "SUPABASE_PUBLISHABLE_KEY",
+        "SUPABASE_SERVICE_ROLE_KEY",
+        "SUPABASE_STORAGE_BUCKET",
+    ):
+        try:
+            value = secrets.get(key, "")
+        except Exception:
+            value = ""
+        if value:
+            overlay[key] = str(value)
+    return overlay
+
+
+@lru_cache
+def get_settings() -> Settings:
+    """Return cached settings with Streamlit Cloud secret support."""
+    overlay = _secrets_overlay()
+    if overlay:
+        # Env/.env still win for keys already present in the process environment.
+        filtered = {k: v for k, v in overlay.items() if not os.getenv(k)}
+        if filtered:
+            return Settings(**filtered)
     return Settings()

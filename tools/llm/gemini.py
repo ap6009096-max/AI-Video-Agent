@@ -28,6 +28,7 @@ from core.errors import (
     DocumentaryAgentError,
     ResearchAgentError,
     SupervisorAgentError,
+    TransformIntentAgentError,
     VideoGenerationAgentError,
     TrendAgentError,
     CalendarAgentError,
@@ -138,6 +139,7 @@ from schemas.character import GeminiCharacterBatch
 from schemas.camera import GeminiCameraBatch
 from schemas.motion_graphics import GeminiMotionGraphicsBatch
 from schemas.documentary import GeminiDocumentaryBatch
+from schemas.transform_intent import GeminiTransformBatch
 from schemas.research import (
     GeminiResearchEnrichment,
     ResearchClaim,
@@ -145,6 +147,10 @@ from schemas.research import (
     ResearchSource,
 )
 from schemas.supervisor import GeminiSupervisorDecision
+from prompts.transform_intent_agent import (
+    TRANSFORM_INTENT_SYSTEM,
+    build_transform_intent_user_prompt,
+)
 
 logger = get_logger(__name__)
 
@@ -1378,6 +1384,53 @@ def analyze_documentary(
         return GeminiDocumentaryBatch.model_validate(result)
     raise DocumentaryAgentError(
         "Unexpected Gemini documentary structured output type."
+    )
+
+
+def analyze_transform_intent(
+    *,
+    instruction: str = "",
+    target_scene: str = "",
+    target_speaker: str = "",
+    scenes_block: str = "",
+    speakers_block: str = "",
+    transcript_block: str = "",
+    model: Any | None = None,
+) -> GeminiTransformBatch:
+    """Plan selective scene transform intent (changed vs preserved)."""
+    user_prompt = build_transform_intent_user_prompt(
+        instruction=instruction or "",
+        target_scene=target_scene or "",
+        target_speaker=target_speaker or "",
+        scenes_block=scenes_block or "",
+        speakers_block=speakers_block or "",
+        transcript_block=transcript_block or "",
+    )
+    try:
+        chat = model or get_chat_model(temperature=0.2)
+        structured = chat.with_structured_output(GeminiTransformBatch)
+        result = structured.invoke(
+            [
+                SystemMessage(content=TRANSFORM_INTENT_SYSTEM),
+                HumanMessage(content=user_prompt),
+            ]
+        )
+    except ConfigurationError:
+        raise
+    except GeminiQuotaExhaustedError:
+        raise
+    except Exception as exc:  # noqa: BLE001
+        logger.exception("Gemini transform intent planning failed")
+        raise TransformIntentAgentError(
+            f"Gemini transform intent planning failed: {exc}"
+        ) from exc
+
+    if isinstance(result, GeminiTransformBatch):
+        return result
+    if isinstance(result, dict):
+        return GeminiTransformBatch.model_validate(result)
+    raise TransformIntentAgentError(
+        "Unexpected Gemini transform intent structured output type."
     )
 
 

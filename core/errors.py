@@ -228,6 +228,10 @@ class DocumentaryAgentError(VideoAgentError):
     """Raised when Documentary Agent planning fails."""
 
 
+class TransformIntentAgentError(VideoAgentError):
+    """Raised when Transform Intent Agent planning fails."""
+
+
 class CaptionAgentError(VideoAgentError):
     """Raised when Caption Agent planning or export fails."""
 

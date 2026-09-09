@@ -233,6 +233,24 @@ A single long-form video can therefore become multiple short-form content assets
 
 ---
 
+## Selective Scene Transform (Phase 1)
+
+The strongest edit experience is: upload a video, tell the AI what to change, change only that part, then download a real full video and a real Short.
+
+1. Upload an authorized video (or YouTube when download is enabled).
+2. The pipeline analyzes transcript, scenes, and speakers.
+3. In Results, open a scene and enter a natural-language instruction (for example: “Make the guest’s answer in scene 3 shorter and funnier. Keep host, background, and music.”).
+4. Click **CREATE VIDEO** again. The app writes `analysis/transform_intent.json` with **changed** vs **preserved** elements.
+5. Render stitches the timeline with FFmpeg: only the target window is reworked (dialogue/voice/trim/captions where supported); other scenes are reused.
+6. Outputs: `renders/final.mp4` (also under `final/`), plus `renders/shorts/short_*s_*.mp4` when Multi Shorts / Scene Transformation is on.
+7. Quality validation + `validate_video` must pass before the UI shows **Video Ready** and enables downloads. Soft-skip without media is never treated as a successful video deliverable.
+
+Real outputs only: the pipeline never invents probe fields or placeholder MP4s. Shorts are moment-selected cuts encoded to **1080×1920** (not rename-only copies). Partial Short failures keep the full video success and surface `Short creation failed. Stage: Short Render…` without broken download buttons.
+
+Honest limits: Phase 1 does **not** synthesize new guest faces or generative video pixels. Unsupported generative requests are listed in the transform intent. Working files still use local `outputs/projects/{id}/` as a cache; **durable media is stored in Supabase Storage** when configured (see **Storage** below).
+
+---
+
 # AI-Assisted Capabilities
 
 The platform brings multiple capabilities into one Creator Operating System.
@@ -385,6 +403,50 @@ This makes longer workflows more manageable and reduces the need to restart an e
 
 ---
 
+# Storage
+
+Supabase Storage provides **persistent** storage for project media (required on Streamlit Cloud where the filesystem is ephemeral):
+
+* Source videos / audio
+* Transcripts and analysis JSON (optional sync)
+* Captions
+* Rendered videos (`final.mp4`)
+* Shorts
+* Thumbnails and export manifests
+
+Object layout (private bucket):
+
+```text
+projects/{project_id}/source/...
+projects/{project_id}/captions/...
+projects/{project_id}/renders/...
+projects/{project_id}/shorts/...
+projects/{project_id}/final/final.mp4
+```
+
+Local development without Supabase credentials uses a **local object mirror** under `OUTPUT_DIR/objects/` with the same key layout so tests and offline runs keep working. Configure Supabase for production durability.
+
+If credentials are set but Storage is **unreachable** (wrong key, missing bucket, network), the app **falls back to the local mirror** and the sidebar shows `Unreachable → local fallback`. Create a **private** bucket named `ai-video-agent` (or match `SUPABASE_STORAGE_BUCKET`) in the Supabase dashboard — the app does not auto-create buckets.
+
+**API keys**
+
+| Key | Required for Storage? | Role |
+|-----|----------------------|------|
+| `SUPABASE_URL` | Yes | Project URL |
+| `SUPABASE_SERVICE_ROLE_KEY` | Yes | Server-side Storage upload/download/signed URLs |
+| `SUPABASE_PUBLISHABLE_KEY` | No | Optional; unused by the Storage client today |
+| `GEMINI_API_KEY` | No (for Storage) | LLM / understanding — separate from Storage |
+
+Server-side only: `SUPABASE_SERVICE_ROLE_KEY` must never be exposed in the browser or committed to Git.
+
+# YouTube
+
+YouTube URL ingestion is **best-effort**. A video that plays in a normal browser may still fail on a hosted Streamlit server (403, unavailable, region, authentication, or bot restrictions).
+
+* **Do not** store personal browser cookies or account credentials on Streamlit Cloud.
+* On failure the UI shows a clear message and an **Upload Video Instead** control.
+* Direct upload is the reliable path and always stores media in durable storage when configured.
+
 # Deployment
 
 AI Video Agent is designed to be simple to run in different environments.
@@ -397,10 +459,13 @@ Install dependencies:
 pip install -r requirements.txt
 ```
 
+Copy `.env.example` to `.env` and set at least `GEMINI_API_KEY`. Optionally set Supabase vars for durable storage.
+
 Start the application:
 
 ```bash
-streamlit run app.py
+python -m streamlit run app.py
+# or: .\.venv\Scripts\python.exe -m streamlit run app.py
 ```
 
 Open:
@@ -408,6 +473,30 @@ Open:
 ```text
 http://localhost:8501
 ```
+
+### Local test commands
+
+```bash
+python -m pytest tests/test_ingestion_youtube.py tests/test_ingestion_upload.py tests/test_supabase_storage.py tests/test_ingestion_workflow_paths.py -q
+```
+
+---
+
+## Streamlit Cloud
+
+1. Deploy from GitHub (Settings → main file `app.py`).
+2. Add **Secrets** (Settings → Secrets), for example:
+
+```toml
+GEMINI_API_KEY = "..."
+SUPABASE_URL = "https://YOUR_PROJECT.supabase.co"
+SUPABASE_PUBLISHABLE_KEY = "..."
+SUPABASE_SERVICE_ROLE_KEY = "..."
+SUPABASE_STORAGE_BUCKET = "ai-video-agent"
+```
+
+3. In Supabase: create a **private** Storage bucket named `ai-video-agent` (or match `SUPABASE_STORAGE_BUCKET`). Do not make the bucket public; the app uses signed URLs.
+4. Do **not** set `YOUTUBE_COOKIES_FILE` on Cloud.
 
 ---
 
@@ -471,8 +560,8 @@ Mounting the `outputs/` directory keeps project artifacts available across conta
 | **Computer Vision**     | OpenCV                               |
 | **Video Processing**    | FFmpeg                               |
 | **Language**            | Python                               |
-| **Project Storage**     | Local structured artifacts and JSON  |
-| **Deployment**          | Docker, Linux VPS, local development |
+| **Project Storage**     | Supabase Storage (local mirror offline) |
+| **Deployment**          | Streamlit Cloud, Docker, Linux VPS, local |
 
 ---
 
@@ -566,7 +655,6 @@ The platform can evolve toward a broader Creator Operating System with:
 * Stronger character consistency
 * Automated visual composition
 * Advanced motion graphics
-* Hosted project storage
 * Distributed processing
 * Automated publishing
 * Deeper analytics

@@ -291,9 +291,9 @@ PLATFORMS: list[str] = [
     "Reddit",
 ]
 
-TARGET_CLIP_DURATIONS: list[int] = [30, 60, 90, 180]
+TARGET_CLIP_DURATIONS: list[int] = [10, 15, 30, 40, 45, 60, 90]
 
-SHORT_DURATION_OPTIONS: list[int] = [30, 60, 90, 180]
+SHORT_DURATION_OPTIONS: list[int] = [10, 15, 30, 40, 45, 60, 90]
 
 THUMBNAIL_PLATFORMS: list[str] = [
     "Same as platform",
@@ -363,6 +363,7 @@ FEATURE_TOGGLE_DEFS: list[tuple[str, str]] = [
     ("smart_reframing", "Smart Reframing"),
     ("platform_optimization", "Platform Optimization"),
     ("multi_shorts_export", "Multi Shorts Export"),
+    ("scene_transform", "Scene Transform Intent"),
 ]
 
 SOURCE_OPTIONS: list[str] = [

@@ -145,6 +145,82 @@ def _install_mock_text_agent(monkeypatch: pytest.MonkeyPatch) -> None:
     )
 
 
+def _install_passthrough_render_for_fake_media(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Allow full-graph tests with placeholder MP4 bytes (no real FFmpeg encode)."""
+    from tools.media.validate_video import ValidationResult
+
+    def _ok(path, **_kwargs):
+        p = Path(path) if path else None
+        if not p or not p.is_file() or p.stat().st_size <= 0:
+            return ValidationResult(ok=False, path=str(p or ""), reason="missing")
+        return ValidationResult(
+            ok=True,
+            path=str(p),
+            reason="ok",
+            duration=1.0,
+            width=1080,
+            height=1920,
+            fps=30.0,
+            has_video=True,
+            has_audio=True,
+            size_bytes=int(p.stat().st_size),
+        )
+
+    def _encode(src, dest, **_kwargs):
+        out = Path(dest)
+        out.parent.mkdir(parents=True, exist_ok=True)
+        src_p = Path(src)
+        out.write_bytes(src_p.read_bytes() if src_p.is_file() else b"enc")
+        return out
+
+    def _cut(media, dest, *, start: float, end: float):
+        out = Path(dest)
+        out.parent.mkdir(parents=True, exist_ok=True)
+        out.write_bytes(f"cut-{start}-{end}".encode())
+        return out
+
+    def _concat(segments, dest):
+        out = Path(dest)
+        out.parent.mkdir(parents=True, exist_ok=True)
+        out.write_bytes(b"joined")
+        return out
+
+    fake_probe = {
+        "duration": 1.0,
+        "width": 1080,
+        "height": 1920,
+        "fps": 30.0,
+        "video_codec": "h264",
+        "audio_codec": "aac",
+        "audio_sample_rate": 48000,
+        "has_audio": True,
+        "has_video": True,
+        "container": "mp4",
+    }
+
+    monkeypatch.setattr("agents.render_agent.validate_video", _ok)
+    monkeypatch.setattr("tools.media.validate_video.validate_video", _ok)
+    monkeypatch.setattr("tools.quality.checks.probe_media", lambda *_a, **_k: dict(fake_probe))
+    monkeypatch.setattr(
+        "tools.quality.checks._sample_frames", lambda *_a, **_k: (True, True, "ok")
+    )
+    monkeypatch.setattr("tools.quality.checks.encode_mp4", _encode)
+    monkeypatch.setattr("agents.render_agent.encode_mp4", _encode)
+    monkeypatch.setattr("agents.render_agent.cut_segment", _cut)
+    monkeypatch.setattr("agents.render_agent.concat_segments", _concat)
+    monkeypatch.setattr("agents.render_agent.normalize_loudness", lambda *a, **k: None)
+    monkeypatch.setattr("agents.render_agent.resize", lambda *a, **k: None)
+    monkeypatch.setattr("agents.render_agent.burn_subtitles", lambda *a, **k: None)
+    monkeypatch.setattr("agents.render_agent.extract_thumbnail", lambda *a, **k: None)
+    monkeypatch.setattr("agents.render_agent.resolve_ffmpeg_binary", lambda: "ffmpeg")
+    # Also stub burn-in tool in case captions path imports it directly
+    monkeypatch.setattr(
+        "tools.captions.burnin.burn_subtitles",
+        lambda *a, **k: None,
+        raising=False,
+    )
+
+
 def _fake_transcribe(media_path):
     return {
         "language": "en",
@@ -946,6 +1022,7 @@ def test_on_step_callback_invoked(
     _install_mock_smart_clip_agent(monkeypatch)
     _install_mock_story_script_agents(monkeypatch)
     _install_mock_language_agent(monkeypatch)
+    _install_passthrough_render_for_fake_media(monkeypatch)
 
     video = tmp_path / "callback.mp4"
     video.write_bytes(b"fake")
@@ -1002,6 +1079,7 @@ def test_youtube_workflow_continues_with_authorized_local_media(
     _install_mock_smart_clip_agent(monkeypatch)
     _install_mock_story_script_agents(monkeypatch)
     _install_mock_language_agent(monkeypatch)
+    _install_passthrough_render_for_fake_media(monkeypatch)
 
     request = VideoJobRequest(
         source_type=SourceType.YOUTUBE,
@@ -1085,6 +1163,7 @@ def test_youtube_workflow_download_enabled_uses_ytdlp_provider(
     _install_mock_smart_clip_agent(monkeypatch)
     _install_mock_story_script_agents(monkeypatch)
     _install_mock_language_agent(monkeypatch)
+    _install_passthrough_render_for_fake_media(monkeypatch)
 
     result = run_video_workflow(
         VideoJobRequest(
@@ -1217,6 +1296,7 @@ def test_upload_workflow_runs_whisper_transcript(
     _install_mock_smart_clip_agent(monkeypatch)
     _install_mock_story_script_agents(monkeypatch)
     _install_mock_language_agent(monkeypatch)
+    _install_passthrough_render_for_fake_media(monkeypatch)
 
     video = tmp_path / "upload.mp4"
     video.write_bytes(b"fake")
@@ -1327,6 +1407,7 @@ def test_podcast_video_type_writes_podcast_clips(
     _install_mock_podcast_agent(monkeypatch)
     _install_mock_story_script_agents(monkeypatch)
     _install_mock_language_agent(monkeypatch)
+    _install_passthrough_render_for_fake_media(monkeypatch)
 
     video = tmp_path / "podcast.mp4"
     video.write_bytes(b"fake")

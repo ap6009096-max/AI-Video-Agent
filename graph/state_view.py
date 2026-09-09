@@ -125,6 +125,7 @@ def project_state_view(state: dict[str, Any]) -> dict[str, Any]:
         "repurpose": state.get("repurpose_pack"),
         "content_calendar": state.get("calendar_pack"),
         "analytics": state.get("analytics_pack"),
+        "transform_intent": state.get("transform_intent_pack"),
         "captions": captions_pack,
         "render_plan": render_plan if render_plan else render_pack,
         "output_files": output_files,

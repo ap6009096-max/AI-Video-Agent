@@ -373,6 +373,15 @@ def get_documentary_plan_path(
     )
 
 
+def get_transform_intent_path(
+    project_id: str, output_dir: str | None = None
+) -> Path:
+    """Return ``projects/{project_id}/analysis/transform_intent.json``."""
+    return (
+        ensure_project_analysis_dir(project_id, output_dir) / "transform_intent.json"
+    )
+
+
 def ensure_project_captions_dir(
     project_id: str, output_dir: str | None = None
 ) -> Path:

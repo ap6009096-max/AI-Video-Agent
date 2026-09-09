@@ -32,6 +32,10 @@ class ProjectRefs(BaseModel):
     export_path: str | None = None
     brand_path: str | None = None
     calendar_path: str | None = None
+    # Durable object storage references (not binary payloads)
+    storage_bucket: str | None = None
+    storage_source_path: str | None = None
+    storage_final_path: str | None = None
 
     def merge_into_state(self) -> dict[str, Any]:
         """Return non-empty path fields suitable for WorkflowState updates."""

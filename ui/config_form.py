@@ -65,7 +65,7 @@ def render_config_form() -> dict[str, Any]:
         short_durations = st.multiselect(
             "SHORT DURATIONS (MULTI EXPORT)",
             SHORT_DURATION_OPTIONS,
-            default=[30, 60, 90, 180],
+            default=[30, 60, 90],
             help="Used when Multi Shorts Export is enabled — one Short MP4 per selected duration window.",
         )
         voice_emotion = st.selectbox(

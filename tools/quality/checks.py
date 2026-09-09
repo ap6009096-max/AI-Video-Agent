@@ -54,6 +54,19 @@ def run_quality_checks(
         )
         if not exists:
             return checks
+        assert path is not None
+        size_ok = path.stat().st_size > 0
+        checks.append(
+            _check(
+                "file_size",
+                size_ok,
+                expected="> 0 bytes",
+                actual=str(path.stat().st_size),
+                message="Empty media file" if not size_ok else "File size ok",
+            )
+        )
+        if not size_ok:
+            return checks
     else:
         checks.append(
             _check(
@@ -69,48 +82,31 @@ def run_quality_checks(
     assert path is not None
     info = probe_media(path)
     if not info:
-        if path.is_file() and path.stat().st_size > 0:
-
-            cap_max = _max_caption_end(caption_paths or []) or 0.0
-            sw = expect_width
-            sh = expect_height
-            if sw <= 0 or sh <= 0:
-                if expect_aspect == "9:16":
-                    sw, sh = 1080, 1920
-                elif expect_aspect == "16:9":
-                    sw, sh = 1920, 1080
-                elif expect_aspect == "1:1":
-                    sw, sh = 1080, 1080
-                else:
-                    sw, sh = 1280, 720
-            info = {
-                "path": str(path.resolve()),
-                "exists": True,
-                "duration": max(300.0, cap_max + 10.0),
-                "width": sw,
-                "height": sh,
-                "fps": expect_fps if expect_fps > 0 else 30.0,
-                "video_codec": "h264",
-                "audio_codec": "aac",
-                "audio_sample_rate": expect_audio_rate if expect_audio_rate > 0 else 44100,
-                "has_audio": True,
-                "has_video": True,
-                "container": path.suffix.lstrip(".").lower() or "mp4",
-            }
-
-
-
-        else:
-            checks.append(
-                _check(
-                    "probe",
-                    False,
-                    expected="readable media",
-                    actual="unreadable",
-                    message="Could not probe media — possibly corrupted",
-                )
+        checks.append(
+            _check(
+                "probe",
+                False,
+                expected="readable media with video stream",
+                actual="unreadable",
+                message="Could not probe media — possibly corrupted or not a valid video",
             )
-            return checks
+        )
+        return checks
+
+    from tools.media.validate_video import validate_video
+
+    validation = validate_video(path, require_audio=False)
+    checks.append(
+        _check(
+            "validate_video",
+            validation.ok,
+            expected="playable MP4 with video stream",
+            actual=validation.reason,
+            message=validation.reason if not validation.ok else "Media validated",
+        )
+    )
+    if not validation.ok:
+        return checks
 
 
     dur = float(info.get("duration") or 0.0)

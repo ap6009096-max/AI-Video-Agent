@@ -22,12 +22,16 @@ def _show_json_or_info(value: Any, empty: str) -> None:
 
 
 def render_results_panel(result: dict[str, Any] | None = None) -> None:
-    """Render end-of-job deliverables grouped by Creator OS stage."""
+    """Secondary Creator OS tabs — primary players/downloads live in output_panel."""
     data = result or st.session_state.get("last_result")
     if not isinstance(data, dict) or not data:
         return
 
-    st.subheader("Results — multi-platform package")
+    st.subheader("Creator OS — agent packages")
+    st.caption(
+        "Detailed stage outputs. Use **Video Results** above for playable MP4s, "
+        "Shorts, before/after, and ZIP downloads (validated files only)."
+    )
     project_dir = data.get("project_dir") or ""
     if project_dir:
         st.caption(f"Project folder: `{project_dir}`")
@@ -149,21 +153,63 @@ def render_results_panel(result: dict[str, Any] | None = None) -> None:
         if not video_path and finals:
             video_path = str(finals[0])
         if video_path and Path(video_path).is_file():
-            st.video(video_path)
-            st.caption(video_path)
+            from tools.media.validate_video import validate_video
+
+            v = validate_video(video_path)
+            if v.ok:
+                st.video(video_path)
+                st.caption(
+                    f"{video_path} · {v.duration:.1f}s · {v.width}x{v.height}"
+                )
+                if Path(video_path).stat().st_size > 0:
+                    try:
+                        st.download_button(
+                            label="Download Full Video",
+                            data=Path(video_path).read_bytes(),
+                            file_name=Path(video_path).name,
+                            mime="video/mp4",
+                            key="results_dl_full",
+                        )
+                    except Exception:  # noqa: BLE001
+                        pass
+            else:
+                st.warning(
+                    f"Full video present but not validated: {v.reason}. "
+                    "See Video Results for status."
+                )
         else:
             st.info(
                 "No rendered video file for this run "
                 "(script-only / soft-skip is expected without media)."
             )
+        tip = data.get("transform_intent") or {}
+        if isinstance(tip, dict) and tip:
+            plan = tip.get("plan") if isinstance(tip.get("plan"), dict) else tip
+            intent = plan.get("intent") if isinstance(plan.get("intent"), dict) else {}
+            if intent and not plan.get("skipped"):
+                st.markdown(
+                    f"**Transform:** Changed {intent.get('scenes_changed', 1)} of "
+                    f"{intent.get('scenes_total', '?')} scenes · "
+                    f"preserved {intent.get('scenes_preserved', '?')}"
+                )
         shorts = folders.get("shorts") or []
         if shorts:
             st.markdown("**Multi Shorts exports**")
-            for sp in shorts:
+            for i, sp in enumerate(shorts):
                 sp_s = str(sp)
                 st.caption(sp_s)
                 if Path(sp_s).is_file():
                     st.video(sp_s)
+                    try:
+                        st.download_button(
+                            label=f"Download {Path(sp_s).name}",
+                            data=Path(sp_s).read_bytes(),
+                            file_name=Path(sp_s).name,
+                            mime="video/mp4",
+                            key=f"results_dl_short_{i}",
+                        )
+                    except Exception:  # noqa: BLE001
+                        pass
         captions = _as_dict(data.get("captions") or data.get("captions_pack"))
         for key, label in (
             ("srt_path", "SRT"),

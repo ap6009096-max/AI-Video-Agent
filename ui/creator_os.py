@@ -17,6 +17,8 @@ def _icon(status: str) -> str:
         return "🔵"
     if status == ProgressStepStatus.FAILED.value:
         return "❌"
+    if status == ProgressStepStatus.SKIPPED.value:
+        return "⊘"
     return "⚪"
 
 

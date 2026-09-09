@@ -24,13 +24,13 @@ ALLOWED_UPLOAD_EXTENSIONS = {
 }
 ALLOWED_AUDIO_UPLOAD_EXTENSIONS = {".mp3", ".wav", ".m4a", ".flac"}
 
-TargetClipDuration = Literal[10, 15, 30, 40, 45, 60, 90, 180]
+TargetClipDuration = Literal[10, 15, 30, 40, 45, 60, 90]
 
-ALLOWED_SHORT_DURATIONS: tuple[int, ...] = (10, 15, 30, 40, 45, 60, 90, 180)
+ALLOWED_SHORT_DURATIONS: tuple[int, ...] = (10, 15, 30, 40, 45, 60, 90)
 
 
 def _default_short_durations() -> list[int]:
-    return [30, 60, 90, 180]
+    return [30, 60, 90]
 
 HumorAdaptationMode = Literal["original", "localized", "regional", "none"]
 
@@ -65,6 +65,7 @@ class ProgressStepStatus(str, Enum):
     RUNNING = "running"
     COMPLETED = "completed"
     FAILED = "failed"
+    SKIPPED = "skipped"
 
 
 class FeatureFlags(BaseModel):
@@ -90,6 +91,7 @@ class FeatureFlags(BaseModel):
     director: bool = False
     motion_graphics: bool = False
     documentary: bool = False
+    scene_transform: bool = False
     podcast_clips: bool = False
     research: bool = False
     supervisor_crew: bool = False
@@ -145,6 +147,9 @@ class VideoJobConfig(BaseModel):
     caption_burn_in: bool = True
     reframe_aspect: str = ""
     localization_targets: list[LocalizationTarget] = Field(default_factory=list)
+    transform_instruction: str = ""
+    transform_scene_id: str = ""
+    transform_speaker: str = ""
 
     @field_validator("short_durations", mode="before")
     @classmethod
@@ -184,6 +189,12 @@ class VideoJobRequest(BaseModel):
     script_text: str = ""
     config: VideoJobConfig = Field(default_factory=VideoJobConfig)
     features: FeatureFlags = Field(default_factory=FeatureFlags)
+    # Preflight durable storage refs (from persist/stage before Input Agent)
+    storage_bucket: str = ""
+    storage_path: str = ""
+    original_filename: str = ""
+    mime_type: str = ""
+    file_size: int = 0
 
     @field_validator("youtube_url")
     @classmethod

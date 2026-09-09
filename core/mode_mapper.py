@@ -142,12 +142,15 @@ def _scene_transformation() -> tuple[FeatureFlags, VideoJobConfig]:
         podcast_clips=True,
         funny_moments=True,
         viral_moments=True,
+        scene_transform=True,
+        multi_shorts_export=True,
     )
     config = VideoJobConfig(
         caption_style="Platform Safe",
         caption_burn_in=True,
         reframe_aspect="9:16",
         target_clip_duration=30,
+        short_durations=[30, 60, 90],
     )
     return flags, config
 

@@ -26,6 +26,7 @@ from tools.ffmpeg.encode import encode_mp4
 from tools.ffmpeg.subs import burn_subtitles
 from tools.ffmpeg.thumb import extract_thumbnail
 from tools.ffmpeg.transform import resize
+from tools.media.validate_video import validate_video
 
 logger = get_logger(__name__)
 
@@ -72,6 +73,8 @@ class RenderAgent(BaseAgent):
         platform_pack: dict[str, Any] | None = None,
         source_metadata: dict[str, Any] | None = None,
         speech_transcript: dict[str, Any] | None = None,
+        transform_intent_pack: dict[str, Any] | None = None,
+        scenes: dict[str, Any] | None = None,
         **_: Any,
     ) -> RenderResult:
         _ = music_pack  # music bed reserved
@@ -151,12 +154,61 @@ class RenderAgent(BaseAgent):
         work = source
         transform_failed = False
         try:
-            work, clip_ops, short_paths = self._apply_clips(
-                work, clips, renders, features=features
+            # Selective scene transform (Phase 1) — stitch changed window + preserve rest
+            sel_work, sel_ops, sel_metrics = self._apply_selective_transform(
+                work,
+                transform_intent_pack,
+                scenes,
+                renders,
+                voice_pack=voice_pack,
+                project_dir=root,
+            )
+            if sel_ops:
+                ops.extend(sel_ops)
+            if sel_work is not None and sel_work.is_file():
+                work = sel_work
+                messages.append(
+                    f"[{self.name}] Selective transform applied "
+                    f"(changed={sel_metrics.get('scenes_changed')} "
+                    f"preserved={sel_metrics.get('scenes_preserved')})"
+                )
+                # Ensure at least one Short from the changed window when multi-shorts on
+                short_extra = self._export_transform_short(
+                    work if sel_metrics.get("applied") else source,
+                    renders,
+                    features=features,
+                    start=float(sel_metrics.get("start") or 0.0),
+                    end=float(sel_metrics.get("end") or 0.0),
+                    source_media=source,
+                )
+                if short_extra:
+                    plan.short_paths = list(plan.short_paths) + [str(p) for p in short_extra]
+                    for p in short_extra:
+                        ops.append(RenderOp(name="export_short", detail=str(p)))
+
+            work, clip_ops, short_paths, short_errors = self._apply_clips(
+                work,
+                clips,
+                renders,
+                features=features,
+                target_width=tw,
+                target_height=th,
             )
             ops.extend(clip_ops)
+            if short_errors:
+                plan.short_errors = list(short_errors)
+                for err in short_errors:
+                    messages.append(
+                        f"[{self.name}] Short creation failed. "
+                        f"Stage: Short Render. Reason: {err}"
+                    )
             if short_paths:
-                plan.short_paths = [str(p) for p in short_paths]
+                existing = list(plan.short_paths or [])
+                for p in short_paths:
+                    sp = str(p)
+                    if sp not in existing:
+                        existing.append(sp)
+                plan.short_paths = existing
                 messages.append(
                     f"[{self.name}] Shorts exported: {len(short_paths)} "
                     f"under renders/shorts/"
@@ -258,12 +310,35 @@ class RenderAgent(BaseAgent):
             notes_parts.append(f"Compose error: {exc}")
             messages.append(f"[{self.name}] Encode soft-skipped ({exc}).")
 
-        # Honesty
-        if plan.encoded and not (
-            plan.output_path and Path(plan.output_path).is_file()
-        ):
-            plan.encoded = False
-            plan.output_path = ""
+        # Honesty: encoded only when file exists AND validates as playable video
+        if plan.encoded:
+            out_path = Path(plan.output_path) if plan.output_path else out_video
+            validation = validate_video(out_path)
+            if not validation.ok:
+                # Encode was attempted; do not mark skipped (that means plan-only /
+                # never tried). Downstream quality must see a failed encode.
+                plan.encoded = False
+                plan.output_path = ""
+                plan.skipped = False
+                notes_parts.append(
+                    f"Full video generation failed. Stage: Render. Reason: {validation.reason}"
+                )
+                messages.append(
+                    f"[{self.name}] Full video generation failed. "
+                    f"Stage: Render. Reason: {validation.reason}"
+                )
+            else:
+                # Package into final/final.mp4
+                final_dir = root / "final"
+                final_dir.mkdir(parents=True, exist_ok=True)
+                packaged = final_dir / "final.mp4"
+                try:
+                    if out_path.resolve() != packaged.resolve():
+                        shutil.copy2(out_path, packaged)
+                    if packaged.is_file():
+                        plan.output_path = str(packaged.resolve())
+                except OSError:
+                    pass
 
         plan.ops = ops
         plan.notes = " ".join(notes_parts) if notes_parts else (
@@ -416,14 +491,17 @@ class RenderAgent(BaseAgent):
         renders: Path,
         *,
         features: FeatureFlags | dict[str, Any] | None = None,
-    ) -> tuple[Path, list[RenderOp], list[Path]]:
+        target_width: int = 1080,
+        target_height: int = 1920,
+    ) -> tuple[Path, list[RenderOp], list[Path], list[str]]:
         ops: list[RenderOp] = []
         short_paths: list[Path] = []
+        short_errors: list[str] = []
         if not isinstance(clips, dict):
-            return media, ops, short_paths
+            return media, ops, short_paths, short_errors
         items = clips.get("clips") or []
         if not isinstance(items, list) or not items:
-            return media, ops, short_paths
+            return media, ops, short_paths, short_errors
 
         multi = False
         if isinstance(features, FeatureFlags):
@@ -435,9 +513,13 @@ class RenderAgent(BaseAgent):
         shorts_dir = renders / "shorts"
         if multi:
             shorts_dir.mkdir(parents=True, exist_ok=True)
+        (renders.parent / "shorts").mkdir(parents=True, exist_ok=True)
 
         segments: list[Path] = []
         duration_counts: dict[int, int] = {}
+        tw = target_width if target_width > 0 else 1080
+        th = target_height if target_height > 0 else 1920
+
         for i, item in enumerate(items):
             if not isinstance(item, dict):
                 continue
@@ -451,6 +533,10 @@ class RenderAgent(BaseAgent):
             seg = renders / f"_clip_{i:03d}.mp4"
             cut = cut_segment(media, seg, start=start, end=end)
             if cut is None:
+                if multi:
+                    short_errors.append(
+                        f"clip_{i:03d}: cut_segment failed ({start:.2f}-{end:.2f})"
+                    )
                 continue
             segments.append(cut)
             ops.append(
@@ -462,7 +548,6 @@ class RenderAgent(BaseAgent):
                     td = int(round(float(item.get("target_duration") or (end - start))))
                 except (TypeError, ValueError):
                     td = int(round(end - start))
-                # Snap to nearest common short bucket for naming
                 for bucket in (10, 15, 30, 40, 45, 60, 90):
                     if abs(td - bucket) <= 5:
                         td = bucket
@@ -471,24 +556,80 @@ class RenderAgent(BaseAgent):
                 duration_counts[td] = idx + 1
                 short_name = f"short_{td}s_{idx:02d}.mp4"
                 short_dst = shorts_dir / short_name
-                copied = self._copy_media(cut, short_dst)
-                if copied is not None and copied.is_file():
-                    short_paths.append(copied)
+                packaged = self._package_short(
+                    cut,
+                    short_dst,
+                    width=tw,
+                    height=th,
+                )
+                if packaged is not None and packaged.is_file():
+                    short_paths.append(packaged)
+                    # Mirror under project shorts/
+                    mirror = renders.parent / "shorts" / short_name
+                    try:
+                        shutil.copy2(packaged, mirror)
+                    except OSError:
+                        pass
                     ops.append(
                         RenderOp(
                             name="export_short",
-                            detail=f"{short_name} {start:.2f}-{end:.2f}",
+                            detail=f"{short_name} {start:.2f}-{end:.2f} {tw}x{th}",
                         )
+                    )
+                else:
+                    short_errors.append(
+                        f"{short_name}: vertical encode/validation failed"
                     )
 
         if not segments:
-            return media, ops, short_paths
+            return media, ops, short_paths, short_errors
         joined = renders / "_joined.mp4"
         result = concat_segments(segments, joined)
         if result is not None:
             ops.append(RenderOp(name="concat_segments", detail=str(len(segments))))
-            return result, ops, short_paths
-        return media, ops, short_paths
+            return result, ops, short_paths, short_errors
+        return media, ops, short_paths, short_errors
+
+    def _package_short(
+        self,
+        cut: Path,
+        dest: Path,
+        *,
+        width: int,
+        height: int,
+    ) -> Path | None:
+        """Encode a cut segment to vertical MP4 and validate (no rename-only)."""
+        tmp = dest.with_suffix(".tmp.mp4")
+        encoded = encode_mp4(cut, tmp, width=width, height=height)
+        if encoded is None or not encoded.is_file():
+            # Fallback: resize then copy
+            resized = dest.with_suffix(".resized.mp4")
+            r = resize(cut, resized, width=width, height=height)
+            if r is None:
+                return None
+            encoded = encode_mp4(r, tmp) or self._copy_media(r, tmp)
+            try:
+                resized.unlink(missing_ok=True)
+            except OSError:
+                pass
+        if encoded is None or not encoded.is_file():
+            return None
+        try:
+            if dest.exists():
+                dest.unlink()
+            encoded.replace(dest)
+        except OSError:
+            copied = self._copy_media(encoded, dest)
+            if copied is None:
+                return None
+        validation = validate_video(dest)
+        if not validation.ok:
+            try:
+                dest.unlink(missing_ok=True)
+            except OSError:
+                pass
+            return None
+        return dest
 
     def _copy_media(self, src: Path, dst: Path) -> Path | None:
         try:
@@ -496,6 +637,86 @@ class RenderAgent(BaseAgent):
             return dst if dst.is_file() else None
         except OSError:
             return None
+
+    def _apply_selective_transform(
+        self,
+        media: Path,
+        transform_intent_pack: dict[str, Any] | None,
+        scenes: dict[str, Any] | None,
+        renders: Path,
+        *,
+        voice_pack: dict[str, Any] | None = None,
+        project_dir: Path | None = None,
+    ) -> tuple[Path | None, list[RenderOp], dict[str, Any]]:
+        from schemas.transform_intent import TransformIntent
+        from tools.transform.selective import apply_selective_transform
+
+        empty: dict[str, Any] = {"applied": False}
+        if not isinstance(transform_intent_pack, dict):
+            return None, [], empty
+        plan = transform_intent_pack.get("plan") or {}
+        if not isinstance(plan, dict) or plan.get("skipped"):
+            return None, [], empty
+        intent_raw = plan.get("intent") or {}
+        if not isinstance(intent_raw, dict):
+            return None, [], empty
+        try:
+            intent = TransformIntent.model_validate(intent_raw)
+        except Exception:  # noqa: BLE001
+            return None, [], empty
+        if not intent.instruction and not intent.requested_changes:
+            return None, [], empty
+        vo = self._voice_audio_path(voice_pack)
+        return apply_selective_transform(
+            media,
+            intent=intent,
+            scenes=scenes if isinstance(scenes, dict) else None,
+            renders=renders,
+            voice_audio=vo,
+            project_dir=project_dir,
+        )
+
+    def _export_transform_short(
+        self,
+        media: Path | None,
+        renders: Path,
+        *,
+        features: FeatureFlags | dict[str, Any] | None,
+        start: float,
+        end: float,
+        source_media: Path | None = None,
+    ) -> list[Path]:
+        multi = False
+        if isinstance(features, FeatureFlags):
+            multi = bool(features.multi_shorts_export)
+        elif isinstance(features, dict):
+            multi = bool(features.get("multi_shorts_export"))
+        if not multi or end <= start:
+            return []
+        src = source_media if source_media and source_media.is_file() else media
+        if src is None or not src.is_file():
+            return []
+        shorts_dir = renders / "shorts"
+        shorts_dir.mkdir(parents=True, exist_ok=True)
+        td = int(round(end - start))
+        for bucket in (10, 15, 30, 40, 45, 60, 90):
+            if abs(td - bucket) <= 5:
+                td = bucket
+                break
+        if td < 5:
+            td = 30
+            end = start + td
+        dest = shorts_dir / f"short_{td}s_00.mp4"
+        if dest.is_file() and validate_video(dest).ok:
+            return [dest]
+        cut_tmp = shorts_dir / f"_transform_cut_{td}s.mp4"
+        cut = cut_segment(src, cut_tmp, start=start, end=min(end, start + float(td)))
+        if cut is None or not cut.is_file():
+            return []
+        packaged = self._package_short(cut, dest, width=1080, height=1920)
+        if packaged is not None and packaged.is_file():
+            return [packaged]
+        return []
 
     def _coerce_project(
         self, project: ProjectMetadata | dict[str, Any]

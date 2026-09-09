@@ -64,13 +64,33 @@ def test_render_exports_separate_shorts(
         dest.write_bytes(b"joined")
         return dest
 
-    def _fake_encode(src: Path, dest: Path, **_: object) -> Path:
+    def _fake_ffmpeg() -> str:
+        return "ffmpeg"
+
+    def _ok_validation(path, **_):
+        from tools.media.validate_video import ValidationResult
+
+        p = Path(path)
+        return ValidationResult(
+            ok=True,
+            path=str(p),
+            reason="ok",
+            duration=1.0,
+            width=1080,
+            height=1920,
+            fps=30.0,
+            has_video=True,
+            has_audio=True,
+            size_bytes=p.stat().st_size if p.is_file() else 1,
+        )
+
+    encode_calls: list[dict] = []
+
+    def _fake_encode(src: Path, dest: Path, **kwargs: object) -> Path:
+        encode_calls.append({"src": src, "dest": dest, **kwargs})
         dest.parent.mkdir(parents=True, exist_ok=True)
         dest.write_bytes(src.read_bytes() if src.is_file() else b"enc")
         return dest
-
-    def _fake_ffmpeg() -> str:
-        return "ffmpeg"
 
     with (
         patch("agents.render_agent.resolve_ffmpeg_binary", _fake_ffmpeg),
@@ -81,6 +101,7 @@ def test_render_exports_separate_shorts(
         patch("agents.render_agent.resize", lambda *a, **k: None),
         patch("agents.render_agent.burn_subtitles", lambda *a, **k: None),
         patch("agents.render_agent.extract_thumbnail", lambda *a, **k: None),
+        patch("agents.render_agent.validate_video", side_effect=_ok_validation),
         patch.object(
             RenderAgent,
             "_resolve_source",
@@ -106,4 +127,9 @@ def test_render_exports_separate_shorts(
     names = {p.name for p in short_files}
     assert any(n.startswith("short_10s_") for n in names)
     assert any(n.startswith("short_40s_") for n in names)
+    # Vertical package: shorts encode requests 1080x1920
+    short_encodes = [
+        c for c in encode_calls if c.get("width") == 1080 and c.get("height") == 1920
+    ]
+    assert short_encodes, "expected vertical encode dims for Shorts"
     get_settings.cache_clear()

@@ -91,10 +91,11 @@ def test_feature_flag_defaults() -> None:
 
 
 def test_target_clip_duration_options() -> None:
-    for d in (10, 15, 30, 40, 45, 60, 90, 180):
+    for d in (10, 15, 30, 40, 45, 60, 90):
         cfg = VideoJobConfig(target_clip_duration=d)
         assert cfg.target_clip_duration == d
     with pytest.raises(ValidationError):
         VideoJobConfig(target_clip_duration=20)  # type: ignore[arg-type]
-    assert VideoJobConfig().short_durations == [30, 60, 90, 180]
+    assert VideoJobConfig().short_durations == [30, 60, 90]
     assert FeatureFlags().multi_shorts_export is False
+    assert FeatureFlags().scene_transform is False

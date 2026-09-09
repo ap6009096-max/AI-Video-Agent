@@ -49,7 +49,7 @@ def test_short_durations_include_10_and_40() -> None:
     assert 10 in ALLOWED_SHORT_DURATIONS
     assert 40 in ALLOWED_SHORT_DURATIONS
     cfg = VideoJobConfig()
-    assert cfg.short_durations == [30, 60, 90, 180]
+    assert cfg.short_durations == [30, 60, 90]
     assert FeatureFlags().multi_shorts_export is False
 
 

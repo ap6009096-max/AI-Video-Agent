@@ -51,6 +51,12 @@ class InputAgent(BaseAgent):
                 if source_type in (SourceType.SCRIPT, SourceType.IDEA)
                 else ""
             ),
+            storage_bucket=str(job.storage_bucket or ""),
+            storage_path=str(job.storage_path or ""),
+            original_filename=str(job.original_filename or ""),
+            mime_type=str(job.mime_type or ""),
+            file_size=int(job.file_size or 0),
+            source_status="ready" if job.storage_path else "",
             status=JobStatus.RUNNING,
             configuration={
                 "config": job.config.model_dump(mode="json"),

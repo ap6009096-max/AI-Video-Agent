@@ -73,6 +73,7 @@ PIPELINE_NODE_GROUPS: dict[str, tuple[str, ...]] = {
         "music",
         "captions",
         "smart_reframe",
+        "transform_intent",
         "render",
         "quality",
         "export",

@@ -20,6 +20,7 @@ from agents.character_agent import CharacterAgent
 from agents.camera_agent import CameraAgent
 from agents.motion_graphics_agent import MotionGraphicsAgent
 from agents.documentary_agent import DocumentaryAgent
+from agents.transform_intent_agent import TransformIntentAgent
 from agents.caption_agent import CaptionAgent
 from agents.country_agent import CountryAgent
 from agents.cultural_adaptation_agent import CulturalAdaptationAgent
@@ -71,6 +72,7 @@ from core.errors import (
     CameraAgentError,
     MotionGraphicsAgentError,
     DocumentaryAgentError,
+    TransformIntentAgentError,
     CaptionAgentError,
     CountryAgentError,
     CulturalAdaptationError,
@@ -243,6 +245,7 @@ THUMBNAIL_NODE = "thumbnail"
 SHARED_AI_NODE = "shared_ai_analysis"
 OBJECT_DETECTION_NODE = "object_detection"
 ANALYTICS_NODE = "analytics"
+TRANSFORM_INTENT_NODE = "transform_intent"
 RENDER_NODE = "render"
 QUALITY_NODE = "quality"
 EXPORT_NODE = "export"
@@ -300,6 +303,7 @@ STEP_NODE_NAMES: tuple[str, ...] = (
     CALENDAR_NODE,
     THUMBNAIL_NODE,
     ANALYTICS_NODE,
+    TRANSFORM_INTENT_NODE,
     RENDER_NODE,
     QUALITY_NODE,
     EXPORT_NODE,
@@ -371,6 +375,7 @@ class WorkflowState(TypedDict):
     calendar_pack: dict[str, Any] | None
     thumbnail_pack: dict[str, Any] | None
     analytics_pack: dict[str, Any] | None
+    transform_intent_pack: dict[str, Any] | None
     render_pack: dict[str, Any] | None
     quality_pack: dict[str, Any] | None
     export_pack: dict[str, Any] | None
@@ -412,9 +417,27 @@ def _mark_steps_completed(
     updated = [dict(s) for s in steps]
     for i, step in enumerate(updated):
         if i <= completed_through:
+            # Preserve SKIPPED so feature-off steps stay honest
+            if step.get("status") == ProgressStepStatus.SKIPPED.value:
+                continue
             step["status"] = ProgressStepStatus.COMPLETED.value
         else:
+            if step.get("status") == ProgressStepStatus.SKIPPED.value:
+                continue
             step["status"] = ProgressStepStatus.PENDING.value
+    return updated
+
+
+def _mark_feature_skipped(
+    steps: list[dict[str, Any]],
+    *,
+    skip_index: int,
+    completed_through: int,
+) -> list[dict[str, Any]]:
+    """Mark prior steps completed and ``skip_index`` as skipped (feature off)."""
+    updated = _mark_steps_completed(steps, completed_through)
+    if 0 <= skip_index < len(updated):
+        updated[skip_index]["status"] = ProgressStepStatus.SKIPPED.value
     return updated
 
 
@@ -525,6 +548,7 @@ def _resolve_workflow_local_media(state: WorkflowState) -> str | None:
 
     Checks ``project.source_path`` then common metadata keys used by upload
     (``local_media_path``, ``media_path``, ``local_path``) and YouTube handoff.
+    When only a durable ``storage_path`` exists, hydrate a local working copy.
     """
     from pathlib import Path
 
@@ -543,6 +567,50 @@ def _resolve_workflow_local_media(state: WorkflowState) -> str | None:
     for path in candidates:
         if path and Path(path).is_file():
             return path
+
+    # Hydrate from durable storage when local cache is missing (e.g. Streamlit Cloud)
+    storage_path = ""
+    bucket = ""
+    project_id = ""
+    if isinstance(project, dict):
+        storage_path = str(project.get("storage_path") or "")
+        bucket = str(project.get("storage_bucket") or "")
+        project_id = str(project.get("project_id") or "")
+    if not storage_path and isinstance(source_metadata, dict):
+        storage_path = str(source_metadata.get("storage_path") or "")
+        bucket = bucket or str(source_metadata.get("storage_bucket") or "")
+    # Job-level media_ref / preflight fields (UI persist before Input Agent)
+    job = state.get("job") if isinstance(state.get("job"), dict) else {}
+    if not storage_path and job:
+        storage_path = str(job.get("storage_path") or "")
+        bucket = bucket or str(job.get("storage_bucket") or "")
+        project_id = project_id or str(job.get("job_id") or "")
+        media_ref = job.get("media_ref")
+        if not storage_path and isinstance(media_ref, dict):
+            storage_path = str(media_ref.get("storage_path") or "")
+            bucket = bucket or str(media_ref.get("storage_bucket") or "")
+            project_id = project_id or str(media_ref.get("project_id") or "")
+    if storage_path:
+        try:
+            from storage.refs import MediaRef
+            from storage.sync import hydrate_local_media
+
+            dest = None
+            if state.get("project_dir"):
+                name = Path(storage_path).name or "source.bin"
+                dest = Path(str(state["project_dir"])) / "source" / name
+            local = hydrate_local_media(
+                MediaRef(
+                    project_id=project_id or "project",
+                    storage_bucket=bucket,
+                    storage_path=storage_path,
+                ),
+                dest_path=dest,
+            )
+            if local and Path(local).is_file():
+                return local
+        except Exception:  # noqa: BLE001
+            return None
     return None
 
 
@@ -632,7 +700,9 @@ def _youtube_ingest_node(state: WorkflowState) -> dict[str, Any]:
         "error": None,
     }
     # Persist source_path when an authorized provider supplied a real file.
-    if result.local_media_path and Path(result.local_media_path).is_file():
+    if result.project:
+        out["project"] = result.project
+    elif result.local_media_path and Path(result.local_media_path).is_file():
         project_update = dict(project_raw) if isinstance(project_raw, dict) else {}
         project_update["source_path"] = str(Path(result.local_media_path).resolve())
         out["project"] = project_update
@@ -1263,9 +1333,10 @@ def _skip_funny_node(state: WorkflowState) -> dict[str, Any]:
     messages = list(state.get("messages") or [])
     messages.append("[funny_moment] Skipped (feature off)")
     messages.extend(result.messages)
-    steps = _mark_steps_completed(
+    steps = _mark_feature_skipped(
         state.get("steps", initial_progress_steps()),
-        completed_through=6,
+        skip_index=6,
+        completed_through=5,
     )
     return {
         **result.to_state_dict(),
@@ -1358,9 +1429,10 @@ def _skip_viral_node(state: WorkflowState) -> dict[str, Any]:
     messages = list(state.get("messages") or [])
     messages.append("[viral_moment] Skipped (feature off)")
     messages.extend(result.messages)
-    steps = _mark_steps_completed(
+    steps = _mark_feature_skipped(
         state.get("steps", initial_progress_steps()),
-        completed_through=7,
+        skip_index=7,
+        completed_through=6,
     )
     return {
         **result.to_state_dict(),
@@ -4442,6 +4514,63 @@ def _analytics_failed_node(state: WorkflowState) -> dict[str, Any]:
     }
 
 
+def _transform_intent_node(state: WorkflowState) -> dict[str, Any]:
+    """Transform Intent Agent: NL scene edit → analysis/transform_intent.json."""
+    project = state.get("project")
+    if not project:
+        return {
+            "status": JobStatus.FAILED.value,
+            "error": "Missing project for transform intent",
+            "transform_intent_pack": None,
+        }
+    job = state.get("job") or {}
+    cfg = job.get("config") if isinstance(job.get("config"), dict) else {}
+    try:
+        result = TransformIntentAgent().run(
+            project,
+            project_dir=state.get("project_dir"),
+            config=job.get("config"),
+            features=job.get("features"),
+            instruction=str((cfg or {}).get("transform_instruction") or ""),
+            target_scene=(cfg or {}).get("transform_scene_id") or None,
+            target_speaker=str((cfg or {}).get("transform_speaker") or ""),
+            scenes=state.get("scenes"),
+            speakers=state.get("speakers"),
+            transcript=state.get("transcript"),
+            speech_transcript=state.get("speech_transcript"),
+        )
+    except TransformIntentAgentError as exc:
+        messages = list(state.get("messages") or [])
+        messages.append(f"[transform_intent] Failed: {exc}")
+        return {
+            "messages": messages,
+            "status": JobStatus.FAILED.value,
+            "error": str(exc),
+            "transform_intent_pack": None,
+        }
+    messages = list(state.get("messages") or [])
+    messages.extend(result.messages)
+    return {
+        **result.to_state_dict(),
+        "messages": messages,
+        "status": JobStatus.RUNNING.value,
+        "error": None,
+    }
+
+
+def _route_after_transform_intent(state: WorkflowState) -> str:
+    if state.get("status") == JobStatus.FAILED.value or state.get("error"):
+        return "transform_intent_failed"
+    return "continue"
+
+
+def _transform_intent_failed_node(state: WorkflowState) -> dict[str, Any]:
+    return {
+        "status": JobStatus.FAILED.value,
+        "error": state.get("error") or "Transform intent failed",
+    }
+
+
 def _step14_running(state: WorkflowState) -> list[dict[str, Any]]:
     """Keep Export completed step RUNNING while Render/Quality resolve."""
     steps = list(state.get("steps") or initial_progress_steps())
@@ -4481,6 +4610,8 @@ def _render_node(state: WorkflowState) -> dict[str, Any]:
             platform_pack=state.get("platform_pack"),
             source_metadata=state.get("source_metadata"),
             speech_transcript=state.get("speech_transcript"),
+            transform_intent_pack=state.get("transform_intent_pack"),
+            scenes=state.get("scenes"),
         )
     except RenderAgentError as exc:
         steps = _mark_steps_completed(
@@ -4499,7 +4630,7 @@ def _render_node(state: WorkflowState) -> dict[str, Any]:
         }
     messages = list(state.get("messages") or [])
     messages.extend(result.messages)
-    return {
+    out: dict[str, Any] = {
         **result.to_state_dict(),
         "current_step": 13,
         "steps": _step14_running(state),
@@ -4507,6 +4638,49 @@ def _render_node(state: WorkflowState) -> dict[str, Any]:
         "status": JobStatus.RUNNING.value,
         "error": None,
     }
+    try:
+        from storage.sync import sync_project_artifacts
+        from config.settings import get_settings
+
+        project_raw = state.get("project") if isinstance(state.get("project"), dict) else {}
+        pid = str((project_raw or {}).get("project_id") or "")
+        pdir = state.get("project_dir")
+        settings = get_settings()
+        if pid and pdir:
+            refs = sync_project_artifacts(pid, pdir)
+            if refs:
+                messages.append(
+                    f"[render] Uploaded {len(refs)} artifact(s) to durable storage"
+                )
+                out["messages"] = messages
+                out["storage_artifacts"] = [r.to_dict() for r in refs]
+            elif settings.has_supabase_storage:
+                # Configured Storage but nothing uploaded (or empty globs)
+                msg = (
+                    "[render] Durable storage sync produced 0 artifacts "
+                    "(check bucket contents / paths)."
+                )
+                messages.append(msg)
+                out["messages"] = messages
+                if settings.is_streamlit_cloud:
+                    out["storage_sync_warning"] = msg
+    except Exception as exc:  # noqa: BLE001
+        from config.settings import get_settings
+
+        settings = get_settings()
+        err_name = type(exc).__name__
+        msg = f"[render] Durable storage sync failed: {err_name}"
+        if settings.has_supabase_storage:
+            msg = (
+                f"[render] Durable storage sync failed under configured Supabase "
+                f"({err_name}). Artifacts may exist only on ephemeral local disk."
+            )
+        messages.append(msg)
+        out["messages"] = messages
+        if settings.is_streamlit_cloud and settings.has_supabase_storage:
+            out["storage_sync_warning"] = msg
+            out["storage_sync_failed"] = True
+    return out
 
 
 def _route_after_render(state: WorkflowState) -> str:
@@ -4687,6 +4861,12 @@ def _export_node(state: WorkflowState) -> dict[str, Any]:
         "export_pack": result.export_pack.model_dump(mode="json"),
         "export_path": export_path,
         "output_files": flat.get("output_files") or {},
+        "multi_shorts_export": bool(
+            (job.get("features") or {}).get("multi_shorts_export")
+        ),
+        "output_mode": (job.get("config") or {}).get("video_type"),
+        "storage_sync_warning": state.get("storage_sync_warning"),
+        "storage_sync_failed": bool(state.get("storage_sync_failed")),
         "detail": (
             "Pipeline finished — export package ready; "
             "opening platform URLs is not publishing."
@@ -4846,6 +5026,8 @@ def build_flat_video_graph(checkpointer=None):
     graph.add_node("thumbnail_failed", _thumbnail_failed_node)
     graph.add_node(ANALYTICS_NODE, _analytics_node)
     graph.add_node("analytics_failed", _analytics_failed_node)
+    graph.add_node(TRANSFORM_INTENT_NODE, _transform_intent_node)
+    graph.add_node("transform_intent_failed", _transform_intent_failed_node)
     graph.add_node(RENDER_NODE, _render_node)
     graph.add_node("render_failed", _render_failed_node)
     graph.add_node(QUALITY_NODE, _quality_node)
@@ -4937,6 +5119,7 @@ def build_flat_video_graph(checkpointer=None):
     graph.add_edge("calendar_failed", END)
     graph.add_edge("thumbnail_failed", END)
     graph.add_edge("analytics_failed", END)
+    graph.add_edge("transform_intent_failed", END)
     graph.add_edge("render_failed", END)
     graph.add_edge("quality_failed", END)
     graph.add_edge("export_failed", END)
@@ -5570,11 +5753,19 @@ def build_flat_video_graph(checkpointer=None):
         ANALYTICS_NODE,
         _route_after_analytics,
         {
-            "continue": RENDER_NODE,
+            "continue": TRANSFORM_INTENT_NODE,
             "analytics_failed": "analytics_failed",
         },
     )
-    graph.add_edge("skip_analytics", RENDER_NODE)
+    graph.add_edge("skip_analytics", TRANSFORM_INTENT_NODE)
+    graph.add_conditional_edges(
+        TRANSFORM_INTENT_NODE,
+        _route_after_transform_intent,
+        {
+            "continue": RENDER_NODE,
+            "transform_intent_failed": "transform_intent_failed",
+        },
+    )
     graph.add_conditional_edges(
         RENDER_NODE,
         _route_after_render,
@@ -5874,6 +6065,28 @@ def run_video_workflow(
                     state["job"]["job_id"] = pid
                 if memory.project_dir:
                     state["project_dir"] = memory.project_dir
+                # Overlay caller request transforms (scene edit) onto resumed job
+                incoming = request.model_dump(mode="json")
+                job = dict(state.get("job") or {})
+                cfg = dict(job.get("config") or {})
+                feats = dict(job.get("features") or {})
+                inc_cfg = incoming.get("config") or {}
+                inc_feats = incoming.get("features") or {}
+                for key in (
+                    "transform_instruction",
+                    "transform_scene_id",
+                    "transform_speaker",
+                ):
+                    if inc_cfg.get(key):
+                        cfg[key] = inc_cfg[key]
+                if inc_feats.get("scene_transform"):
+                    feats["scene_transform"] = True
+                    feats["multi_shorts_export"] = True
+                job["config"] = cfg
+                job["features"] = feats
+                state["job"] = job
+                memory.job = job
+                save_memory(memory)
             # Clear terminal failure so downstream nodes can run again
             if resume or from_step:
                 state["status"] = JobStatus.RUNNING.value

@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import shutil
 from collections.abc import Callable
 from pathlib import Path
 from typing import Any
@@ -10,6 +11,8 @@ from typing import Any
 from config.settings import get_settings
 from core.errors import StorageError, YouTubeAgentError
 from core.logging import get_logger
+from ingestion.errors import YouTubeDownloadError
+from ingestion.youtube import DEFAULT_FORMAT, download_youtube
 from schemas.youtube import (
     PreparedYouTubeSource,
     YouTubeSourceMetadata,
@@ -20,7 +23,7 @@ from tools.youtube.oembed_provider import OEmbedYouTubeProvider
 
 logger = get_logger(__name__)
 
-DEFAULT_YTDLP_FORMAT = "bestvideo*+bestaudio/best"
+DEFAULT_YTDLP_FORMAT = DEFAULT_FORMAT
 
 _SOURCE_README = """# YouTube source package
 
@@ -35,49 +38,8 @@ imageio-ffmpeg executable, or FFMPEG_PATH when explicitly configured.
 DownloadFn = Callable[[str, Path, dict[str, Any]], Path]
 
 
-def _require_ffmpeg_hint() -> None:
-    from tools.ffmpeg.bin import resolve_ffmpeg_binary
-
-    if resolve_ffmpeg_binary() is None:
-        raise YouTubeAgentError(
-            "FFmpeg is required for video/audio processing. "
-            "The bundled imageio-ffmpeg executable was unavailable; "
-            "install FFmpeg locally or set FFMPEG_PATH."
-        )
-
-
-def _pick_downloaded_file(prepared: Path, source_dir: Path, video_id: str) -> Path:
-    candidates = [
-        prepared,
-        prepared.with_suffix(".mp4"),
-        prepared.with_suffix(".mkv"),
-        prepared.with_suffix(".webm"),
-        source_dir / f"{video_id}.mp4",
-        source_dir / f"{video_id}.mkv",
-        source_dir / f"{video_id}.webm",
-    ]
-    seen: set[Path] = set()
-    for path in candidates:
-        resolved = path.resolve()
-        if resolved in seen:
-            continue
-        seen.add(resolved)
-        if path.exists() and path.is_file() and path.stat().st_size > 0:
-            return path.resolve()
-
-    matches = sorted(
-        p
-        for p in source_dir.iterdir()
-        if p.is_file()
-        and p.stem.startswith(video_id)
-        and p.suffix.lower() in {".mp4", ".mkv", ".webm", ".m4a", ".mp3", ".wav"}
-        and p.stat().st_size > 0
-    )
-    if matches:
-        return matches[0].resolve()
-    raise YouTubeAgentError(
-        "Downloaded YouTube media could not be located under the media directory."
-    )
+def _to_agent_error(exc: YouTubeDownloadError) -> YouTubeAgentError:
+    return YouTubeAgentError(exc.message)
 
 
 def _default_ytdlp_download(
@@ -86,98 +48,28 @@ def _default_ytdlp_download(
     options: dict[str, Any],
 ) -> Path:
     """Download media with yt-dlp into ``source_dir``; return the media file path."""
-    try:
-        import yt_dlp
-    except ImportError as exc:  # pragma: no cover
-        raise YouTubeAgentError(
-            "yt-dlp is not installed. Run: pip install yt-dlp"
-        ) from exc
+    _ = options
+    source_dir = Path(source_dir)
+    source_dir.mkdir(parents=True, exist_ok=True)
+    result = download_youtube(url, dest_dir=source_dir)
+    if not result.ok or not result.local_path:
+        if result.error:
+            raise _to_agent_error(result.error)
+        raise YouTubeAgentError("YouTube media download failed.")
 
-    _require_ffmpeg_hint()
-
-    video_id = str(options.get("video_id") or "youtube_video")
-    outtmpl = str(source_dir / f"{video_id}.%(ext)s")
-    requested_format = str(options.get("format") or DEFAULT_YTDLP_FORMAT).strip()
-    formats = [requested_format]
-    if requested_format != DEFAULT_YTDLP_FORMAT:
-        formats.append(DEFAULT_YTDLP_FORMAT)
-    cookies = (options.get("cookies_file") or "").strip()
-    if cookies:
-        cookie_path = Path(cookies)
-        if not cookie_path.is_file():
-            raise YouTubeAgentError(
-                f"YOUTUBE_COOKIES_FILE not found: {cookie_path}"
-            )
-
-    from tools.ffmpeg.bin import resolve_ffmpeg_binary
-
-    ffmpeg_path = (
-        (options.get("ffmpeg_path") or "").strip() or resolve_ffmpeg_binary() or ""
-    )
-
-    last_error: Exception | None = None
-    for index, format_value in enumerate(formats):
-        ydl_opts: dict[str, Any] = {
-            "outtmpl": outtmpl,
-            "format": format_value,
-            "merge_output_format": "mp4",
-            "noplaylist": True,
-            "quiet": True,
-            "no_warnings": True,
-            "noprogress": True,
-            "retries": 3,
-            "fragment_retries": 3,
-            "file_access_retries": 3,
-            "concurrent_fragment_downloads": 1,
-            "http_headers": {
-                "User-Agent": (
-                    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
-                    "AppleWebKit/537.36 (KHTML, like Gecko) "
-                    "Chrome/131.0.0.0 Safari/537.36"
-                )
-            },
-        }
-        if cookies:
-            ydl_opts["cookiefile"] = str(cookie_path.resolve())
-        if ffmpeg_path:
-            ydl_opts["ffmpeg_location"] = ffmpeg_path
-
+    media = Path(result.local_path)
+    if media.parent.resolve() != source_dir.resolve():
+        dest = source_dir / media.name
         try:
-            with yt_dlp.YoutubeDL(ydl_opts) as ydl:
-                info = ydl.extract_info(url, download=True)
-                if not isinstance(info, dict):
-                    raise YouTubeAgentError("yt-dlp returned no media info.")
-                prepared = Path(ydl.prepare_filename(info))
-                media = _pick_downloaded_file(prepared, source_dir, video_id)
-                return Path(validate_media_path(media))
-        except Exception as exc:  # noqa: BLE001
-            last_error = exc
-            if index + 1 < len(formats):
-                logger.warning(
-                    "yt-dlp format failed; retrying with a compatible single-stream format"
-                )
-                continue
-
-    assert last_error is not None
-    if isinstance(last_error, YouTubeAgentError):
-        raise last_error
-    error_text = str(last_error)
-    if "403" in error_text or "forbidden" in error_text.lower():
-        raise YouTubeAgentError(
-            "YouTube rejected the media request with HTTP 403. This is usually "
-            "caused by video restrictions, an expired/blocked request, or the "
-            "deployment IP being denied. Use an authorized public video or upload "
-            "the media file directly."
-        ) from last_error
-    raise YouTubeAgentError(
-        f"YouTube media download failed: {last_error}. Ensure the video is "
-        "publicly accessible and you are authorized to process it."
-    ) from last_error
+            shutil.copy2(media, dest)
+            media = dest
+        except OSError as exc:
+            raise StorageError(f"Failed to place YouTube media in source/: {exc}") from exc
+    return Path(validate_media_path(media))
 
 
 def download_youtube_media(url: str, dest_dir: Path | str) -> Path:
     """Public helper: download ``url`` into ``dest_dir`` and return the file path."""
-    settings = get_settings()
     target = Path(dest_dir)
     target.mkdir(parents=True, exist_ok=True)
     from tools.youtube.urls import extract_video_id
@@ -191,9 +83,7 @@ def download_youtube_media(url: str, dest_dir: Path | str) -> Path:
         target,
         {
             "video_id": video_id or "youtube_video",
-            "format": settings.youtube_download_format or DEFAULT_YTDLP_FORMAT,
-            "cookies_file": settings.youtube_cookies_file,
-            "ffmpeg_path": settings.ffmpeg_path,
+            "format": get_settings().youtube_download_format or DEFAULT_YTDLP_FORMAT,
         },
     )
 
@@ -243,10 +133,10 @@ class YtdlpYouTubeProvider:
                 {
                     "video_id": video_id,
                     "format": settings.youtube_download_format or DEFAULT_YTDLP_FORMAT,
-                    "cookies_file": settings.youtube_cookies_file,
-                    "ffmpeg_path": settings.ffmpeg_path,
                 },
             )
+        except YouTubeDownloadError as exc:
+            raise _to_agent_error(exc) from exc
         except YouTubeAgentError:
             raise
         except Exception as exc:  # noqa: BLE001
@@ -255,7 +145,6 @@ class YtdlpYouTubeProvider:
 
         media_path = Path(validate_media_path(media_path))
 
-        # Prefer a stable filename for downstream tools.
         stable = source_dir / "youtube_video.mp4"
         if media_path.resolve() != stable.resolve():
             try:
