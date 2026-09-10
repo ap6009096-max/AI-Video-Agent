@@ -445,7 +445,9 @@ YouTube URL ingestion is **best-effort**. A video that plays in a normal browser
 
 * Downloads use the installed **`yt-dlp`** package (keep it current: `pip install -U yt-dlp`).
 * Progressive formats are tried first; FFmpeg (system `FFMPEG_PATH` or **imageio-ffmpeg**) is required only for split-stream merge fallbacks.
-* **Do not** store personal browser cookies or account credentials on Streamlit Cloud.
+* **Local only:** if a public download returns authentication / bot blocks, the app can retry with `YOUTUBE_COOKIES_FILE` (priority) or `YOUTUBE_COOKIES_FROM_BROWSER` (`chrome` / `edge` / `firefox`) when `YOUTUBE_AUTH_FALLBACK=true`.
+* **Do not** store personal browser cookies or account credentials on Streamlit Cloud; browser-cookie auth is disabled there.
+* If cookies still fail (for example YouTube PO-token requirements), see the [yt-dlp Po Token Guide](https://github.com/yt-dlp/yt-dlp/wiki/PO-Token-Guide) and use **Upload Video Instead**.
 * On failure the UI shows a **status-specific** reason plus an **Upload Video Instead** control — analysis continues after a direct MP4/MOV upload.
 * Direct upload is the reliable path and stores media in durable storage when Supabase is configured.
 
@@ -498,7 +500,7 @@ SUPABASE_STORAGE_BUCKET = "ai-video-agent"
 ```
 
 3. In Supabase: create a **private** Storage bucket named `ai-video-agent` (or match `SUPABASE_STORAGE_BUCKET`). Do not make the bucket public; the app uses signed URLs.
-4. Do **not** set `YOUTUBE_COOKIES_FILE` on Cloud.
+4. Do **not** set `YOUTUBE_COOKIES_FILE` or `YOUTUBE_COOKIES_FROM_BROWSER` on Cloud.
 
 ---
 

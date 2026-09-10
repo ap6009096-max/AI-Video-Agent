@@ -95,26 +95,67 @@ def _resolve_js_runtimes() -> dict[str, dict[str, str]]:
     return runtimes
 
 
-def _cookies_allowed(settings: Any) -> str:
-    """Return cookie file path only for non-cloud local use when explicitly set."""
-    raw = str(getattr(settings, "youtube_cookies_file", "") or "").strip()
-    if not raw:
-        return ""
+def _resolve_local_youtube_auth(settings: Any) -> tuple[str, str]:
+    """Return ``(cookiefile, browser_name)`` for local auth retry only.
+
+    Streamlit Cloud never receives cookies. Cookies file wins over browser.
+    """
     if getattr(settings, "is_streamlit_cloud", False):
-        logger.warning(
-            "YOUTUBE_COOKIES_FILE ignored on Streamlit Cloud "
-            "(do not store personal browser cookies)."
-        )
-        return ""
-    path = Path(raw)
-    if not path.is_file():
+        if str(getattr(settings, "youtube_cookies_file", "") or "").strip():
+            logger.warning(
+                "YOUTUBE_COOKIES_FILE ignored on Streamlit Cloud "
+                "(do not store personal browser cookies)."
+            )
+        if str(getattr(settings, "youtube_cookies_from_browser", "") or "").strip():
+            logger.warning(
+                "YOUTUBE_COOKIES_FROM_BROWSER ignored on Streamlit Cloud."
+            )
+        return "", ""
+
+    raw_file = str(getattr(settings, "youtube_cookies_file", "") or "").strip()
+    if raw_file:
+        path = Path(raw_file)
+        if not path.is_file():
+            raise YouTubeDownloadError(
+                YouTubeDownloadStatus.EXTRACTOR_ERROR.value,
+                f"YOUTUBE_COOKIES_FILE not found: {path}",
+                retryable=False,
+                status=YouTubeDownloadStatus.EXTRACTOR_ERROR,
+            )
+        return str(path.resolve()), ""
+
+    auth_fallback = bool(getattr(settings, "youtube_auth_fallback", True))
+    if not auth_fallback:
+        return "", ""
+
+    browser = str(getattr(settings, "youtube_cookies_from_browser", "") or "").strip()
+    # Guard against MagicMock / non-string settings in tests.
+    if not browser or browser.startswith("<"):
+        return "", ""
+    allowed = {"chrome", "edge", "firefox", "brave", "opera", "chromium", "safari"}
+    name = browser.lower().split(":")[0].strip()
+    if name not in allowed:
         raise YouTubeDownloadError(
             YouTubeDownloadStatus.EXTRACTOR_ERROR.value,
-            f"YOUTUBE_COOKIES_FILE not found: {path}",
+            f"Unsupported YOUTUBE_COOKIES_FROM_BROWSER={browser!r}. "
+            f"Use one of: {', '.join(sorted(allowed))}.",
             retryable=False,
             status=YouTubeDownloadStatus.EXTRACTOR_ERROR,
         )
-    return str(path.resolve())
+    return "", name
+
+
+def _error_warrants_auth_retry(error: YouTubeDownloadError) -> bool:
+    """True when a second pass with cookies may unlock the media."""
+    if error.status == YouTubeDownloadStatus.AUTHENTICATION_REQUIRED:
+        return True
+    if error.status == YouTubeDownloadStatus.FORBIDDEN:
+        lower = (error.message or "").lower()
+        return any(
+            token in lower
+            for token in ("bot", "403", "blocked", "forbidden", "automated")
+        )
+    return False
 
 
 def _cleanup_partials(source_dir: Path, video_id: str) -> None:
@@ -182,7 +223,8 @@ def _run_ytdlp(
     *,
     video_id: str,
     format_value: str,
-    cookies_file: str,
+    cookies_file: str = "",
+    cookies_from_browser: str = "",
     ffmpeg_path: str,
     debug: bool = False,
 ) -> tuple[Path, dict[str, Any]]:
@@ -220,6 +262,9 @@ def _run_ytdlp(
         ydl_opts["remote_components"] = {"ejs:github"}
     if cookies_file:
         ydl_opts["cookiefile"] = cookies_file
+    elif cookies_from_browser:
+        # (browser, profile, keyring, container) — profile/keyring unused.
+        ydl_opts["cookiesfrombrowser"] = (cookies_from_browser, None, None, None)
     if ffmpeg_path:
         ydl_opts["ffmpeg_location"] = ffmpeg_path
 
@@ -307,11 +352,6 @@ def download_youtube(
         or str(getattr(settings, "log_level", "") or "").upper() == "DEBUG"
     )
 
-    try:
-        cookies = _cookies_allowed(settings)
-    except YouTubeDownloadError as exc:
-        return YouTubeDownloadResult(status=exc.status, video_id=video_id, error=exc)
-
     formats = _build_format_chain(
         str(getattr(settings, "youtube_download_format", "") or ""),
         ffmpeg_available=bool(ffmpeg_path),
@@ -328,7 +368,6 @@ def download_youtube(
             )
             continue
         runnable_formats.append(fmt)
-
 
     if not runnable_formats:
         err = YouTubeDownloadError(
@@ -357,15 +396,22 @@ def download_youtube(
         runnable_formats,
         bool(ffmpeg_path),
     )
-    last_error: YouTubeDownloadError | None = None
-    max_attempts = 3
-    try:
+
+    def _run_format_chain(
+        *,
+        cookies_file: str,
+        cookies_from_browser: str,
+        pass_label: str,
+    ) -> YouTubeDownloadResult:
+        last_error: YouTubeDownloadError | None = None
+        max_attempts = 3
         for format_index, fmt in enumerate(runnable_formats):
             for attempt in range(max_attempts):
                 _cleanup_partials(source_dir, video_id)
                 logger.info(
-                    "YOUTUBE_DOWNLOAD_ATTEMPT video_id=%s format=%s attempt=%s",
+                    "YOUTUBE_DOWNLOAD_ATTEMPT video_id=%s pass=%s format=%s attempt=%s",
                     video_id,
+                    pass_label,
                     fmt,
                     attempt + 1,
                 )
@@ -375,7 +421,8 @@ def download_youtube(
                         source_dir,
                         video_id=video_id,
                         format_value=fmt,
-                        cookies_file=cookies,
+                        cookies_file=cookies_file,
+                        cookies_from_browser=cookies_from_browser,
                         ffmpeg_path=ffmpeg_path,
                         debug=debug,
                     )
@@ -401,11 +448,13 @@ def download_youtube(
                     size = final_path.stat().st_size if final_path.is_file() else 0
                     title = str(info.get("title") or "")
                     logger.info(
-                        "YOUTUBE_DOWNLOAD_SUCCEEDED video_id=%s path=%s size=%s format=%s",
+                        "YOUTUBE_DOWNLOAD_SUCCEEDED video_id=%s path=%s size=%s "
+                        "format=%s pass=%s",
                         video_id,
                         final_path,
                         size,
                         fmt,
+                        pass_label,
                     )
                     return YouTubeDownloadResult(
                         status=YouTubeDownloadStatus.SUCCESS,
@@ -422,11 +471,13 @@ def download_youtube(
                 if last_error is None:
                     continue
                 logger.warning(
-                    "YOUTUBE_DOWNLOAD_FAILED code=%s status=%s format=%s attempt=%s detail=%s",
+                    "YOUTUBE_DOWNLOAD_FAILED code=%s status=%s format=%s "
+                    "attempt=%s pass=%s detail=%s",
                     last_error.code,
                     last_error.status.value,
                     fmt,
                     attempt + 1,
+                    pass_label,
                     last_error.message[:200],
                 )
                 if last_error.retryable and attempt + 1 < max_attempts:
@@ -441,12 +492,53 @@ def download_youtube(
 
         assert last_error is not None
         if skipped_merge and last_error.status != YouTubeDownloadStatus.EXTRACTOR_ERROR:
-            # Progressive failed; note that merge was unavailable
             logger.info(
                 "YOUTUBE_DOWNLOAD_NOTE progressive_failed_merge_skipped_no_ffmpeg"
             )
         return YouTubeDownloadResult(
             status=last_error.status, video_id=video_id, error=last_error
+        )
+
+    try:
+        # Pass 1: public (no cookies) so open videos never touch the browser session.
+        public_result = _run_format_chain(
+            cookies_file="",
+            cookies_from_browser="",
+            pass_label="public",
+        )
+        if public_result.ok:
+            return public_result
+
+        public_error = public_result.error
+        if public_error is None or not _error_warrants_auth_retry(public_error):
+            return public_result
+
+        try:
+            auth_file, auth_browser = _resolve_local_youtube_auth(settings)
+        except YouTubeDownloadError as auth_exc:
+            return YouTubeDownloadResult(
+                status=auth_exc.status, video_id=video_id, error=auth_exc
+            )
+
+        if not auth_file and not auth_browser:
+            return public_result
+
+        if auth_file:
+            logger.info(
+                "YOUTUBE_AUTH_RETRY video_id=%s mode=cookiefile",
+                video_id,
+            )
+        else:
+            logger.info(
+                "YOUTUBE_AUTH_RETRY video_id=%s mode=cookiesfrombrowser browser=%s",
+                video_id,
+                auth_browser,
+            )
+
+        return _run_format_chain(
+            cookies_file=auth_file,
+            cookies_from_browser=auth_browser,
+            pass_label="authenticated",
         )
     finally:
         if temp_root is not None:

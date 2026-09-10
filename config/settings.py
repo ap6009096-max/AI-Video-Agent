@@ -5,7 +5,7 @@ from __future__ import annotations
 import os
 from functools import lru_cache
 
-from pydantic import Field
+from pydantic import Field, field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -49,6 +49,10 @@ class Settings(BaseSettings):
         alias="YOUTUBE_DOWNLOAD_FORMAT",
     )
     youtube_cookies_file: str = Field(default="", alias="YOUTUBE_COOKIES_FILE")
+    youtube_cookies_from_browser: str = Field(
+        default="", alias="YOUTUBE_COOKIES_FROM_BROWSER"
+    )
+    youtube_auth_fallback: bool = Field(default=True, alias="YOUTUBE_AUTH_FALLBACK")
     gemini_model: str = Field(default="gemini-3.6-flash", alias="GEMINI_MODEL")
     gemini_fallback_models: str = Field(default="", alias="GEMINI_FALLBACK_MODELS")
     gemini_max_retries: int = Field(default=2, alias="GEMINI_MAX_RETRIES")
@@ -99,6 +103,18 @@ class Settings(BaseSettings):
     supabase_storage_bucket: str = Field(
         default="ai-video-agent", alias="SUPABASE_STORAGE_BUCKET"
     )
+
+    @field_validator("supabase_url", mode="before")
+    @classmethod
+    def _normalize_supabase_url(cls, value: object) -> object:
+        """Strip accidental ``SUPABASE_URL=`` duplication pasted into the value."""
+        if not isinstance(value, str):
+            return value
+        cleaned = value.strip().strip('"').strip("'")
+        prefix = "SUPABASE_URL="
+        while cleaned.upper().startswith(prefix):
+            cleaned = cleaned[len(prefix) :].strip()
+        return cleaned
 
     @property
     def has_sentry_dsn(self) -> bool:
