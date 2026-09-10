@@ -19,7 +19,17 @@ from ingestion.errors import (
 
 logger = get_logger(__name__)
 
-DEFAULT_FORMAT = "bv*+ba/b"
+# Progressive first (no FFmpeg merge); merge formats last.
+PROGRESSIVE_FORMAT = "best[height<=720][ext=mp4]/best[height<=720]/best"
+# Prefer HTTPS progressive streams over HLS (m3u8) — much faster / more reliable in UI.
+HTTPS_MERGE_FORMAT = (
+    "bv*[height<=720][ext=mp4]+ba[ext=m4a]/"
+    "bestvideo[height<=720][protocol^=http]+bestaudio[protocol^=http]/"
+    "bv*+ba/b"
+)
+MERGE_FORMAT = "bv*+ba/b"
+DEFAULT_FORMAT = HTTPS_MERGE_FORMAT
+SOCKET_TIMEOUT_SEC = 30
 _MEDIA_SUFFIXES = {".mp4", ".mkv", ".webm", ".m4a", ".mp3", ".wav", ".mov"}
 
 
@@ -36,12 +46,60 @@ class YouTubeDownloadResult:
         return self.status == YouTubeDownloadStatus.SUCCESS and bool(self.local_path)
 
 
+def _format_needs_ffmpeg(format_value: str) -> bool:
+    """Split-stream formats (contain '+') need FFmpeg to merge."""
+    return "+" in (format_value or "")
+
+
+def _build_format_chain(
+    settings_format: str, *, ffmpeg_available: bool = True
+) -> list[str]:
+    """Ordered formats for yt-dlp.
+
+    Modern YouTube often exposes only separate video/audio streams (no progressive
+    A+V). Prefer merge when FFmpeg is available; keep progressive as fallback.
+    """
+    configured = (settings_format or "").strip()
+    chain: list[str] = []
+    if ffmpeg_available:
+        candidates = (
+            HTTPS_MERGE_FORMAT,
+            MERGE_FORMAT,
+            "bestvideo[height<=720]+bestaudio/best",
+            configured,
+            PROGRESSIVE_FORMAT,
+            "best",
+        )
+    else:
+        candidates = (configured, PROGRESSIVE_FORMAT, "best")
+    for fmt in candidates:
+        if not fmt or fmt in chain:
+            continue
+        if not ffmpeg_available and _format_needs_ffmpeg(fmt):
+            continue
+        chain.append(fmt)
+    return chain or [PROGRESSIVE_FORMAT]
+
+
+def _resolve_js_runtimes() -> dict[str, dict[str, str]]:
+    """Enable Node/Deno for yt-dlp YouTube EJS when available on PATH."""
+    import shutil
+
+    runtimes: dict[str, dict[str, str]] = {}
+    node = shutil.which("node")
+    if node:
+        runtimes["node"] = {"path": node}
+    deno = shutil.which("deno")
+    if deno:
+        runtimes["deno"] = {"path": deno}
+    return runtimes
+
+
 def _cookies_allowed(settings: Any) -> str:
     """Return cookie file path only for non-cloud local use when explicitly set."""
     raw = str(getattr(settings, "youtube_cookies_file", "") or "").strip()
     if not raw:
         return ""
-    # Never use personal browser cookies on Streamlit Cloud
     if getattr(settings, "is_streamlit_cloud", False):
         logger.warning(
             "YOUTUBE_COOKIES_FILE ignored on Streamlit Cloud "
@@ -57,6 +115,19 @@ def _cookies_allowed(settings: Any) -> str:
             status=YouTubeDownloadStatus.EXTRACTOR_ERROR,
         )
     return str(path.resolve())
+
+
+def _cleanup_partials(source_dir: Path, video_id: str) -> None:
+    """Remove incomplete yt-dlp artifacts for this video_id."""
+    if not source_dir.is_dir():
+        return
+    for path in source_dir.glob(f"{video_id}*"):
+        try:
+            if path.is_file():
+                path.unlink()
+                logger.debug("Cleaned partial download: %s", path.name)
+        except OSError as exc:
+            logger.warning("Could not remove partial %s: %s", path, exc)
 
 
 def _pick_downloaded_file(prepared: Path, source_dir: Path, video_id: str) -> Path:
@@ -96,6 +167,15 @@ def _pick_downloaded_file(prepared: Path, source_dir: Path, video_id: str) -> Pa
     )
 
 
+def _yt_dlp_version() -> str:
+    try:
+        import yt_dlp.version
+
+        return str(getattr(yt_dlp.version, "__version__", "unknown"))
+    except Exception:  # noqa: BLE001
+        return "unknown"
+
+
 def _run_ytdlp(
     url: str,
     source_dir: Path,
@@ -104,6 +184,7 @@ def _run_ytdlp(
     format_value: str,
     cookies_file: str,
     ffmpeg_path: str,
+    debug: bool = False,
 ) -> tuple[Path, dict[str, Any]]:
     try:
         import yt_dlp
@@ -111,7 +192,7 @@ def _run_ytdlp(
     except ImportError as exc:  # pragma: no cover
         raise YouTubeDownloadError(
             YouTubeDownloadStatus.EXTRACTOR_ERROR.value,
-            "yt-dlp is not installed. Run: pip install yt-dlp",
+            "yt-dlp is not installed. Run: pip install -U yt-dlp",
             retryable=False,
             status=YouTubeDownloadStatus.EXTRACTOR_ERROR,
         ) from exc
@@ -119,16 +200,24 @@ def _run_ytdlp(
     outtmpl = str(source_dir / f"{video_id}.%(ext)s")
     ydl_opts: dict[str, Any] = {
         "outtmpl": outtmpl,
-        "format": format_value or DEFAULT_FORMAT,
+        "format": format_value or (
+            MERGE_FORMAT if ffmpeg_path else PROGRESSIVE_FORMAT
+        ),
         "merge_output_format": "mp4",
         "noplaylist": True,
-        "quiet": True,
-        "no_warnings": True,
+        "quiet": not debug,
+        "no_warnings": not debug,
         "noprogress": True,
         "retries": 2,
         "fragment_retries": 2,
         "concurrent_fragment_downloads": 1,
+        "socket_timeout": SOCKET_TIMEOUT_SEC,
     }
+    js_runtimes = _resolve_js_runtimes()
+    if js_runtimes:
+        ydl_opts["js_runtimes"] = js_runtimes
+        # Needed so Node can solve YouTube n/sig challenges and unlock HTTPS formats.
+        ydl_opts["remote_components"] = {"ejs:github"}
     if cookies_file:
         ydl_opts["cookiefile"] = cookies_file
     if ffmpeg_path:
@@ -153,6 +242,17 @@ def _run_ytdlp(
         raise classify_ytdlp_error(exc) from exc
     except Exception as exc:  # noqa: BLE001
         raise classify_ytdlp_error(exc) from exc
+
+
+def _resolve_ffmpeg() -> str:
+    """Resolve FFmpeg binary path; empty string if unavailable."""
+    try:
+        from tools.ffmpeg.bin import resolve_ffmpeg_binary
+
+        return (resolve_ffmpeg_binary() or "").strip()
+    except Exception:  # noqa: BLE001
+        logger.warning("FFmpeg resolution failed; continuing without merge support")
+        return ""
 
 
 def download_youtube(
@@ -187,7 +287,6 @@ def download_youtube(
         )
         return YouTubeDownloadResult(status=err.status, error=err)
 
-    from tools.ffmpeg.bin import resolve_ffmpeg_binary
     from tools.youtube.urls import extract_video_id, normalize_youtube_url
 
     try:
@@ -202,25 +301,45 @@ def download_youtube(
         )
         return YouTubeDownloadResult(status=err.status, error=err)
 
-    ffmpeg_path = (settings.ffmpeg_path or "").strip() or (resolve_ffmpeg_binary() or "")
-    if not ffmpeg_path:
-        err = YouTubeDownloadError(
-            YouTubeDownloadStatus.EXTRACTOR_ERROR.value,
-            "FFmpeg is required for YouTube media merge. Install FFmpeg or set FFMPEG_PATH.",
-            retryable=False,
-            status=YouTubeDownloadStatus.EXTRACTOR_ERROR,
-        )
-        return YouTubeDownloadResult(status=err.status, video_id=video_id, error=err)
+    ffmpeg_path = (settings.ffmpeg_path or "").strip() or _resolve_ffmpeg()
+    debug = (
+        str(getattr(settings, "app_env", "") or "").lower() == "development"
+        or str(getattr(settings, "log_level", "") or "").upper() == "DEBUG"
+    )
 
     try:
         cookies = _cookies_allowed(settings)
     except YouTubeDownloadError as exc:
         return YouTubeDownloadResult(status=exc.status, video_id=video_id, error=exc)
 
-    format_value = (settings.youtube_download_format or DEFAULT_FORMAT).strip() or DEFAULT_FORMAT
-    formats = [format_value]
-    if format_value != DEFAULT_FORMAT:
-        formats.append(DEFAULT_FORMAT)
+    formats = _build_format_chain(
+        str(getattr(settings, "youtube_download_format", "") or ""),
+        ffmpeg_available=bool(ffmpeg_path),
+    )
+    # Drop merge formats when FFmpeg is unavailable; keep progressive attempts.
+    runnable_formats: list[str] = []
+    skipped_merge = False
+    for fmt in formats:
+        if _format_needs_ffmpeg(fmt) and not ffmpeg_path:
+            skipped_merge = True
+            logger.info(
+                "YOUTUBE_FORMAT_SKIPPED reason=no_ffmpeg format=%s",
+                fmt,
+            )
+            continue
+        runnable_formats.append(fmt)
+
+
+    if not runnable_formats:
+        err = YouTubeDownloadError(
+            YouTubeDownloadStatus.EXTRACTOR_ERROR.value,
+            "FFmpeg is required for YouTube media merge. "
+            "Install FFmpeg, set FFMPEG_PATH, or install imageio-ffmpeg. "
+            "Alternatively upload the video file directly.",
+            retryable=False,
+            status=YouTubeDownloadStatus.EXTRACTOR_ERROR,
+        )
+        return YouTubeDownloadResult(status=err.status, video_id=video_id, error=err)
 
     owns_temp = dest_dir is None
     temp_root: tempfile.TemporaryDirectory[str] | None = None
@@ -231,12 +350,25 @@ def download_youtube(
         source_dir = Path(dest_dir)
         source_dir.mkdir(parents=True, exist_ok=True)
 
-    logger.info("YOUTUBE_DOWNLOAD_STARTED video_id=%s", video_id)
+    logger.info(
+        "YOUTUBE_DOWNLOAD_STARTED video_id=%s yt_dlp=%s formats=%s ffmpeg=%s",
+        video_id,
+        _yt_dlp_version(),
+        runnable_formats,
+        bool(ffmpeg_path),
+    )
     last_error: YouTubeDownloadError | None = None
     max_attempts = 3
     try:
-        for format_index, fmt in enumerate(formats):
+        for format_index, fmt in enumerate(runnable_formats):
             for attempt in range(max_attempts):
+                _cleanup_partials(source_dir, video_id)
+                logger.info(
+                    "YOUTUBE_DOWNLOAD_ATTEMPT video_id=%s format=%s attempt=%s",
+                    video_id,
+                    fmt,
+                    attempt + 1,
+                )
                 try:
                     media, info = _run_ytdlp(
                         normalized,
@@ -245,11 +377,10 @@ def download_youtube(
                         format_value=fmt,
                         cookies_file=cookies,
                         ffmpeg_path=ffmpeg_path,
+                        debug=debug,
                     )
-                    # Optionally copy out of temp into a stable caller path
                     final_path = media
                     if owns_temp and keep_temp:
-                        # Caller asked to keep file: copy beside temp into media dir
                         from core.paths import ensure_media_dir
 
                         stable = ensure_media_dir() / media.name
@@ -258,18 +389,23 @@ def download_youtube(
                     elif not owns_temp:
                         final_path = media.resolve()
                     else:
-                        # Persist into media dir so temp cleanup does not delete it
                         from core.paths import ensure_media_dir
 
-                        stable = ensure_media_dir() / f"{video_id}{media.suffix.lower() or '.mp4'}"
+                        stable = (
+                            ensure_media_dir()
+                            / f"{video_id}{media.suffix.lower() or '.mp4'}"
+                        )
                         shutil.copy2(media, stable)
                         final_path = stable.resolve()
 
+                    size = final_path.stat().st_size if final_path.is_file() else 0
                     title = str(info.get("title") or "")
                     logger.info(
-                        "YOUTUBE_DOWNLOAD_SUCCEEDED video_id=%s path=%s",
+                        "YOUTUBE_DOWNLOAD_SUCCEEDED video_id=%s path=%s size=%s format=%s",
                         video_id,
                         final_path,
+                        size,
+                        fmt,
                     )
                     return YouTubeDownloadResult(
                         status=YouTubeDownloadStatus.SUCCESS,
@@ -282,39 +418,42 @@ def download_youtube(
                 except Exception as exc:  # noqa: BLE001
                     last_error = classify_ytdlp_error(exc)
 
+                _cleanup_partials(source_dir, video_id)
                 if last_error is None:
                     continue
-                if last_error.retryable and attempt + 1 < max_attempts:
-                    delay = 2**attempt
-                    logger.warning(
-                        "YOUTUBE_DOWNLOAD_FAILED retryable code=%s attempt=%s",
-                        last_error.code,
-                        attempt + 1,
-                    )
-                    time.sleep(delay)
-                    continue
-                if format_index + 1 < len(formats):
-                    break
                 logger.warning(
-                    "YOUTUBE_DOWNLOAD_FAILED code=%s status=%s",
+                    "YOUTUBE_DOWNLOAD_FAILED code=%s status=%s format=%s attempt=%s detail=%s",
                     last_error.code,
                     last_error.status.value,
+                    fmt,
+                    attempt + 1,
+                    last_error.message[:200],
                 )
+                if last_error.retryable and attempt + 1 < max_attempts:
+                    delay = 2**attempt
+                    time.sleep(delay)
+                    continue
+                if format_index + 1 < len(runnable_formats):
+                    break
                 return YouTubeDownloadResult(
                     status=last_error.status, video_id=video_id, error=last_error
                 )
+
         assert last_error is not None
-        logger.warning(
-            "YOUTUBE_DOWNLOAD_FAILED code=%s status=%s",
-            last_error.code,
-            last_error.status.value,
-        )
+        if skipped_merge and last_error.status != YouTubeDownloadStatus.EXTRACTOR_ERROR:
+            # Progressive failed; note that merge was unavailable
+            logger.info(
+                "YOUTUBE_DOWNLOAD_NOTE progressive_failed_merge_skipped_no_ffmpeg"
+            )
         return YouTubeDownloadResult(
             status=last_error.status, video_id=video_id, error=last_error
         )
     finally:
         if temp_root is not None:
-            temp_root.cleanup()
+            try:
+                temp_root.cleanup()
+            except Exception:  # noqa: BLE001
+                logger.warning("Temp download directory cleanup failed")
 
 
 def download_youtube_or_raise(url: str, *, dest_dir: Path | str | None = None) -> Path:

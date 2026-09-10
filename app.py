@@ -12,7 +12,7 @@ from config.settings import get_settings
 from core.logging import configure_logging, get_logger
 from core.paths import ensure_output_dir, get_output_dir
 from core.sentry import init_sentry
-from ingestion.errors import USER_FACING_YOUTUBE_FAILURE, YouTubeDownloadError
+from ingestion.errors import YouTubeDownloadError, user_message_for_youtube_error
 from ingestion.youtube import download_youtube
 from ui import (
     apply_styles,
@@ -116,7 +116,10 @@ def _render_sidebar() -> None:
     if ffmpeg_bin:
         st.sidebar.markdown("**FFmpeg:** `Available`")
     else:
-        st.sidebar.error("FFmpeg: unavailable — install or set FFMPEG_PATH.")
+        st.sidebar.error(
+            "FFmpeg unavailable — install system FFmpeg, set FFMPEG_PATH, "
+            "or ensure imageio-ffmpeg is installed (needed for merge formats)."
+        )
 
     st.sidebar.markdown(f"**Whisper:** `{settings.whisper_model}`")
     st.sidebar.markdown(f"**YouTube Downloader:** `{_youtube_downloader_status()}`")
@@ -140,7 +143,11 @@ def _render_sidebar() -> None:
 
 def _preflight_youtube(url: str) -> str | None:
     """Attempt YouTube download before Creator OS. On failure, arm upload fallback."""
-    result = download_youtube(url)
+    with st.spinner(
+        "Downloading YouTube media… this can take 1–3 minutes for longer videos. "
+        "Do not click other Process buttons."
+    ):
+        result = download_youtube(url)
     if result.ok and result.local_path:
         st.session_state.pop("youtube_fallback", None)
         st.session_state.pop("youtube_ingest_error_detail", None)
@@ -154,7 +161,11 @@ def _preflight_youtube(url: str) -> str | None:
     st.session_state["youtube_fallback"] = True
     st.session_state["youtube_ingest_error_detail"] = f"{code}: {detail}"
     st.error("⚠ YouTube download unavailable")
-    st.warning(USER_FACING_YOUTUBE_FAILURE)
+    st.warning(user_message_for_youtube_error(err if isinstance(err, YouTubeDownloadError) else None))
+    st.info(
+        "Upload an MP4/MOV/MKV/WebM (or audio) file below — analysis continues "
+        "without YouTube downloading."
+    )
     return None
 
 
@@ -183,41 +194,46 @@ def main() -> None:
     st.divider()
 
     action_hint = str(source.get("action_hint") or "create")
+    yt_busy = bool(st.session_state.get("yt_preflight_busy"))
     col_a, col_b = st.columns(2)
     with col_a:
         process_youtube = st.button(
             "Process YouTube Video",
             type="primary",
             use_container_width=True,
-            disabled=action_hint == "upload" and not source.get("youtube_url"),
+            disabled=yt_busy or (action_hint == "upload" and not source.get("youtube_url")),
         )
     with col_b:
         upload_process = st.button(
             "Upload & Process",
             type="primary",
             use_container_width=True,
+            disabled=yt_busy,
         )
     # Keep a combined create button for resume / script-only flows
-    generate = st.button("🎬 CREATE VIDEO", use_container_width=True)
+    generate = st.button("🎬 CREATE VIDEO", use_container_width=True, disabled=yt_busy)
+
+    if yt_busy:
+        st.info("YouTube download in progress… please wait.")
 
     run_now = False
+
+    # Queue at most one YouTube preflight (avoids concurrent yt-dlp from multi-clicks).
+    def _queue_youtube_preflight(url: str, *, reason: str) -> None:
+        if st.session_state.get("yt_preflight_busy"):
+            return
+        st.session_state["pending_yt_url"] = url
+        st.session_state["pending_yt_reason"] = reason
+        st.session_state["yt_preflight_busy"] = True
+        st.rerun()
+
     if process_youtube:
         url = str(source.get("youtube_url") or "").strip()
         if not url:
             st.error("Enter a YouTube URL first.")
         else:
             logger.info("SOURCE_REQUESTED type=youtube preflight=true")
-            local = _preflight_youtube(url)
-            if local:
-                source = dict(source)
-                source["source_type"] = "upload"
-                source["preflight_media_path"] = local
-                # Prefer upload path so workflow uses local_video_ingest with real file
-                source["existing_media_path"] = local
-                run_now = True
-            else:
-                st.info("Use **Upload Video Instead** below / switch to Upload, then **Upload & Process**.")
-                st.rerun()
+            _queue_youtube_preflight(url, reason="process")
     elif upload_process or generate:
         source = dict(source)
         url = str(source.get("youtube_url") or "").strip()
@@ -229,34 +245,17 @@ def main() -> None:
                 st.session_state.pop("youtube_fallback", None)
                 run_now = True
             elif url and not has_upload:
-                # Treat as YouTube process when URL present
                 logger.info("SOURCE_REQUESTED type=youtube preflight=true via_upload_btn")
-                local = _preflight_youtube(url)
-                if local:
-                    source["source_type"] = "upload"
-                    source["preflight_media_path"] = local
-                    source["existing_media_path"] = local
-                    run_now = True
-                else:
-                    st.rerun()
+                _queue_youtube_preflight(url, reason="upload_btn")
             elif has_script:
                 source["source_type"] = "script"
                 run_now = True
             else:
                 st.error("Please upload a video or provide a YouTube URL.")
         elif generate:
-            # CREATE VIDEO: YouTube URL → same preflight as Process YouTube
             if url and not has_upload:
                 logger.info("SOURCE_REQUESTED type=youtube preflight=true via_create")
-                local = _preflight_youtube(url)
-                if local:
-                    source["source_type"] = "upload"
-                    source["preflight_media_path"] = local
-                    source["existing_media_path"] = local
-                    run_now = True
-                else:
-                    st.info("Use **Upload Video Instead** / **Upload & Process**.")
-                    st.rerun()
+                _queue_youtube_preflight(url, reason="create")
             elif has_upload:
                 source["source_type"] = "upload"
                 st.session_state.pop("youtube_fallback", None)
@@ -266,6 +265,25 @@ def main() -> None:
                 run_now = True
             else:
                 st.error("Please upload a video or provide a YouTube URL.")
+
+    pending_url = str(st.session_state.get("pending_yt_url") or "").strip()
+    if yt_busy and pending_url:
+        logger.info(
+            "SOURCE_REQUESTED type=youtube preflight=execute reason=%s",
+            st.session_state.get("pending_yt_reason"),
+        )
+        st.session_state.pop("pending_yt_url", None)
+        local = _preflight_youtube(pending_url)
+        st.session_state["yt_preflight_busy"] = False
+        if local:
+            source = dict(source)
+            source["source_type"] = "upload"
+            source["preflight_media_path"] = local
+            source["existing_media_path"] = local
+            run_now = True
+        else:
+            st.info("Use **Upload Video Instead** below / switch to Upload, then **Upload & Process**.")
+            st.rerun()
 
     if run_now:
         # If preflight produced media, map into upload_path via job runner helper

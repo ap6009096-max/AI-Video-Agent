@@ -15,7 +15,7 @@ def test_youtube_failure_path_allows_upload_fallback(tmp_path: Path) -> None:
     """YouTube failure returns structured error; upload can still persist media."""
     with (
         patch("ingestion.youtube.get_settings") as gs,
-        patch("tools.ffmpeg.bin.resolve_ffmpeg_binary", return_value="/bin/ffmpeg"),
+        patch("ingestion.youtube._resolve_ffmpeg", return_value="/bin/ffmpeg"),
         patch("tools.youtube.urls.normalize_youtube_url", return_value="https://youtu.be/z"),
         patch("tools.youtube.urls.extract_video_id", return_value="z"),
         patch(
@@ -29,6 +29,8 @@ def test_youtube_failure_path_allows_upload_fallback(tmp_path: Path) -> None:
         settings.youtube_cookies_file = ""
         settings.ffmpeg_path = ""
         settings.is_streamlit_cloud = False
+        settings.app_env = "test"
+        settings.log_level = "INFO"
         gs.return_value = settings
         result = download_youtube("https://youtu.be/z", dest_dir=tmp_path)
 

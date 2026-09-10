@@ -49,6 +49,78 @@ USER_FACING_YOUTUBE_FAILURE = (
     "Please use another authorized public video or upload the media file directly."
 )
 
+_STATUS_USER_MESSAGES: dict[YouTubeDownloadStatus, str] = {
+    YouTubeDownloadStatus.FORBIDDEN: (
+        "YouTube blocked automated access from this server (HTTP 403 / bot check).\n\n"
+        "Upload the video file directly (MP4/MOV/etc.) to continue analysis."
+    ),
+    YouTubeDownloadStatus.RESTRICTED: (
+        "This YouTube video is private, age-restricted, or region-limited "
+        "for the hosted server.\n\n"
+        "Upload the media file directly to continue."
+    ),
+    YouTubeDownloadStatus.AUTHENTICATION_REQUIRED: (
+        "YouTube requires authentication to access this video.\n\n"
+        "This app does not sign in to YouTube. Upload the file directly instead."
+    ),
+    YouTubeDownloadStatus.UNAVAILABLE: (
+        "YouTube reports this video as unavailable or removed.\n\n"
+        "Try another public URL or upload the media file directly."
+    ),
+    YouTubeDownloadStatus.NETWORK_ERROR: (
+        "A temporary network error occurred while contacting YouTube.\n\n"
+        "Retry shortly, or upload the media file directly."
+    ),
+    YouTubeDownloadStatus.EXTRACTOR_ERROR: (
+        "YouTube media extraction failed (invalid URL, missing formats, "
+        "or missing FFmpeg for stream merge).\n\n"
+        "Upload the video file directly, or ensure FFmpeg / yt-dlp are installed."
+    ),
+    YouTubeDownloadStatus.UNKNOWN: (
+        "YouTube media download failed for an unexpected reason.\n\n"
+        "Upload the media file directly to continue analysis."
+    ),
+}
+
+
+def user_message_for_youtube_error(
+    error: YouTubeDownloadError | None,
+    *,
+    include_generic: bool = True,
+) -> str:
+    """Return status-specific UI text; optionally append the generic help blurb."""
+    status = (
+        error.status
+        if isinstance(error, YouTubeDownloadError)
+        else YouTubeDownloadStatus.UNKNOWN
+    )
+    specific = _STATUS_USER_MESSAGES.get(
+        status, _STATUS_USER_MESSAGES[YouTubeDownloadStatus.UNKNOWN]
+    )
+    detail = ""
+    if isinstance(error, YouTubeDownloadError) and error.message:
+        detail = f"\n\nTechnical detail: {error.code}: {error.message}"
+    if include_generic and status not in {
+        YouTubeDownloadStatus.FORBIDDEN,
+        YouTubeDownloadStatus.RESTRICTED,
+        YouTubeDownloadStatus.AUTHENTICATION_REQUIRED,
+        YouTubeDownloadStatus.UNAVAILABLE,
+    }:
+        return f"{specific}{detail}\n\n---\n{USER_FACING_YOUTUBE_FAILURE}"
+    return f"{specific}{detail}"
+
+
+def user_message_for_status(status: YouTubeDownloadStatus | str) -> str:
+    """Map a status enum/string to a short user-facing explanation."""
+    if isinstance(status, str):
+        try:
+            status = YouTubeDownloadStatus(status)
+        except ValueError:
+            status = YouTubeDownloadStatus.UNKNOWN
+    return _STATUS_USER_MESSAGES.get(
+        status, _STATUS_USER_MESSAGES[YouTubeDownloadStatus.UNKNOWN]
+    )
+
 
 def classify_ytdlp_error(exc: BaseException) -> YouTubeDownloadError:
     """Map yt-dlp / network exceptions into structured application errors."""
@@ -129,7 +201,13 @@ def classify_ytdlp_error(exc: BaseException) -> YouTubeDownloadError:
             retryable=True,
             status=YouTubeDownloadStatus.NETWORK_ERROR,
         )
-    if "unsupported url" in lower or "no video formats" in lower or "extractor" in lower:
+    if (
+        "format is not available" in lower
+        or "requested format" in lower
+        or "no video formats" in lower
+        or "unsupported url" in lower
+        or "extractor" in lower
+    ):
         return YouTubeDownloadError(
             YouTubeDownloadStatus.EXTRACTOR_ERROR.value,
             f"YouTube extractor failure: {text}",

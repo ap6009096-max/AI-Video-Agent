@@ -41,7 +41,11 @@ class Settings(BaseSettings):
         default=True, alias="YOUTUBE_DOWNLOAD_ENABLED"
     )
     youtube_download_format: str = Field(
-        default="bv*+ba/b",
+        default=(
+            "bv*[height<=720][ext=mp4]+ba[ext=m4a]/"
+            "bestvideo[height<=720][protocol^=http]+bestaudio[protocol^=http]/"
+            "bv*+ba/b"
+        ),
         alias="YOUTUBE_DOWNLOAD_FORMAT",
     )
     youtube_cookies_file: str = Field(default="", alias="YOUTUBE_COOKIES_FILE")

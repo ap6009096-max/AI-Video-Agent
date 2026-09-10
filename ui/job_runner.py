@@ -92,14 +92,34 @@ def _friendly_workflow_error(error: BaseException) -> str:
             "Check GEMINI_MODEL and fallback models."
         )
     if isinstance(error, YouTubeAgentError) or "youtube" in message.lower():
-        from ingestion.errors import USER_FACING_YOUTUBE_FAILURE
+        from ingestion.errors import (
+            YouTubeDownloadError,
+            user_message_for_youtube_error,
+        )
 
         try:
             st.session_state["youtube_fallback"] = True
-            st.session_state["youtube_ingest_error_detail"] = message[:300]
+            st.session_state["youtube_ingest_error_detail"] = message[:500]
         except Exception:  # noqa: BLE001
             pass
-        return USER_FACING_YOUTUBE_FAILURE
+        if isinstance(error, YouTubeDownloadError):
+            return user_message_for_youtube_error(error)
+        # Prefer structured detail when present over a generic-only banner.
+        return user_message_for_youtube_error(
+            YouTubeDownloadError("unknown", message[:400])
+        )
+    if (
+        "application control" in message.lower()
+        or "windows blocked" in message.lower()
+        or "_cffiarray" in message.lower()
+        or ("whisper" in message.lower() and "dll" in message.lower())
+    ):
+        return (
+            "Transcription failed: Windows Application Control blocked Whisper’s "
+            "native libraries (numba/llvmlite). Allow those DLLs under the project "
+            ".venv, or move the project out of a controlled OneDrive folder, then "
+            "restart Streamlit and retry."
+        )
     return message
 
 

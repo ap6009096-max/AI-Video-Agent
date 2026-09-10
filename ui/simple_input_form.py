@@ -7,7 +7,13 @@ from typing import Any
 import streamlit as st
 
 from config.settings import get_settings
-from ingestion.errors import USER_FACING_YOUTUBE_FAILURE
+from ingestion.errors import (
+    USER_FACING_YOUTUBE_FAILURE,
+    YouTubeDownloadError,
+    YouTubeDownloadStatus,
+    user_message_for_status,
+    user_message_for_youtube_error,
+)
 from tools.scripts.ingest import extract_script_text
 from ui.constants import (
     ALLOWED_UPLOAD_TYPES,
@@ -21,10 +27,27 @@ from ui.constants import (
 def _render_youtube_fallback() -> Any:
     """Show required YouTube failure copy + upload control on the same page."""
     st.error("⚠ YouTube download unavailable")
-    st.warning(USER_FACING_YOUTUBE_FAILURE)
-    detail = st.session_state.get("youtube_ingest_error_detail")
+    detail = str(st.session_state.get("youtube_ingest_error_detail") or "")
+    status_hint = YouTubeDownloadStatus.UNKNOWN
     if detail:
+        code = detail.split(":", 1)[0].strip().lower()
+        try:
+            status_hint = YouTubeDownloadStatus(code)
+        except ValueError:
+            status_hint = YouTubeDownloadStatus.UNKNOWN
+        synthetic = YouTubeDownloadError(
+            code,
+            detail.split(":", 1)[-1].strip() if ":" in detail else detail,
+            status=status_hint,
+        )
+        st.warning(user_message_for_youtube_error(synthetic))
         st.caption(f"Technical detail (logged): {detail}")
+    else:
+        st.warning(user_message_for_status(YouTubeDownloadStatus.UNKNOWN))
+        st.caption(USER_FACING_YOUTUBE_FAILURE)
+    st.info(
+        "Direct upload continues the same analysis pipeline — no YouTube download required."
+    )
     st.markdown("**Upload Video Instead**")
     return st.file_uploader(
         "Choose File",
@@ -42,9 +65,9 @@ def render_simple_input_form() -> dict[str, Any]:
         "Direct upload is the reliable path and stores media in durable storage."
     )
 
-    force_upload = bool(st.session_state.get("youtube_fallback"))
+    prior_fallback = bool(st.session_state.get("youtube_fallback"))
     options = ["YouTube URL", "Upload Video / Audio"]
-    default_index = 1 if force_upload else 0
+    default_index = 1 if prior_fallback else 0
     input_type = st.radio(
         "Source method",
         options=options,
@@ -60,38 +83,43 @@ def render_simple_input_form() -> dict[str, Any]:
     col1, col2 = st.columns([3, 2])
 
     with col1:
-        if force_upload or input_type == "Upload Video / Audio":
-            if force_upload and input_type == "YouTube URL":
-                # Keep radio but still show fallback upload when flagged
-                uploaded_file = _render_youtube_fallback()
-                action_hint = "upload"
-            elif force_upload:
-                uploaded_file = _render_youtube_fallback()
-                action_hint = "upload"
-            else:
-                st.markdown("#### Upload Video / Audio")
-                uploaded_file = st.file_uploader(
-                    "Choose File",
-                    type=ALLOWED_UPLOAD_TYPES,
-                    help="Local video or podcast audio file to transform.",
-                )
-                action_hint = "upload"
-        else:
+        if input_type == "YouTube URL":
             st.markdown("#### YouTube URL")
             download_enabled = get_settings().youtube_download_enabled
             youtube_url = st.text_input(
                 "YouTube URL",
                 placeholder="https://www.youtube.com/watch?v=...",
                 help="Best-effort download via yt-dlp. Restricted videos may fail on Streamlit Cloud.",
+                key="youtube_url_input",
             )
             if not download_enabled:
                 st.warning(
                     "YouTube download is disabled (YOUTUBE_DOWNLOAD_ENABLED=false)."
                 )
             action_hint = "youtube"
-            if st.session_state.get("youtube_fallback"):
+            if prior_fallback:
+                st.info(
+                    "A previous YouTube download failed. You can retry with Process YouTube "
+                    "or upload a file below."
+                )
+                if st.button("Dismiss download error", key="clear_youtube_fallback"):
+                    st.session_state.pop("youtube_fallback", None)
+                    st.session_state.pop("youtube_ingest_error_detail", None)
+                    st.rerun()
                 uploaded_file = _render_youtube_fallback()
-                action_hint = "upload"
+                if uploaded_file is not None:
+                    action_hint = "upload"
+        else:
+            st.markdown("#### Upload Video / Audio")
+            if prior_fallback:
+                uploaded_file = _render_youtube_fallback()
+            else:
+                uploaded_file = st.file_uploader(
+                    "Choose File",
+                    type=ALLOWED_UPLOAD_TYPES,
+                    help="Local video or podcast audio file to transform.",
+                )
+            action_hint = "upload"
 
         st.divider()
         st.markdown("#### Optional Script")
@@ -172,7 +200,7 @@ def render_simple_input_form() -> dict[str, Any]:
             help="Real moment-selected vertical Shorts (1080×1920). Empty = no Shorts export.",
         )
 
-    if uploaded_file is not None or force_upload:
+    if uploaded_file is not None:
         source_type = "upload"
     elif youtube_url.strip():
         source_type = "youtube"
@@ -194,5 +222,5 @@ def render_simple_input_form() -> dict[str, Any]:
         "visual_style": visual_style,
         "short_durations": [int(d) for d in short_durations],
         "action_hint": action_hint,
-        "youtube_fallback": force_upload,
+        "youtube_fallback": prior_fallback and uploaded_file is not None,
     }

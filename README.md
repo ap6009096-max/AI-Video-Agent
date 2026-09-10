@@ -443,9 +443,11 @@ Server-side only: `SUPABASE_SERVICE_ROLE_KEY` must never be exposed in the brows
 
 YouTube URL ingestion is **best-effort**. A video that plays in a normal browser may still fail on a hosted Streamlit server (403, unavailable, region, authentication, or bot restrictions).
 
+* Downloads use the installed **`yt-dlp`** package (keep it current: `pip install -U yt-dlp`).
+* Progressive formats are tried first; FFmpeg (system `FFMPEG_PATH` or **imageio-ffmpeg**) is required only for split-stream merge fallbacks.
 * **Do not** store personal browser cookies or account credentials on Streamlit Cloud.
-* On failure the UI shows a clear message and an **Upload Video Instead** control.
-* Direct upload is the reliable path and always stores media in durable storage when configured.
+* On failure the UI shows a **status-specific** reason plus an **Upload Video Instead** control — analysis continues after a direct MP4/MOV upload.
+* Direct upload is the reliable path and stores media in durable storage when Supabase is configured.
 
 # Deployment
 
