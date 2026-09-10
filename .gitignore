@@ -1,5 +1,7 @@
-# Environment
+# Environment / secrets (never commit)
 .env
+.env.*
+!.env.example
 .venv/
 venv/
 env/

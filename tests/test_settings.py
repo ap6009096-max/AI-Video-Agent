@@ -170,3 +170,16 @@ def test_get_settings_uses_streamlit_secret(monkeypatch, tmp_path) -> None:
 
     assert settings.has_gemini_api_key is True
     get_settings.cache_clear()
+
+
+def test_supabase_url_strips_duplicated_key_prefix(monkeypatch) -> None:
+    monkeypatch.setenv(
+        "SUPABASE_URL",
+        "SUPABASE_URL=https://example.supabase.co",
+    )
+    get_settings.cache_clear()
+
+    settings = Settings(_env_file=None)
+
+    assert settings.supabase_url == "https://example.supabase.co"
+    get_settings.cache_clear()
