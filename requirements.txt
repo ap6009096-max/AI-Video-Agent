@@ -16,7 +16,7 @@ supabase>=2.10.0
 # Media
 opencv-python-headless>=4.10.0
 openai-whisper>=20231117
-yt-dlp>=2025.01.26
+yt-dlp>=2026.08.19
 imageio-ffmpeg>=0.5.1
 
 edge-tts>=6.1.0

@@ -183,3 +183,15 @@ def test_supabase_url_strips_duplicated_key_prefix(monkeypatch) -> None:
 
     assert settings.supabase_url == "https://example.supabase.co"
     get_settings.cache_clear()
+
+
+def test_youtube_auth_fallback_settings(monkeypatch) -> None:
+    monkeypatch.setenv("YOUTUBE_COOKIES_FROM_BROWSER", "edge")
+    monkeypatch.setenv("YOUTUBE_AUTH_FALLBACK", "false")
+    get_settings.cache_clear()
+
+    settings = Settings(_env_file=None)
+
+    assert settings.youtube_cookies_from_browser == "edge"
+    assert settings.youtube_auth_fallback is False
+    get_settings.cache_clear()

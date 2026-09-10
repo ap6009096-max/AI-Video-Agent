@@ -49,6 +49,10 @@ class Settings(BaseSettings):
         alias="YOUTUBE_DOWNLOAD_FORMAT",
     )
     youtube_cookies_file: str = Field(default="", alias="YOUTUBE_COOKIES_FILE")
+    youtube_cookies_from_browser: str = Field(
+        default="", alias="YOUTUBE_COOKIES_FROM_BROWSER"
+    )
+    youtube_auth_fallback: bool = Field(default=True, alias="YOUTUBE_AUTH_FALLBACK")
     gemini_model: str = Field(default="gemini-3.6-flash", alias="GEMINI_MODEL")
     gemini_fallback_models: str = Field(default="", alias="GEMINI_FALLBACK_MODELS")
     gemini_max_retries: int = Field(default=2, alias="GEMINI_MAX_RETRIES")

@@ -60,8 +60,11 @@ _STATUS_USER_MESSAGES: dict[YouTubeDownloadStatus, str] = {
         "Upload the media file directly to continue."
     ),
     YouTubeDownloadStatus.AUTHENTICATION_REQUIRED: (
-        "YouTube requires authentication to access this video.\n\n"
-        "This app does not sign in to YouTube. Upload the file directly instead."
+        "This YouTube video requires authentication that could not be "
+        "completed automatically.\n\n"
+        "You can upload the video directly and the same AI analysis pipeline "
+        "will continue.\n\n"
+        "No other workflow changes are required."
     ),
     YouTubeDownloadStatus.UNAVAILABLE: (
         "YouTube reports this video as unavailable or removed.\n\n"
