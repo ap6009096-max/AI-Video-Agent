@@ -12,7 +12,6 @@ from config.settings import get_settings
 from core.logging import configure_logging, get_logger
 from core.paths import ensure_output_dir, get_output_dir
 from core.sentry import init_sentry
-from ingestion.errors import YouTubeDownloadError, user_message_for_youtube_error
 from ui import (
     apply_styles,
     init_progress_session,
@@ -142,6 +141,7 @@ def _render_sidebar() -> None:
 
 def _preflight_youtube(url: str) -> str | None:
     """Attempt YouTube download before Creator OS. On failure, arm upload fallback."""
+    from ingestion.errors import YouTubeDownloadError, user_message_for_youtube_error
     from ingestion.youtube import download_youtube
 
     with st.spinner(

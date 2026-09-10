@@ -7,13 +7,6 @@ from typing import Any
 import streamlit as st
 
 from config.settings import get_settings
-from ingestion.errors import (
-    USER_FACING_YOUTUBE_FAILURE,
-    YouTubeDownloadError,
-    YouTubeDownloadStatus,
-    user_message_for_status,
-    user_message_for_youtube_error,
-)
 from tools.scripts.ingest import extract_script_text
 from ui.constants import (
     ALLOWED_UPLOAD_TYPES,
@@ -26,6 +19,14 @@ from ui.constants import (
 
 def _render_youtube_fallback() -> Any:
     """Show required YouTube failure copy + upload control on the same page."""
+    from ingestion.errors import (
+        USER_FACING_YOUTUBE_FAILURE,
+        YouTubeDownloadError,
+        YouTubeDownloadStatus,
+        user_message_for_status,
+        user_message_for_youtube_error,
+    )
+
     st.error("⚠ YouTube download unavailable")
     detail = str(st.session_state.get("youtube_ingest_error_detail") or "")
     status_hint = YouTubeDownloadStatus.UNKNOWN

@@ -21,7 +21,6 @@ from core.errors import (
     YouTubeAgentError,
 )
 from core.logging import get_logger
-from graph.workflow import run_video_workflow
 from schemas.base import JobStatus
 from schemas.job import (
     FeatureFlags,
@@ -410,6 +409,8 @@ def run_job_from_ui(
             render_progress_panel()
 
     try:
+        from graph.workflow import run_video_workflow
+
         label = "Resuming…" if resume else "Generating video…"
         with st.spinner(label):
             result = run_video_workflow(
