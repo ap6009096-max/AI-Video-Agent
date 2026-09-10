@@ -21,6 +21,12 @@ VIDEO_ID = "dQw4w9WgXcQ"
         f"https://m.youtube.com/watch?v={VIDEO_ID}",
         f"https://www.youtube.com/live/{VIDEO_ID}",
         f"https://youtube.com/watch?v={VIDEO_ID}&t=30",
+        f"www.youtube.com/watch?v={VIDEO_ID}",
+        f"youtu.be/{VIDEO_ID}",
+        f'"https://www.youtube.com/watch?v={VIDEO_ID}"',
+        f"<https://youtu.be/{VIDEO_ID}>",
+        f"https://www.youtube-nocookie.com/embed/{VIDEO_ID}",
+        f"\u200bhttps://www.youtube.com/watch?v={VIDEO_ID}\u200b",
     ],
 )
 def test_extract_and_normalize_common_formats(url: str) -> None:
